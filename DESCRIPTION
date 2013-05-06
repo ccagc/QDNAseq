@@ -1,0 +1,13 @@
+Package: QDNAseq
+Type: Package
+Title: QDNAseq: Quantitative DNA sequencing for chromosomal aberrations.
+Version: 0.1.0
+Date: 2013-05-06
+Author: Ilari Scheinin
+Maintainer: Ilari Scheinin <firstname.lastname@gmail.com>
+Description: More about what it does (maybe more than one line)
+Imports: 
+Depends: R (>= 2.10), Biobase (>= 2.5.5), CGHbase (>= 1.18.0)
+Suggests: 
+Enhances: 
+License: GPL
