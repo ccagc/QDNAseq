@@ -8,15 +8,15 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-binReadCounts(binsize, files = NULL, path = ".", ext = "bam", names = NULL, genome = "hg19", cache = TRUE, samtools = "samtools", f = "", F = "0x0404", q = 37, maxChunk = 1e+08)
+binReadCounts(bins, bamfiles = NULL, path = ".", ext = "bam", bamnames = NULL, phenofile = NULL, genome = "hg19", cache = TRUE, samtools = "samtools", f = "", F = "0x0404", q = 37, maxChunk = 100000000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{binsize}{
-%%     ~~Describe \code{binsize} here~~
+  \item{bins}{
+%%     ~~Describe \code{bins} here~~
 }
-  \item{files}{
-%%     ~~Describe \code{files} here~~
+  \item{bamfiles}{
+%%     ~~Describe \code{bamfiles} here~~
 }
   \item{path}{
 %%     ~~Describe \code{path} here~~
@@ -24,8 +24,11 @@ binReadCounts(binsize, files = NULL, path = ".", ext = "bam", names = NULL, geno
   \item{ext}{
 %%     ~~Describe \code{ext} here~~
 }
-  \item{names}{
-%%     ~~Describe \code{names} here~~
+  \item{bamnames}{
+%%     ~~Describe \code{bamnames} here~~
+}
+  \item{phenofile}{
+%%     ~~Describe \code{phenofile} here~~
 }
   \item{genome}{
 %%     ~~Describe \code{genome} here~~
@@ -80,41 +83,38 @@ binReadCounts(binsize, files = NULL, path = ".", ext = "bam", names = NULL, geno
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (binsize, files = NULL, path = ".", ext = "bam", names = NULL, 
-    genome = "hg19", cache = TRUE, samtools = "samtools", f = "", 
-    F = "0x0404", q = 37, maxChunk = 1e+08) 
+function (bins, bamfiles = NULL, path = ".", ext = "bam", bamnames = NULL, 
+    phenofile = NULL, genome = "hg19", cache = TRUE, samtools = "samtools", 
+    f = "", F = "0x0404", q = 37, maxChunk = 100000000) 
 {
-    genome.build <- as.integer(gsub("[^0-9]", "", genome))
-    if (genome.build == 36 || genome.build == 18) {
-        annfile <- file.path("/scratch/data/ref/hg18/MPScall", 
-            paste("QDNAseq.", binsize * 1000, ".txt.gz", sep = ""))
+    if (is.null(bamfiles)) 
+        bamfiles <- list.files(path, paste("\\.", ext, "$", sep = ""))
+    if (length(bamfiles) == 0) 
+        stop("No files to process.")
+    if (is.null(bamnames)) {
+        bamnames <- sub(paste("\\.", ext, "$", sep = ""), "", 
+            bamfiles)
     }
-    else {
-        annfile <- file.path("/scratch/data/ref/hg19/MPScall", 
-            paste("QDNAseq.", binsize * 1000, ".txt.gz", sep = ""))
+    else if (length(bamfiles) != length(bamnames)) {
+        stop("bamfiles and bamnames have to be of same length.")
     }
-    if (!file.exists(annfile)) 
-        stop("No annotations file found for genome ", genome, 
-            " and bin size of ", binsize, "kbp. Please generate it first.")
-    bins <- read.table(annfile, header = TRUE, sep = "\t", as.is = TRUE)
-    rownames(bins) <- paste(bins$chromosome, ":", bins$start, 
-        "-", bins$end, sep = "")
-    if (is.null(files)) 
-        files <- list.files(path, paste("\\.", ext, "$", sep = ""))
-    if (is.null(names)) {
-        names <- sub(paste("\\.", ext, "$", sep = ""), "", files)
+    phenodata <- data.frame(name = bamnames, row.names = bamnames, 
+        stringsAsFactors = FALSE)
+    if (!is.null(phenofile)) {
+        pdata <- read.table(phenofile, header = TRUE, sep = "\t", 
+            as.is = TRUE, row.names = 1)
+        phenodata <- cbind(phenodata, pdata[rownames(phenodata), 
+            ])
     }
-    else if (length(files) != length(names)) {
-        stop("files and names have to be of same length.")
-    }
-    counts <- matrix(nrow = nrow(bins), ncol = length(names), 
-        dimnames = list(rownames(bins), names))
-    for (i in 1:length(files)) {
-        counts[, i] <- .binReadCountsPerSample(binsize, files[i], 
-            path, bins, cache, samtools, f, F, q, maxChunk)
+    counts <- matrix(nrow = nrow(bins), ncol = length(bamnames), 
+        dimnames = list(rownames(bins), bamnames))
+    for (i in 1:length(bamfiles)) {
+        counts[, i] <- .binReadCountsPerSample(bins, bamfiles[i], 
+            path, cache, samtools, f, F, q, maxChunk)
         gc(FALSE)
     }
-    dat <- list(bins = bins, counts = counts)
+    phenodata$reads <- apply(counts, 2, sum)
+    dat <- list(phenodata = phenodata, bins = bins, counts = counts)
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

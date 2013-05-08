@@ -15,7 +15,7 @@ More about what it does (maybe more than one line)
 Package: \tab qdnaseq\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2013-05-06\cr
+Date: \tab 2013-05-08\cr
 License: \tab What license is it under?\cr
 }
 ~~ An overview of how to use the package, including the most important ~~

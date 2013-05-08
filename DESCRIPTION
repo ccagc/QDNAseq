@@ -1,8 +1,8 @@
-Package: QDNAseq
+Package: qdnaseq
 Type: Package
-Title: QDNAseq: Quantitative DNA sequencing for chromosomal aberrations.
+Title: Quantitative DNA sequencing for chromosomal aberrations.
 Version: 0.1.0
-Date: 2013-05-06
+Date: 2013-05-08
 Author: Ilari Scheinin
 Maintainer: Ilari Scheinin <firstname.lastname@gmail.com>
 Description: More about what it does (maybe more than one line)
