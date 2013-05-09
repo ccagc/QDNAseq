@@ -25,7 +25,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 }
 
 .binReadCountsPerSample <- function(bins, bamfile, path, cache, samtools, f, F, q, maxChunk) {
-  binsize <- bins$end[1]-bins$start[1]+1
+  binsize <- (bins$end[1]-bins$start[1]+1)/1000
   linkTarget <- Sys.readlink(file.path(path, bamfile))
   if (linkTarget != '') {
     bamfile <- basename(linkTarget)
