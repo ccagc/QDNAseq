@@ -9,7 +9,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
   } else {
     stop('Unknown genome: ', genome)
   }
-  filename <- paste('QDNAseq.', genome.name, '.', binsize, 'kbp.txt.gz', sep='')
+  filename <- paste('QDNAseq.', genome.name, '.', binsize, 'kbp.rds', sep='')
   if (cache) {
     localfile <- file.path(path.expand('~'), '.QDNAseq', filename)
   } else {
@@ -22,9 +22,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     if (download.file(remotefile, localfile, quiet=TRUE) != 0)
       stop('Annotations not found on server for genome ', genome, ' and bin size ', binsize, '. Please generate them first.')
   }
-  bins <- read.table(localfile, header=TRUE, sep='\t', as.is=TRUE)
-  rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end, sep='')
-  bins
+  readRDS(localfile)
 }
 
 createBins <- function(binsize, genome='hg19') {
