@@ -55,7 +55,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
           next
         chromosome.breaks <- c(bins[bins$chromosome==chromosome, 'start'], max(bins[bins$chromosome==chromosome, 'end']))
         # without the as.numeric() the command below gives an integer overflow warning:
-        count <- hist(hits[hits$chromosome==chromosome, 'pos'], breaks=as.numeric(chromosome.breaks), plot=FALSE)$count
+        count <- hist(hits[hits$chromosome==chromosome, 'pos'], breaks=as.numeric(chromosome.breaks), right=FALSE, plot=FALSE)$count
+        # count <- binCounts(hits[hits$chromosome==chromosome, 'pos'], chromosome.breaks) # matrixStats
         readCounts[bins$chromosome==chromosome] <- readCounts[bins$chromosome==chromosome] + count
       }
       skip <- skip + maxChunk
