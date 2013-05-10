@@ -29,7 +29,7 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
   gc <- round(bins$gc)
   mappability <- round(bins$mappability)
-  median.counts <- aggregate(counts[condition], by=list(gc=gc[condition], mappability=mappability[condition]), median)
+  median.counts <- aggregate(counts[condition,], by=list(gc=gc[condition], mappability=mappability[condition]), median)
   median.counts <- median.counts[!is.na(median.counts$gc),]
   rownames(median.counts) <- paste(median.counts$gc, '-', median.counts$mappability, sep='')
   # if (plotting) {
