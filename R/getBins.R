@@ -18,7 +18,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
   if (cache & !file.exists(file.path(path.expand('~'), '.QDNAseq')))
     dir.create(file.path(path.expand('~'), '.QDNAseq'))
   if (!file.exists(localfile)) {
-    remotefile <- paste('http://cdn.bitbucket.org/ilarischeinin/qdnaseq/downloads/', filename, sep='')
+    remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
     if (download.file(remotefile, localfile, quiet=TRUE) != 0)
       stop('Annotations not found on server for genome ', genome, ' and bin size ', binsize, '. Please generate them first.')
   }

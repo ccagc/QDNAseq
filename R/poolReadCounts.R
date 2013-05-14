@@ -17,15 +17,15 @@ poolReadCounts <- function(obj, samples) {
     newcorrected <- matrix(nrow=nrow(counts), ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
   for (newsample in newsamples) {
     replicates <- samples == newsample
-    newcounts[,x] <- rowSums(counts[,replicates, drop=FALSE])
+    newcounts[,newsample] <- rowSums(counts[,replicates, drop=FALSE])
     if ('corrected' %in% names(obj))
-      newcorrected[,x] <- rowSums(corrected[,replicates, drop=FALSE])
-    oldpheno <- dat[['phenodata']][replicates,]
-    newpheno[x, 'reads'] <- sum(oldpheno$reads)
-    if (length(unique(oldpheno$loess.span)) == 1)
-      newpheno[x, 'loess.span'] <- oldpheno[1, 'loess.span']
-    if (length(unique(oldpheno$loess.family)) == 1)
-      newpheno[x, 'loess.family'] <- oldpheno[1, 'loess.family']
+      newcorrected[,newsample] <- rowSums(corrected[,replicates, drop=FALSE])
+    oldphenodata <- dat[['phenodata']][replicates,]
+    newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)
+    if (length(unique(oldphenodata$loess.span)) == 1)
+      newphenodata[newsample, 'loess.span'] <- oldphenodata[1, 'loess.span']
+    if (length(unique(oldphenodata$loess.family)) == 1)
+      newphenodata[newsample, 'loess.family'] <- oldphenodata[1, 'loess.family']
   }
   if ('corrected' %in% names(obj))
     return(list(phenodata=newphenodata, bins=bins, counts=newcounts, corrected=newcorrected))
