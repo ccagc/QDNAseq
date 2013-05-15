@@ -1,6 +1,4 @@
-options(scipen=10) # change filenames to 'kbp'
-
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000) {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000, filter=TRUE) {
   if (is.null(bamfiles))
     bamfiles <- list.files(path, paste('\\.', ext, '$', sep=''))
   if (length(bamfiles) == 0)
@@ -21,7 +19,17 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     gc(FALSE)
   }
   phenodata$reads <- apply(counts, 2, sum)
-  dat <- list(phenodata=phenodata, bins=bins, counts=counts)
+  if (length(filter)==nrow(bins)) {
+    condition <- filter
+  } else if (filter) {
+    condition <- bins$chromosome %in% as.character(1:22) & # By default, ignore sex chromosomes,
+      bins$chromosome == c(bins$chromosome[-1], '0')       # the very last bin of each chromosome,
+    if ('blacklist' %in% colnames(bins))                   # and if the information is present,
+      condition <- condition & bins$blacklist == 0         # bins overlapping with the ENCODE blacklist.
+  } else {
+    condition <- rep(TRUE, nrow(bins))
+  } 
+  list(phenodata=phenodata, bins=bins, counts=counts, filter=condition)
 }
 
 .binReadCountsPerSample <- function(bins, bamfile, path, cache, samtools, f, F, q, maxChunk) {

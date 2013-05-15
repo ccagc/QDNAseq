@@ -3,3 +3,5 @@ addPhenodata <- function(obj, phenofile) {
   obj[['phenodata']] <- cbind(obj[['phenodata']], pdata[rownames(obj[['phenodata']]),])
   obj
 }
+
+# EOF

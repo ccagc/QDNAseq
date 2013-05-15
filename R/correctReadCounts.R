@@ -1,4 +1,4 @@
-correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE, condition=TRUE, ...) {
+correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE, ...) {
   phenodata <- obj[['phenodata']]
   bins <- obj[['bins']]
   counts <- obj[['counts']]
@@ -11,18 +11,11 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
     stop('span has to be either a single value or a vector the same length as the number of columns in counts.')
   if (length(family) != ncol(counts))
     stop('family has to be either a single value or a vector the same length as the number of columns in counts.')
-  if (length(condition)==1) {
-    if (condition) {                                         # when calculating the correction, ignore
-      condition <- bins$chromosome %in% as.character(1:22) & # sex chromosomes
-        bins$chromosome == c(bins$chromosome[-1], '0')       # and the very last bins of each chromosome,
-      if ('blacklist' %in% colnames(bins))                   # and if the information is present,
-        condition <- condition & bins$blacklist == 0         # bins overlapping with the ENCDOE blacklist
-    } else {
-      condition <- rep(TRUE, nrow(bins))
-    }
+  if (exists('filter', obj)) {
+    condition <- obj[['filter']]
+  } else {
+    condition <- rep(TRUE, nrow(obj[['dat']]))
   }
-  if (length(condition) != nrow(bins))
-    stop('condition has to be either a single value or vector the same length as the number of rows in bins.')
   used.span <- rep(NA, ncol(counts))
   used.family <- rep(NA, ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
@@ -93,7 +86,7 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   phenodata$loess.span <- used.span
   phenodata$loess.family <- used.family
   cat('Done.\n')
-  list(phenodata=phenodata, bins=bins, counts=counts, corrected=corrected, residuals=residuals)
+  list(phenodata=phenodata, bins=bins, counts=counts, filter=obj[['filter']], corrected=corrected, residuals=residuals)
 }
 
 # a subfunction for performing the correction on one sample at a time could be defined here.

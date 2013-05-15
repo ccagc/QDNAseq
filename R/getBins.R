@@ -1,5 +1,3 @@
-options(scipen=10) # change filenames to 'kbp'
-
 getBins <- function(binsize, genome='hg19', cache=TRUE) {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {

@@ -28,8 +28,8 @@ poolReadCounts <- function(obj, samples) {
       newphenodata[newsample, 'loess.family'] <- oldphenodata[1, 'loess.family']
   }
   if ('corrected' %in% names(obj))
-    return(list(phenodata=newphenodata, bins=bins, counts=newcounts, corrected=newcorrected))
-  list(phenodata=newphenodata, bins=bins, counts=newcounts)
+    return(list(phenodata=newphenodata, bins=bins, counts=newcounts, filter=obj[['filter']], corrected=newcorrected))
+  list(phenodata=newphenodata, bins=bins, counts=newcounts, filter=obj[['filter']])
 }
 
 # EOF
