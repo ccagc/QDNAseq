@@ -1,4 +1,4 @@
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000, filter=TRUE) {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag') {
   if (is.null(bamfiles))
     bamfiles <- list.files(path, paste('\\.', ext, '$', sep=''))
   if (length(bamfiles) == 0)
@@ -19,16 +19,17 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     gc(FALSE)
   }
   phenodata$reads <- apply(counts, 2, sum)
-  if (length(filter)==nrow(bins)) {
-    condition <- filter
-  } else if (filter) {
-    condition <- bins$chromosome %in% as.character(1:22) & # By default, ignore sex chromosomes,
-      bins$chromosome == c(bins$chromosome[-1], '0')       # the very last bin of each chromosome,
-    if ('blacklist' %in% colnames(bins))                   # and if the information is present,
-      condition <- condition & bins$blacklist == 0         # bins overlapping with the ENCODE blacklist.
-  } else {
-    condition <- rep(TRUE, nrow(bins))
-  } 
+  condition <- condition <- rep(TRUE, nrow(bins))
+  if (allosomeBins=='flag')
+    condition <- condition & bins$chromosome %in% as.character(1:22)
+  if (incompleteBins=='flag') {
+    condition <- condition & bins$bases == 100
+  } else if (incompleteBins=='adjust') {
+    counts[bins$bases==0] <- NA # theoretically, BWA might place reads where reference is all Ns
+    counts <- counts / bins$bases * 100
+  }
+  if (blacklistedBins=='flag')
+    condition <- condition & bins$blacklist == 0
   list(phenodata=phenodata, bins=bins, counts=counts, filter=condition)
 }
 
