@@ -4,7 +4,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   } else {
     condition <- rep(TRUE, nrow(obj[['bins']]))
   }
-  bins <- dat[['bins']][condition,]
+  bins <- obj[['bins']][condition,]
   copynumber <- obj[['corrected']][condition,]
   if (logTransform)
     copynumber <- log2(copynumber + 1)
@@ -25,7 +25,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
     CNA.object <- DNAcopy::smooth.CNA(DNAcopy::CNA(copynumber, bins$chromosome, bins$start, data.type='logratio', presorted=TRUE))
     copynumber <- as.matrix(CNA.object[,-(1:2)])
   }
-  obj[['copynumber']] <- matrix(nrow=nrow(dat[['corrected']]), ncol=ncol(dat[['corrected']]), dimnames=dimnames(dat[['corrected']]))
+  obj[['copynumber']] <- matrix(nrow=nrow(obj[['corrected']]), ncol=ncol(obj[['corrected']]), dimnames=dimnames(obj[['corrected']]))
   obj[['copynumber']][rownames(copynumber),] <- copynumber
   obj
 }
