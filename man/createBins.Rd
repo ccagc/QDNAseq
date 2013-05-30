@@ -1,7 +1,7 @@
 \name{createBins}
 \alias{createBins}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
+\title{createBins
 %%  ~~function to do ... ~~
 }
 \description{

@@ -1,7 +1,7 @@
 \name{addPhenodata}
 \alias{addPhenodata}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
+\title{addPhenodata
 %%  ~~function to do ... ~~
 }
 \description{

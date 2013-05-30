@@ -1,7 +1,7 @@
 \name{binReadCounts}
 \alias{binReadCounts}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
+\title{binReadCounts
 %%  ~~function to do ... ~~
 }
 \description{

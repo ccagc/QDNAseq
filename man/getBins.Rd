@@ -1,7 +1,7 @@
 \name{getBins}
 \alias{getBins}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
+\title{getBins
 %%  ~~function to do ... ~~
 }
 \description{
