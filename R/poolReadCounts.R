@@ -1,3 +1,30 @@
+#########################################################################/**
+# @RdocFunction poolReadCounts
+#
+# @title "Pools binned read counts across samples"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{obj}{...}
+#   \item{samples}{...}
+# }
+#
+# \value{
+#   Returns a named @list containing elements ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, ...
+# }
+#
+#*/#########################################################################
 poolReadCounts <- function(obj, samples) {
   phenodata <- obj[['phenodata']]
   bins <- obj[['bins']]

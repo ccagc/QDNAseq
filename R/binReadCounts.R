@@ -1,3 +1,45 @@
+#########################################################################/**
+# @RdocFunction binReadCounts
+#
+# @title "Calculate binned read counts from a set of BAM files"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{bins}{...}
+#   \item{bamfiles}{...}
+#   \item{path}{...}
+#   \item{ext}{...}
+#   \item{bamnames}{...}
+#   \item{phenofile}{...}
+#   \item{genome}{...}
+#   \item{cache}{...}
+#   \item{samtools}{...}
+#   \item{f}{...}
+#   \item{F}{...}
+#   \item{q}{...}
+#   \item{maxChunk}{...}
+#   \item{allosomeBins}{...}
+#   \item{incompleteBins}{...}
+#   \item{blacklistedBins}{...}
+# }
+#
+# \value{
+#   Returns a named @list with elements ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, @see ".binReadCountsPerSample" is used.
+# }
+#
+# @keyword IO
+#*/#########################################################################
 binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag') {
   if (is.null(bamfiles))
     bamfiles <- list.files(path, paste('\\.', ext, '$', sep=''))
@@ -33,6 +75,44 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   list(phenodata=phenodata, bins=bins, counts=counts, filter=condition)
 }
 
+
+
+#########################################################################/**
+# @RdocFunction .binReadCountsPerSample
+#
+# @title "Calculate binned read counts from a BAM file"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{bins}{...}
+#   \item{bamfile}{...}
+#   \item{path}{...}
+#   \item{cache}{...}
+#   \item{samtools}{...}
+#   \item{f}{...}
+#   \item{F}{...}
+#   \item{q}{...}
+#   \item{maxChunk}{...}
+# }
+#
+# \value{
+#   Returns ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   To retrieve bin read counts for a set of BAM files,
+#   see @see "binReadCounts".
+# }
+#
+# @keyword IO
+#*/#########################################################################
 .binReadCountsPerSample <- function(bins, bamfile, path, cache, samtools, f, F, q, maxChunk) {
   binsize <- (bins$end[1]-bins$start[1]+1)/1000
   linkTarget <- Sys.readlink(file.path(path, bamfile))

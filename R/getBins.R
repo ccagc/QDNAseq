@@ -1,3 +1,32 @@
+#########################################################################/**
+# @RdocFunction getBins
+#
+# @title "Gets bin annotation data for a particular bin size"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{binsize}{A @numeric scalar specifying ...}
+#   \item{genome}{A @character string ...}
+#   \item{cache}{A @logical ...}
+# }
+#
+# \value{
+#   Returns ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   @see "createBins".
+# }
+#
+# @keyword IO
+#*/#########################################################################
 getBins <- function(binsize, genome='hg19', cache=TRUE) {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {
@@ -23,6 +52,34 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
   readRDS(localfile)
 }
 
+
+
+#########################################################################/**
+# @RdocFunction createBins
+#
+# @title "Builds bin annotation data for a particular bin size"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{binsize}{A @numeric scalar specifying ...}
+#   \item{genome}{A @character string ...}
+# }
+#
+# \value{
+#   Returns ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   @see "getBins".
+# }
+#*/#########################################################################
 createBins <- function(binsize, genome='hg19') {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {

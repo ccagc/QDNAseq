@@ -1,3 +1,32 @@
+#########################################################################/**
+# @RdocFunction correctReadCounts
+#
+# @title "Correct binned read counts for GC content and mappability"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{obj}{...}
+#   \item{span}{...}
+#   \item{family}{...}
+#   \item{plotting}{...}
+#   \item{...}{Not used.}
+# }
+#
+# \value{
+#   Returns a named @list with elements ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, @see "stats::loess" is used to fit the regression model.
+# }
+#*/#########################################################################
 correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE, ...) {
   phenodata <- obj[['phenodata']]
   bins <- obj[['bins']]

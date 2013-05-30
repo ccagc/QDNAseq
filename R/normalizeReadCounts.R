@@ -1,3 +1,32 @@
+#########################################################################/**
+# @RdocFunction normalizeReadCounts
+#
+# @title "Normalizes binned read counts"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{obj}{...}
+#   \item{method}{A @character string specifying ...}
+#   \item{logTransform}{If @TRUE, ..., otherwise, ...}
+#   \item{smoothOutliers}{If @TRUE, ..., otherwise, ...}
+# }
+#
+# \value{
+#   Returns a named @list containing elements ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, ...
+# }
+#
+#*/#########################################################################
 normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothOutliers=TRUE) {
   if (exists('filter', obj)) {
     condition <- obj[['filter']]

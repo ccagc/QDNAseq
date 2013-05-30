@@ -1,37 +1,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  poolReadCounts.R
+%  makeCghRaw.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{poolReadCounts}
-\alias{poolReadCounts}
+\name{makeCghRaw}
+\alias{makeCghRaw}
 
 
-\title{Pools binned read counts across samples}
+\title{Constructs a 'cghRaw' object}
 
 \usage{
-poolReadCounts(obj, samples)
+makeCghRaw(obj)
 }
 
 \description{
- Pools binned read counts across samples.
+ Constructs a 'cghRaw' object.
 }
 
 \arguments{
   \item{obj}{...}
-  \item{samples}{...}
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} containing elements ...
+  Returns a \code{\link[CGHbase]{cghRaw}} object.
 }
 
 \author{Ilari Scheinin}
 
 \seealso{
-  Internally, ...
+  Internally, \code{\link[CGHbase]{make_cghRaw}} is used.
 }
 

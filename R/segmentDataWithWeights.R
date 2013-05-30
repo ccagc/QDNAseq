@@ -1,5 +1,35 @@
-segmentDataWithWeights <- function (input, weights=TRUE, tgr=NULL, ...) 
-{
+#########################################################################/**
+# @RdocFunction segmentDataWithWeights
+#
+# @title "Segments and calls total copy numbers"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{input}{...}
+#   \item{weights}{If @TRUE and \code{tgr} is specified, then weighted
+#     segmentation is used, otherwise not.}
+#   \item{tgr}{...}
+#   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
+# }
+#
+# \value{
+#   Returns ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, @see "DNAcopy::segment" of the \pkg{DNAcopy} package,
+#   which implements the CBS method, is used to segment the data.
+# }
+#
+#*/#########################################################################
+segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
   if (length(weights)==1 & weights & !is.null(tgr)) {
     input <- input[!is.na(tgr),]
     tgr <- tgr[!is.na(tgr)]

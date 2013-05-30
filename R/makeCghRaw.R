@@ -1,3 +1,28 @@
+#########################################################################/**
+# @RdocFunction makeCghRaw
+#
+# @title "Constructs a 'cghRaw' object"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{obj}{...}
+# }
+#
+# \value{
+#   Returns a @see "CGHbase::cghRaw" object.
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, @see "CGHbase::make_cghRaw" is used.
+# }
+#*/#########################################################################
 makeCghRaw <- function(obj) {
   if (exists('filter', obj)) {
     condition <- obj[['filter']]

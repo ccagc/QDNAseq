@@ -1,28 +1,30 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  poolReadCounts.R
+%  normalizeReadCounts.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{poolReadCounts}
-\alias{poolReadCounts}
+\name{normalizeReadCounts}
+\alias{normalizeReadCounts}
 
 
-\title{Pools binned read counts across samples}
+\title{Normalizes binned read counts}
 
 \usage{
-poolReadCounts(obj, samples)
+normalizeReadCounts(obj, method="median", logTransform=TRUE, smoothOutliers=TRUE)
 }
 
 \description{
- Pools binned read counts across samples.
+ Normalizes binned read counts.
 }
 
 \arguments{
   \item{obj}{...}
-  \item{samples}{...}
+  \item{method}{A \code{\link[base]{character}} string specifying ...}
+  \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
+  \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
 }
 
 \value{
