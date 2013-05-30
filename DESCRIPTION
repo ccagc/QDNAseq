@@ -1,13 +1,11 @@
 Package: qdnaseq
-Type: Package
-Title: Quantitative DNA sequencing for chromosomal aberrations.
 Version: 0.1.0
-Date: 2013-05-08
+Depends: R (>= 2.10.0), Biobase (>= 2.5.5), CGHbase (>= 1.18.0), DNAcopy
+Imports: CGHbase (>= 1.18.0)
+Suggests: 
+Title: Quantitative DNA sequencing for chromosomal aberrations.
+Date: 2013-05-30
 Author: Ilari Scheinin
 Maintainer: Ilari Scheinin <firstname.lastname@gmail.com>
-Description: More about what it does (maybe more than one line)
-Imports: 
-Depends: R (>= 2.10), Biobase (>= 2.5.5), CGHbase (>= 1.18.0)
-Suggests: 
-Enhances: 
+Description: Quantitative DNA sequencing for chromosomal aberrations.
 License: GPL
