@@ -52,7 +52,8 @@ segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
   }
   makelist <- apply(numsmrat, MARGIN=1L, FUN=repdata)
   joined <- unlist(makelist)
-  rm(makelist)
+  # Not needed anymore
+  rm(list="makelist")
   joined <- matrix(joined, ncol=ncol(input), byrow=FALSE)
   joined <- CGHcall:::.assignNames(joined, input)
   result <- CGHcall:::.segFromRaw(input, joined)

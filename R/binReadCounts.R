@@ -149,7 +149,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
         readCounts[bins$chromosome==chromosome] <- readCounts[bins$chromosome==chromosome] + count
       }
       skip <- skip + maxChunk
-      rm(hits, count); gc(FALSE)
+
+      # Not needed anymore
+      rm(list=c("hits", "count"))
+      gc(FALSE)
     }
     if (cache) {
       cat(readCounts, file=sub('\\.gz$', '', binfile), sep='\n')
