@@ -127,6 +127,12 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
       hitsfile <- tempfile()
     }
     if (!file.exists(hitsfile)) {
+      # TO DO: This system call requires that 'samtools', 'cut', 'tr'
+      # and 'gzip' are on the PATH and available.  It cannot be expected
+      # that the latter three are available on Windows.
+      # Alternatives (cross-platform):
+      # (1) Rsamtools package on Bioconductor.
+      # (2) The samtoolsView() function of future aroma.seq package
       system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
     }
     readCounts <- numeric(length=nrow(bins))
@@ -152,6 +158,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     }
     if (cache) {
       cat(readCounts, file=sub('\\.gz$', '', binfile), sep='\n')
+      # TO DO: This system call requires that 'gzip' is available,
+      # which cannot be expected on Windows.
+      # Alternatives (cross-platform):
+      # (1) Cross-platform gzip()/gunzip() of the R.utils package.
       system(paste('gzip "', sub('\\.gz$', '', binfile), '"', sep=''))
     }
   }
