@@ -17,15 +17,10 @@
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
 #   \item{genome}{...}
-#   \item{cache}{...}
-#   \item{samtools}{...}
-#   \item{f}{...}
-#   \item{F}{...}
-#   \item{q}{...}
-#   \item{maxChunk}{...}
 #   \item{allosomeBins}{...}
 #   \item{incompleteBins}{...}
 #   \item{blacklistedBins}{...}
+#   \item{...}{Additional arguments passed to @see ".binReadCountsPerSample"}
 # }
 #
 # \value{
@@ -40,7 +35,7 @@
 #
 # @keyword IO
 #*/#########################################################################
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000L, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag') {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag', ...) {
   if (is.null(bamfiles))
     bamfiles <- list.files(path, pattern=paste('\\.', ext, '$', sep=''))
   if (length(bamfiles) == 0L)
@@ -57,7 +52,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   }
   counts <- matrix(nrow=nrow(bins), ncol=length(bamnames), dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
-    counts[,i] <- .binReadCountsPerSample(bins, bamfiles[i], path, cache, samtools, f, F, q, maxChunk)
+    counts[,i] <- .binReadCountsPerSample(bins, bamfile=bamfiles[i], path=path, ...)
     gc(FALSE)
   }
   phenodata$reads <- rowSums(counts)
@@ -113,7 +108,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 #
 # @keyword IO
 #*/#########################################################################
-.binReadCountsPerSample <- function(bins, bamfile, path, cache, samtools, f, F, q, maxChunk) {
+.binReadCountsPerSample <- function(bins, bamfile, path, cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000L) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
   linkTarget <- Sys.readlink(file.path(path, bamfile))
   if (linkTarget != '') {
@@ -131,8 +126,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     } else {
       hitsfile <- tempfile()
     }
-    if (!file.exists(hitsfile))
+    if (!file.exists(hitsfile)) {
       system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
+    }
     readCounts <- numeric(length=nrow(bins))
     skip <- 0L
     while(TRUE) {
