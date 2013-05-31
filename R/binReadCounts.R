@@ -107,6 +107,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 # }
 #
 # @keyword IO
+# @keyword internal
 #*/#########################################################################
 .binReadCountsPerSample <- function(bins, bamfile, path, cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000L) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000

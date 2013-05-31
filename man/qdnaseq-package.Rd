@@ -15,7 +15,7 @@
 
 
 \description{
-  More about what it does (maybe more than one line)
+  Quantitative DNA sequencing for chromosomal aberrations.
 }
 
 \section{Requirements}{

@@ -52,7 +52,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   }
   if (smoothOutliers) {
     cat('Smoothing outliers ... \n')
-    CNA.object <- DNAcopy::smooth.CNA(DNAcopy::CNA(copynumber, bins$chromosome, bins$start, data.type='logratio', presorted=TRUE))
+    CNA.object <- smooth.CNA(CNA(copynumber, bins$chromosome, bins$start, data.type='logratio', presorted=TRUE))
     copynumber <- as.matrix(CNA.object[,-(1:2)])
   }
   obj[['copynumber']] <- matrix(nrow=nrow(obj[['corrected']]), ncol=ncol(obj[['corrected']]), dimnames=dimnames(obj[['corrected']]))

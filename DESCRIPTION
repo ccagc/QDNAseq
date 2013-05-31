@@ -1,8 +1,7 @@
 Package: qdnaseq
 Version: 0.1.0
-Depends: R (>= 2.10.0), Biobase (>= 2.5.5), CGHbase (>= 1.18.0), CGHcall, DNAcopy
-Imports: CGHcall
-Suggests: 
+Depends: R (>= 2.15.0)
+Imports: Biobase (>= 2.18.0), CGHbase (>= 1.18.0), CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0)
 Title: Quantitative DNA sequencing for chromosomal aberrations.
 Date: 2013-05-30
 Author: Ilari Scheinin

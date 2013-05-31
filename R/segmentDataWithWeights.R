@@ -37,7 +37,7 @@ segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
     tgr[tgr==0] <- min(tgr[tgr!=0], na.rm=TRUE)
     weights <- 1/tgr
   }
-  CNA.object <- DNAcopy::CNA(genomdat=copynumber(input), chrom=chromosomes(input), maploc=bpstart(input), data.type="logratio")
+  CNA.object <- CNA(genomdat=copynumber(input), chrom=chromosomes(input), maploc=bpstart(input), data.type="logratio")
   cat("Start data segmentation .. \n")
   if (length(weights)==1L && !weights) {
     segmented <- segment(CNA.object, ...)

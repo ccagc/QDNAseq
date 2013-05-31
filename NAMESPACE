@@ -1,7 +1,17 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IMPORTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-import("CGHcall")
+importFrom("Biobase", "pData")
+importFrom("Biobase", "pData<-")
+
+importFrom("CGHbase", "copynumber")
+importFrom("CGHbase", "chromosomes")
+importFrom("CGHbase", "bpstart")
+importFrom("CGHbase", "make_cghRaw")
+
+importFrom("DNAcopy", "CNA")
+importFrom("DNAcopy", "segment")
+importFrom("DNAcopy", "smooth.CNA")
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -14,8 +14,7 @@
 
 \usage{
 binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile=NULL,
-  genome="hg19", cache=TRUE, samtools="samtools", f="", F="0x0404", q=37, maxChunk=1e+08,
-  allosomeBins="flag", incompleteBins="flag", blacklistedBins="flag")
+  genome="hg19", allosomeBins="flag", incompleteBins="flag", blacklistedBins="flag", ...)
 }
 
 \description{
@@ -30,15 +29,10 @@ binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile
   \item{bamnames}{...}
   \item{phenofile}{...}
   \item{genome}{...}
-  \item{cache}{...}
-  \item{samtools}{...}
-  \item{f}{...}
-  \item{F}{...}
-  \item{q}{...}
-  \item{maxChunk}{...}
   \item{allosomeBins}{...}
   \item{incompleteBins}{...}
   \item{blacklistedBins}{...}
+  \item{...}{Additional arguments passed to \code{\link{.binReadCountsPerSample}}}
 }
 
 \value{

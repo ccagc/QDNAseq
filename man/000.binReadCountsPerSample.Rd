@@ -13,7 +13,8 @@
 \title{Calculate binned read counts from a BAM file}
 
 \usage{
-.binReadCountsPerSample(bins, bamfile, path, cache, samtools, f, F, q, maxChunk)
+.binReadCountsPerSample(bins, bamfile, path, cache=TRUE, samtools="samtools", f="",
+  F="0x0404", q=37, maxChunk=100000000L)
 }
 
 \description{
