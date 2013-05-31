@@ -42,6 +42,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   } else {
     if (method == 'median') {
       cat('Applying median normalization ... \n')
+      # TO DO: See matrixStats::rowMedians().
       values <- apply(copynumber, MARGIN=2L, FUN=median, na.rm=TRUE)
     } else if (method == 'mode') {
       cat('Applying mode normalization ... \n')

@@ -46,6 +46,8 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     dir.create(file.path(path.expand('~'), '.QDNAseq'))
   if (!file.exists(localfile)) {
     remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
+    # TO DO: If download.file() is interrupted/fails, it may leave a
+    # corrupt/empty file behind.  Using R.utils::downloadFile() avoids this.
     if (download.file(remotefile, localfile, quiet=TRUE) != 0L)
       stop('Annotations not found on server for genome ', genome, ' and bin size ', binsize, '. Please generate them first.')
   }
