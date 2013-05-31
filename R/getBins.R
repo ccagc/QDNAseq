@@ -46,7 +46,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     dir.create(file.path(path.expand('~'), '.QDNAseq'))
   if (!file.exists(localfile)) {
     remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
-    if (download.file(remotefile, localfile, quiet=TRUE) != 0)
+    if (download.file(remotefile, localfile, quiet=TRUE) != 0L)
       stop('Annotations not found on server for genome ', genome, ' and bin size ', binsize, '. Please generate them first.')
   }
   readRDS(localfile)
@@ -100,7 +100,7 @@ createBins <- function(binsize, genome='hg19') {
     start <- c(start, chromosome.starts)
     end <- c(end, chromosome.ends)
   }
-  bins <- data.frame(chromosome=rep(names(genome), ceiling(genome / (binsize*1000))), start, end, stringsAsFactors=FALSE)
+  bins <- data.frame(chromosome=rep(names(genome), times=ceiling(genome / (binsize*1000))), start, end, stringsAsFactors=FALSE)
   rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end, sep='')
   bins
 }

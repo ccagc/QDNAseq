@@ -40,10 +40,10 @@
 #
 # @keyword IO
 #*/#########################################################################
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag') {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000L, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag') {
   if (is.null(bamfiles))
-    bamfiles <- list.files(path, paste('\\.', ext, '$', sep=''))
-  if (length(bamfiles) == 0)
+    bamfiles <- list.files(path, pattern=paste('\\.', ext, '$', sep=''))
+  if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
     bamnames <- sub(paste('\\.', ext, '$', sep=''), '', bamfiles)
@@ -52,16 +52,16 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   }
   phenodata <- data.frame(name=bamnames, row.names=bamnames, stringsAsFactors=FALSE)
   if (!is.null(phenofile)) {
-    pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE, row.names=1)
+    pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE, row.names=1L)
     phenodata <- cbind(phenodata, pdata[rownames(phenodata),])
   }
   counts <- matrix(nrow=nrow(bins), ncol=length(bamnames), dimnames=list(rownames(bins), bamnames))
-  for (i in 1:length(bamfiles)) {
+  for (i in seq_along(bamfiles)) {
     counts[,i] <- .binReadCountsPerSample(bins, bamfiles[i], path, cache, samtools, f, F, q, maxChunk)
     gc(FALSE)
   }
-  phenodata$reads <- apply(counts, 2, sum)
-  condition <- condition <- rep(TRUE, nrow(bins))
+  phenodata$reads <- apply(counts, MARGIN=2L, FUN=sum)
+  condition <- condition <- rep(TRUE, times=nrow(bins))
   if (allosomeBins=='flag')
     condition <- condition & bins$chromosome %in% as.character(1:22)
   if (incompleteBins=='flag') {
@@ -114,7 +114,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 # @keyword IO
 #*/#########################################################################
 .binReadCountsPerSample <- function(bins, bamfile, path, cache, samtools, f, F, q, maxChunk) {
-  binsize <- (bins$end[1]-bins$start[1]+1)/1000
+  binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
   linkTarget <- Sys.readlink(file.path(path, bamfile))
   if (linkTarget != '') {
     bamfile <- basename(linkTarget)
@@ -134,10 +134,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     if (!file.exists(hitsfile))
       system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
     readCounts <- numeric(length=nrow(bins))
-    skip <- 0
-    while(1) {
+    skip <- 0L
+    while(TRUE) {
       hits <- as.data.frame(scan(hitsfile, what=list(chromosome=character(), pos=integer()), sep='\t', nmax=maxChunk, skip=skip, quiet=TRUE), stringsAsFactors=FALSE)
-      if (nrow(hits) == 0)
+      if (nrow(hits) == 0L)
         break
       for (chromosome in unique(hits$chromosome)) {
         if (!chromosome %in% unique(bins$chromosome))

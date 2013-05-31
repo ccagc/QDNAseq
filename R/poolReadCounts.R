@@ -49,9 +49,9 @@ poolReadCounts <- function(obj, samples) {
       newcorrected[,newsample] <- rowSums(corrected[,replicates, drop=FALSE])
     oldphenodata <- obj[['phenodata']][replicates,]
     newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)
-    if (length(unique(oldphenodata$loess.span)) == 1)
+    if (length(unique(oldphenodata$loess.span)) == 1L)
       newphenodata[newsample, 'loess.span'] <- oldphenodata[1, 'loess.span']
-    if (length(unique(oldphenodata$loess.family)) == 1)
+    if (length(unique(oldphenodata$loess.family)) == 1L)
       newphenodata[newsample, 'loess.family'] <- oldphenodata[1, 'loess.family']
   }
   if ('corrected' %in% names(obj))

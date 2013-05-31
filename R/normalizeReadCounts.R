@@ -31,7 +31,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   if (exists('filter', obj)) {
     condition <- obj[['filter']]
   } else {
-    condition <- rep(TRUE, nrow(obj[['bins']]))
+    condition <- rep(TRUE, times=nrow(obj[['bins']]))
   }
   bins <- obj[['bins']][condition,]
   copynumber <- obj[['corrected']][condition,]
@@ -42,10 +42,10 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   } else {
     if (method == 'median') {
       cat('Applying median normalization ... \n')
-      values <- apply(copynumber, 2, median, na.rm=TRUE)
+      values <- apply(copynumber, MARGIN=2L, FUN=median, na.rm=TRUE)
     } else if (method == 'mode') {
       cat('Applying mode normalization ... \n')
-      values <- apply(copynumber, 2, function(x) { d <- density(x, na.rm=TRUE); d$x[which.max(d$y)] })
+      values <- apply(copynumber, MARGIN=2L, FUN=function(x) { d <- density(x, na.rm=TRUE); d$x[which.max(d$y)] })
     }
     copynumber <- t(t(copynumber) - values)
   }

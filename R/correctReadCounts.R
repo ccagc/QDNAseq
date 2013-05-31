@@ -32,10 +32,10 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   bins <- obj[['bins']]
   counts <- obj[['counts']]
   cat('Performing correction for GC content and mappability:\n')
-  if (length(span) == 1)
-    span <- rep(span, ncol(counts))
-  if (length(family) == 1)
-    family <- rep(family, ncol(counts))
+  if (length(span) == 1L)
+    span <- rep(span, times=ncol(counts))
+  if (length(family) == 1L)
+    family <- rep(family, times=ncol(counts))
   if (length(span) != ncol(counts))
     stop('span has to be either a single value or a vector the same length as the number of columns in counts.')
   if (length(family) != ncol(counts))
@@ -43,10 +43,10 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   if (exists('filter', obj)) {
     condition <- obj[['filter']]
   } else {
-    condition <- rep(TRUE, nrow(obj[['dat']]))
+    condition <- rep(TRUE, times=nrow(obj[['dat']]))
   }
-  used.span <- rep(NA, ncol(counts))
-  used.family <- rep(NA, ncol(counts))
+  used.span <- rep(NA_real_, times=ncol(counts))
+  used.family <- rep(NA_real_, times=ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
   residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
   gc <- round(bins$gc)
@@ -63,13 +63,13 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
       # dir.create(d)
     # setwd(d)
   # }
-  for (i in 1:ncol(counts)) {
+  for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
       cat('\tSkipping correction for sample ', colnames(counts)[i], '...\n', sep='')
       next
     }
     cat('\tUsing span=', span[i], '\tand family=', family[i], ',\tcorrecting sample ', colnames(counts)[i], '...\n', sep='')
-    vals <- median.counts[,i+2]
+    vals <- median.counts[,i+2L]
     corvals <- counts[,i]
     try({
       l <- loess(vals ~ median.counts$gc * median.counts$mappability, span=span[i], family=family[i]) # , ...)
@@ -104,7 +104,7 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
     }, silent=TRUE)
     corrected[,i] <- corvals
   }
-  corrected <- round(corrected, digits=2)
+  corrected <- round(corrected, digits=2L)
   # if (plotting) {
     # setwd('..')
     # pnga4(sub('-counts\\.(txt|RData)', '-residuals.png', basename(countsfile)))

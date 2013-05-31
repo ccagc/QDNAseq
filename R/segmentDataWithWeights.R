@@ -30,16 +30,16 @@
 #
 #*/#########################################################################
 segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
-  if (length(weights)==1 & weights & !is.null(tgr)) {
+  if (length(weights)==1L & weights & !is.null(tgr)) {
     input <- input[!is.na(tgr),]
     tgr <- tgr[!is.na(tgr)]
     tgr <- abs(tgr)
     tgr[tgr==0] <- min(tgr[tgr!=0], na.rm=TRUE)
     weights <- 1/tgr
   }
-  CNA.object <- DNAcopy::CNA(copynumber(input), chromosomes(input), bpstart(input), data.type="logratio")
+  CNA.object <- DNAcopy::CNA(genomdat=copynumber(input), chrom=chromosomes(input), maploc=bpstart(input), data.type="logratio")
   cat("Start data segmentation .. \n")
-  if (length(weights)==1 && !weights) {
+  if (length(weights)==1L && !weights) {
     segmented <- segment(CNA.object, ...)
   } else {
     segmented <- segment(CNA.object, weights=weights, ...)
@@ -48,9 +48,9 @@ segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
   smrat <- segmented$output$seg
   numsmrat <- cbind(smrat, numclone)
   repdata <- function(row) {
-    rep(row[1], row[2])
+    rep(row[1L], times=row[2L])
   }
-  makelist <- apply(numsmrat, 1, repdata)
+  makelist <- apply(numsmrat, MARGIN=1L, FUN=repdata)
   joined <- unlist(makelist)
   rm(makelist)
   joined <- matrix(joined, ncol=ncol(input), byrow=FALSE)
