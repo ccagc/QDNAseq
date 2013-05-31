@@ -60,7 +60,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     counts[,i] <- .binReadCountsPerSample(bins, bamfiles[i], path, cache, samtools, f, F, q, maxChunk)
     gc(FALSE)
   }
-  phenodata$reads <- apply(counts, MARGIN=2L, FUN=sum)
+  phenodata$reads <- rowSums(counts)
   condition <- condition <- rep(TRUE, times=nrow(bins))
   if (allosomeBins=='flag')
     condition <- condition & bins$chromosome %in% as.character(1:22)
