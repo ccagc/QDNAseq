@@ -116,56 +116,50 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     bamfile <- basename(linkTarget)
     path <- dirname(linkTarget)
   }
-  if (cache & !file.exists(file.path(path, '.QDNAseq')))
-    dir.create(file.path(path, '.QDNAseq'))
-  binfile <- file.path(path, '.QDNAseq', paste(bamfile, '.f', f, '.F', F, '.q', q, '.', binsize, 'kbp.txt.gz', sep=''))
-  if (file.exists(binfile)) {
-    readCounts <- scan(binfile, what=integer(), quiet=TRUE)
-  } else {
-    if (cache) {
-      hitsfile <- file.path(path, '.QDNAseq', paste(bamfile, '.f', f, '.F', F, '.q', q, '.txt.gz', sep=''))
-    } else {
-      hitsfile <- tempfile()
-    }
-    if (!file.exists(hitsfile)) {
-      # TO DO: This system call requires that 'samtools', 'cut', 'tr'
-      # and 'gzip' are on the PATH and available.  It cannot be expected
-      # that the latter three are available on Windows.
-      # Alternatives (cross-platform):
-      # (1) Rsamtools package on Bioconductor.
-      # (2) The samtoolsView() function of future aroma.seq package
-      system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
-    }
-    readCounts <- numeric(length=nrow(bins))
-    skip <- 0L
-    while(TRUE) {
-      hits <- as.data.frame(scan(hitsfile, what=list(chromosome=character(), pos=integer()), sep='\t', nmax=maxChunk, skip=skip, quiet=TRUE), stringsAsFactors=FALSE)
-      if (nrow(hits) == 0L)
-        break
-      for (chromosome in unique(hits$chromosome)) {
-        if (!chromosome %in% unique(bins$chromosome))
-          next
-        chromosome.breaks <- c(bins[bins$chromosome==chromosome, 'start'], max(bins[bins$chromosome==chromosome, 'end']))
-        # without the as.numeric() the command below gives an integer overflow warning:
-        count <- hist(hits[hits$chromosome==chromosome, 'pos'], breaks=as.numeric(chromosome.breaks), right=FALSE, plot=FALSE)$count
-        # count <- binCounts(hits[hits$chromosome==chromosome, 'pos'], chromosome.breaks) # matrixStats
-        readCounts[bins$chromosome==chromosome] <- readCounts[bins$chromosome==chromosome] + count
-      }
-      skip <- skip + maxChunk
-
-      # Not needed anymore
-      rm(list=c("hits", "count"))
-      gc(FALSE)
-    }
-    if (cache) {
-      cat(readCounts, file=sub('\\.gz$', '', binfile), sep='\n')
-      # TO DO: This system call requires that 'gzip' is available,
-      # which cannot be expected on Windows.
-      # Alternatives (cross-platform):
-      # (1) Cross-platform gzip()/gunzip() of the R.utils package.
-      system(paste('gzip "', sub('\\.gz$', '', binfile), '"', sep=''))
-    }
+  readCounts <- NULL
+  if (cache)
+    readCounts <- loadCache(key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q, binsize=binsize), dirs='QDNAseq')
+  if (!is.null(readCounts)) {
+cat('bins from cache\n')
+    return(readCounts)
   }
+  hits <- NULL
+  hits <- loadCache(key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q), dirs='QDNAseq')
+if (!is.null(hits))
+cat('hits from cache\n')
+  if (is.null(hits)) {
+    hitsfile <- tempfile()
+    # TO DO: This system call requires that 'samtools', 'cut', 'tr'
+    # and 'gzip' are on the PATH and available.  It cannot be expected
+    # that the latter three are available on Windows.
+    # Alternatives (cross-platform):
+    # (1) Rsamtools package on Bioconductor.
+    # (2) The samtoolsView() function of future aroma.seq package
+    system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
+    reads <- as.data.frame(scan(hitsfile, what=list(chromosome=character(), pos=integer()), sep='\t', quiet=TRUE), stringsAsFactors=FALSE)
+    hits <- list()
+    for (chr in unique(reads$chromosome))
+      hits[[chr]] <- reads[reads$chromosome==chr, 'pos']
+    if (cache)
+      saveCache(hits, key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q), dirs='QDNAseq', compress=TRUE)
+  }
+  # TO DO: the binning is very memory intensive, and therefore should be done
+  # to only a maximum of maxChunk reads at a time.
+  readCounts <- numeric(length=nrow(bins))
+  for (chromosome in names(hits)) {
+    if (!chromosome %in% unique(bins$chromosome))
+      next
+    chromosome.breaks <- c(bins[bins$chromosome==chromosome, 'start'], max(bins[bins$chromosome==chromosome, 'end']))
+    # without the as.numeric() the command below gives an integer overflow warning:
+    count <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks), right=FALSE, plot=FALSE)$count
+    # count <- binCounts(hits[[chromosome]], chromosome.breaks) # matrixStats
+    readCounts[bins$chromosome==chromosome] <- readCounts[bins$chromosome==chromosome] + count
+  }
+  # Not needed anymore
+  rm(list=c("hits", "count"))
+  gc(FALSE)
+  if (cache)
+    saveCache(readCounts, key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q, binsize=binsize), dirs='QDNAseq', compress=TRUE)
   readCounts
 }
 

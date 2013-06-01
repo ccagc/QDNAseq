@@ -36,23 +36,31 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
   } else {
     stop('Unknown genome: ', genome)
   }
-  filename <- paste('QDNAseq.', genome.name, '.', binsize, 'kbp.rds', sep='')
-  if (cache) {
-    localfile <- file.path(path.expand('~'), '.QDNAseq', filename)
-  } else {
-    localfile <- tempfile()
+  bins <- NULL
+  if (cache)
+    bins <- loadCache(key=list(genome=genome, binsize=binsize), dirs='QDNAseq')
+  if (!is.null(bins)) {
+    cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp loaded from cache.\n', sep='')
+    return(bins)
   }
-  if (cache & !file.exists(file.path(path.expand('~'), '.QDNAseq')))
-    dir.create(file.path(path.expand('~'), '.QDNAseq'))
-  if (!file.exists(localfile)) {
-    remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
-    # TO DO: If download.file() is interrupted/fails, it may leave a
-    # corrupt/empty file behind.  Using R.utils::downloadFile() avoids this.
-    if (download.file(remotefile, localfile, quiet=TRUE) != 0L)
-      stop('Annotations not found on server for genome ', genome, ' and bin size ', binsize, '. Please generate them first.')
-  }
-  readRDS(localfile)
+  remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.', genome.name, '.', binsize, 'kbp.rds', sep='')
+  localfile <- tempfile()
+  error <- TRUE
+  try({
+    result <- downloadFile(remotefile, localfile)
+    error <- FALSE
+  }, silent=TRUE)
+  if (error || is.null(result))
+    stop('Bin annotations not found on server for genome ', genome, ' and bin size ', binsize, 'kbp. Please generate them first.')
+  bins <- readRDS(localfile)
+  file.remove(localfile)
+  cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp downloaded from the web.\n', sep='')
+  if (cache)
+    saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq', compress=TRUE)
+  bins
 }
+
+remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
 
 
 
