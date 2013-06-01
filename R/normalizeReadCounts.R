@@ -28,13 +28,12 @@
 #
 #*/#########################################################################
 normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothOutliers=TRUE) {
-  if (exists('filter', obj)) {
-    condition <- obj[['filter']]
+  if ('filter' %in% colnames(fData(obj))) {
+    condition <- fData(obj)$filter
   } else {
-    condition <- rep(TRUE, times=nrow(obj[['bins']]))
+    condition <- rep(TRUE, times=nrow(obj))
   }
-  bins <- obj[['bins']][condition,]
-  copynumber <- obj[['corrected']][condition,]
+  copynumber <- assayDataElement(obj, 'corrected')[condition, , drop=FALSE]
   if (logTransform)
     copynumber <- log2(copynumber + 1)
   if (method == 'none') {
@@ -52,11 +51,12 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   }
   if (smoothOutliers) {
     cat('Smoothing outliers ... \n')
-    CNA.object <- smooth.CNA(CNA(copynumber, bins$chromosome, bins$start, data.type='logratio', presorted=TRUE))
-    copynumber <- as.matrix(CNA.object[,-(1:2)])
+    CNA.object <- smooth.CNA(CNA(copynumber, fData(obj)[condition, 'chromosome'], fData(obj)[condition, 'start'], data.type='logratio', presorted=TRUE))
+    copynumber <- as.matrix(CNA.object[,-(1:2), drop=FALSE])
   }
-  obj[['copynumber']] <- matrix(nrow=nrow(obj[['corrected']]), ncol=ncol(obj[['corrected']]), dimnames=dimnames(obj[['corrected']]))
-  obj[['copynumber']][rownames(copynumber),] <- copynumber
+  copynumber2 <- matrix(nrow=nrow(obj), ncol=ncol(obj), dimnames=list(featureNames(obj), sampleNames(obj)))
+  copynumber2[rownames(copynumber),] <- copynumber
+  assayDataElement(obj, 'copynumber') <- copynumber2
   obj
 }
 

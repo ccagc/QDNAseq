@@ -16,7 +16,6 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{genome}{...}
 #   \item{allosomeBins}{...}
 #   \item{incompleteBins}{...}
 #   \item{blacklistedBins}{...}
@@ -35,13 +34,13 @@
 #
 # @keyword IO
 #*/#########################################################################
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, genome='hg19', allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag', ...) {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag', ...) {
   if (is.null(bamfiles))
-    bamfiles <- list.files(path, pattern=paste('\\.', ext, '$', sep=''))
+    bamfiles <- list.files(path, pattern=paste(ext, '$', sep=''))
   if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
-    bamnames <- sub(paste('\\.', ext, '$', sep=''), '', bamfiles)
+    bamnames <- sub(paste('\\.?', ext, '$', sep=''), '', bamfiles)
   } else if (length(bamfiles) != length(bamnames)) {
     stop('bamfiles and bamnames have to be of same length.')
   }
@@ -55,7 +54,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     counts[,i] <- .binReadCountsPerSample(bins, bamfile=bamfiles[i], path=path, ...)
     gc(FALSE)
   }
-  phenodata$reads <- rowSums(counts)
+  phenodata$reads <- colSums(counts)
   condition <- condition <- rep(TRUE, times=nrow(bins))
   if (allosomeBins=='flag')
     condition <- condition & bins$chromosome %in% as.character(1:22)
@@ -67,7 +66,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   }
   if (blacklistedBins=='flag')
     condition <- condition & bins$blacklist == 0
-  list(phenodata=phenodata, bins=bins, counts=counts, filter=condition)
+  bins$filter <- condition
+  new('qdnaseq', bins=bins, counts=counts, phenodata=phenodata)
 }
 
 

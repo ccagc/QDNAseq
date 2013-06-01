@@ -14,7 +14,7 @@
 
 \usage{
 binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile=NULL,
-  genome="hg19", allosomeBins="flag", incompleteBins="flag", blacklistedBins="flag", ...)
+  allosomeBins="flag", incompleteBins="flag", blacklistedBins="flag", ...)
 }
 
 \description{
@@ -28,7 +28,6 @@ binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile
   \item{ext}{...}
   \item{bamnames}{...}
   \item{phenofile}{...}
-  \item{genome}{...}
   \item{allosomeBins}{...}
   \item{incompleteBins}{...}
   \item{blacklistedBins}{...}

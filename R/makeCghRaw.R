@@ -24,13 +24,18 @@
 # }
 #*/#########################################################################
 makeCghRaw <- function(obj) {
-  if (exists('filter', where=obj)) {
-    condition <- obj[['filter']]
+  if ('filter' %in% colnames(fData(obj))) {
+    condition <- fData(obj)$filter
   } else {
-    condition <- rep(TRUE, times=nrow(obj[['bins']]))
+    condition <- rep(TRUE, times=nrow(obj))
   }
-  cgh <- make_cghRaw(data.frame(bin=rownames(obj[['bins']][condition,]), obj[['bins']][condition, c('chromosome', 'start', 'end'),], obj[['copynumber']][condition,], check.names=FALSE, stringsAsFactors=FALSE))
-  pData(cgh) <- obj[['phenodata']]
+  cgh <- make_cghRaw(data.frame(bin=featureNames(obj)[condition], fData(obj)[condition, c('chromosome', 'start', 'end'),], assayDataElement(obj, 'copynumber')[condition, , drop=FALSE], check.names=FALSE, stringsAsFactors=FALSE))
+  pData(cgh) <- pData(obj)
+  fData(cgh)$bases <- bins[condition, 'bases']
+  fData(cgh)$gc <- bins[condition, 'gc']
+  fData(cgh)$mappability <- bins[condition, 'mappability']
+  fData(cgh)$blacklist <- bins[condition, 'blacklist']
+  fData(cgh)$tgr <- bins[condition, 'tgr']
   cgh
 }
 

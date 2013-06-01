@@ -28,9 +28,7 @@
 # }
 #*/#########################################################################
 correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE, ...) {
-  phenodata <- obj[['phenodata']]
-  bins <- obj[['bins']]
-  counts <- obj[['counts']]
+  counts <- assayDataElement(obj, 'counts')
   cat('Performing correction for GC content and mappability:\n')
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
@@ -40,17 +38,17 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
     stop('span has to be either a single value or a vector the same length as the number of columns in counts.')
   if (length(family) != ncol(counts))
     stop('family has to be either a single value or a vector the same length as the number of columns in counts.')
-  if (exists('filter', obj)) {
-    condition <- obj[['filter']]
+  if ('filter' %in% colnames(fData(obj))) {
+    condition <- fData(obj)$filter
   } else {
-    condition <- rep(TRUE, times=nrow(obj[['dat']]))
+    condition <- rep(TRUE, times=nrow(obj))
   }
   used.span <- rep(NA_real_, times=ncol(counts))
   used.family <- rep(NA_real_, times=ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
   residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
-  gc <- round(bins$gc)
-  mappability <- round(bins$mappability)
+  gc <- round(fData(obj)$gc)
+  mappability <- round(fData(obj)$mappability)
   median.counts <- aggregate(counts[condition,], by=list(gc=gc[condition], mappability=mappability[condition]), median)
   median.counts <- median.counts[!is.na(median.counts$gc),]
   rownames(median.counts) <- paste(median.counts$gc, '-', median.counts$mappability, sep='')
@@ -112,10 +110,12 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
     # contour(x, y, m, nlevels=20, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
     # dev.off()
   # }
-  phenodata$loess.span <- used.span
-  phenodata$loess.family <- used.family
+  obj$loess.span <- used.span
+  obj$loess.family <- used.family
   cat('Done.\n')
-  list(phenodata=phenodata, bins=bins, counts=counts, filter=obj[['filter']], corrected=corrected, residuals=residuals)
+  assayDataElement(obj, 'corrected') <- corrected
+  assayDataElement(obj, 'residuals') <- residuals
+  obj
 }
 
 # a subfunction for performing the correction on one sample at a time could be defined here.

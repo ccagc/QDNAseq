@@ -28,7 +28,7 @@
 #*/#########################################################################
 addPhenodata <- function(obj, phenofile) {
   pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE, row.names=1L)
-  obj[['phenodata']] <- cbind(obj[['phenodata']], pdata[rownames(obj[['phenodata']]),])
+  pData(obj) <- cbind(pData(obj), pdata[sampleNames(obj),])
   obj
 }
 

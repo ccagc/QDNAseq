@@ -13,7 +13,7 @@
 \title{Segments and calls total copy numbers}
 
 \usage{
-segmentDataWithWeights(input, weights=TRUE, tgr=NULL, ...)
+segmentDataWithWeights(input, weights=TRUE, ...)
 }
 
 \description{
@@ -22,9 +22,8 @@ segmentDataWithWeights(input, weights=TRUE, tgr=NULL, ...)
 
 \arguments{
   \item{input}{...}
-  \item{weights}{If \code{\link[base:logical]{TRUE}} and \code{tgr} is specified, then weighted
-    segmentation is used, otherwise not.}
-  \item{tgr}{...}
+  \item{weights}{Either \code{\link[base:logical]{TRUE}} or a vector of weights. If \code{\link[base:logical]{TRUE}},
+    the 1000 Genomes residuals are used as weights.}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 

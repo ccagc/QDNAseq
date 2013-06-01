@@ -11,9 +11,8 @@
 #
 # \arguments{
 #   \item{input}{...}
-#   \item{weights}{If @TRUE and \code{tgr} is specified, then weighted
-#     segmentation is used, otherwise not.}
-#   \item{tgr}{...}
+#   \item{weights}{Either @TRUE or a vector of weights. If @TRUE,
+#     the 1000 Genomes residuals are used as weights.}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -29,15 +28,18 @@
 # }
 #
 #*/#########################################################################
-segmentDataWithWeights <- function(input, weights=TRUE, tgr=NULL, ...) {
-  if (length(weights)==1L & weights & !is.null(tgr)) {
+segmentDataWithWeights <- function(input, weights=TRUE, ...) {
+  if (length(weights)==1L & weights) {
+    if (!'tgr' %in% colnames(fData(input)))
+      stop('1000 Genomes residuals not found.')
+    tgr <- fData(input)$tgr
     input <- input[!is.na(tgr),]
     tgr <- tgr[!is.na(tgr)]
     tgr <- abs(tgr)
     tgr[tgr==0] <- min(tgr[tgr!=0], na.rm=TRUE)
     weights <- 1/tgr
   }
-  CNA.object <- CNA(genomdat=copynumber(input), chrom=chromosomes(input), maploc=bpstart(input), data.type="logratio")
+  CNA.object <- CNA(genomdat=copynumber(input), chrom=chromosomes(input), maploc=bpstart(input), data.type="logratio", sampleid=sampleNames(input))
   cat("Start data segmentation .. \n")
   if (length(weights)==1L && !weights) {
     segmented <- segment(CNA.object, ...)

@@ -26,13 +26,13 @@
 #
 #*/#########################################################################
 poolReadCounts <- function(obj, samples) {
-  phenodata <- obj[['phenodata']]
-  bins <- obj[['bins']]
-  counts <- obj[['counts']]
-  if ('corrected' %in% names(obj))
-    corrected <- obj[['corrected']]
+  phenodata <- pData(obj)
+  bins <- fData(obj)
+  counts <- assayDataElement(obj, 'counts')
+  if ('corrected' %in% assayDataElementNames(obj))
+    corrected <- assayDataElement(obj, 'corrected')
   if (length(samples) != nrow(phenodata))
-    stop('Vector samples must be of equal length as there are samples.')
+    stop('Vector samples must be of equal length as there are samples in obj.')
   newsamples <- sort(unique(samples))
   oldsamples <- phenodata$name
   if (length(newsamples) == nrow(phenodata))
@@ -47,16 +47,17 @@ poolReadCounts <- function(obj, samples) {
     newcounts[,newsample] <- rowSums(counts[,replicates, drop=FALSE])
     if ('corrected' %in% names(obj))
       newcorrected[,newsample] <- rowSums(corrected[,replicates, drop=FALSE])
-    oldphenodata <- obj[['phenodata']][replicates,]
+    oldphenodata <- phenodata[replicates,]
     newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)
     if (length(unique(oldphenodata$loess.span)) == 1L)
       newphenodata[newsample, 'loess.span'] <- oldphenodata[1, 'loess.span']
     if (length(unique(oldphenodata$loess.family)) == 1L)
       newphenodata[newsample, 'loess.family'] <- oldphenodata[1, 'loess.family']
   }
-  if ('corrected' %in% names(obj))
-    return(list(phenodata=newphenodata, bins=bins, counts=newcounts, filter=obj[['filter']], corrected=newcorrected))
-  list(phenodata=newphenodata, bins=bins, counts=newcounts, filter=obj[['filter']])
+  obj2 <- new('qdnaseq', bins=bins, counts=newcounts, phenodata=newphenodata)
+  if ('corrected' %in% assayDataElementNames(obj))
+    assayDataElement(obj2, 'corrected') <- newcorrected
+  obj2
 }
 
 # EOF
