@@ -60,7 +60,6 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
   bins
 }
 
-remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/', filename, sep='')
 
 
 
