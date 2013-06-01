@@ -13,8 +13,10 @@
 \title{Calculate binned read counts from a BAM file}
 
 \usage{
-.binReadCountsPerSample(bins, bamfile, path, cache=TRUE, samtools="samtools", f="",
-  F="0x0404", q=37, maxChunk=100000000L)
+.binReadCountsPerSample(bins, bamfile, cache=TRUE, maxChunk=100000000L, isPaired=NA,
+  isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA,
+  isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
+  isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37)
 }
 
 \description{
@@ -24,13 +26,20 @@
 \arguments{
   \item{bins}{...}
   \item{bamfile}{...}
-  \item{path}{...}
   \item{cache}{...}
-  \item{samtools}{...}
-  \item{f}{...}
-  \item{F}{...}
-  \item{q}{...}
   \item{maxChunk}{...}
+  \item{isPaired=NA}{...}
+  \item{isProperPair=NA}{...}
+  \item{isUnmappedQuery=FALSE}{...}
+  \item{hasUnmappedMate=NA}{...}
+  \item{isMinusStrand=NA}{...}
+  \item{isMateMinusStrand=NA}{...}
+  \item{isFirstMateRead=NA}{...}
+  \item{isSecondMateRead=NA}{...}
+  \item{isNotPrimaryRead=NA}{...}
+  \item{isNotPassingQualityControls=NA}{...}
+  \item{isDuplicate=FALSE}{...}
+  \item{minMapq=37}{...}
 }
 
 \value{

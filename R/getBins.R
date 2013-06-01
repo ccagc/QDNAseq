@@ -37,12 +37,14 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     stop('Unknown genome: ', genome)
   }
   bins <- NULL
-  if (cache)
+  if (cache==TRUE)
+    # TO DO: somehow check if file available online is newer than cached one?
     bins <- loadCache(key=list(genome=genome, binsize=binsize), dirs='QDNAseq')
   if (!is.null(bins)) {
     cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp loaded from cache.\n', sep='')
     return(bins)
   }
+  cat('Downloading bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp ...', sep='')
   remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.', genome.name, '.', binsize, 'kbp.rds', sep='')
   localfile <- tempfile()
   error <- TRUE
@@ -51,12 +53,14 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     error <- FALSE
   }, silent=TRUE)
   if (error || is.null(result))
-    stop('Bin annotations not found on server for genome ', genome, ' and bin size ', binsize, 'kbp. Please generate them first.')
+    stop('not found. Please generate them first.')
   bins <- readRDS(localfile)
   file.remove(localfile)
-  cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp downloaded from the web.\n', sep='')
-  if (cache)
+  if (cache==TRUE || cache=='overwrite') {
+    cat(' saving in cache ...', sep='')
     saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq', compress=TRUE)
+  }
+  cat('\n', sep='')
   bins
 }
 

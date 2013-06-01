@@ -31,11 +31,11 @@ makeCghRaw <- function(obj) {
   }
   cgh <- make_cghRaw(data.frame(bin=featureNames(obj)[condition], fData(obj)[condition, c('chromosome', 'start', 'end'),], assayDataElement(obj, 'copynumber')[condition, , drop=FALSE], check.names=FALSE, stringsAsFactors=FALSE))
   pData(cgh) <- pData(obj)
-  fData(cgh)$bases <- bins[condition, 'bases']
-  fData(cgh)$gc <- bins[condition, 'gc']
-  fData(cgh)$mappability <- bins[condition, 'mappability']
-  fData(cgh)$blacklist <- bins[condition, 'blacklist']
-  fData(cgh)$tgr <- bins[condition, 'tgr']
+  fData(cgh)$bases <- fData(obj)[condition, 'bases']
+  fData(cgh)$gc <- fData(obj)[condition, 'gc']
+  fData(cgh)$mappability <- fData(obj)[condition, 'mappability']
+  fData(cgh)$blacklist <- fData(obj)[condition, 'blacklist']
+  fData(cgh)$tgr <- fData(obj)[condition, 'tgr']
   cgh
 }
 

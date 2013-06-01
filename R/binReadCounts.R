@@ -51,7 +51,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   }
   counts <- matrix(nrow=nrow(bins), ncol=length(bamnames), dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
-    counts[,i] <- .binReadCountsPerSample(bins, bamfile=bamfiles[i], path=path, ...)
+    counts[,i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path, bamfiles[i]), ...)
     gc(FALSE)
   }
   phenodata$reads <- colSums(counts)
@@ -86,13 +86,20 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 # \arguments{
 #   \item{bins}{...}
 #   \item{bamfile}{...}
-#   \item{path}{...}
 #   \item{cache}{...}
-#   \item{samtools}{...}
-#   \item{f}{...}
-#   \item{F}{...}
-#   \item{q}{...}
 #   \item{maxChunk}{...}
+#   \item{isPaired=NA}{...}
+#   \item{isProperPair=NA}{...}
+#   \item{isUnmappedQuery=FALSE}{...}
+#   \item{hasUnmappedMate=NA}{...}
+#   \item{isMinusStrand=NA}{...}
+#   \item{isMateMinusStrand=NA}{...}
+#   \item{isFirstMateRead=NA}{...}
+#   \item{isSecondMateRead=NA}{...}
+#   \item{isNotPrimaryRead=NA}{...}
+#   \item{isNotPassingQualityControls=NA}{...}
+#   \item{isDuplicate=FALSE}{...}
+#   \item{minMapq=37}{...}
 # }
 #
 # \value{
@@ -109,40 +116,40 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 # @keyword IO
 # @keyword internal
 #*/#########################################################################
-.binReadCountsPerSample <- function(bins, bamfile, path, cache=TRUE, samtools='samtools', f='', F='0x0404', q=37, maxChunk=100000000L) {
+.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, maxChunk=100000000L, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
-  linkTarget <- Sys.readlink(file.path(path, bamfile))
+  linkTarget <- Sys.readlink(bamfile)
   if (linkTarget != '') {
-    bamfile <- basename(linkTarget)
-    path <- dirname(linkTarget)
+    bamfile <- linkTarget
   }
   readCounts <- NULL
-  if (cache)
-    readCounts <- loadCache(key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q, binsize=binsize), dirs='QDNAseq')
+  if (cache==TRUE)
+    readCounts <- loadCache(key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize), sources=bamfile, dirs='QDNAseq')
   if (!is.null(readCounts)) {
-cat('bins from cache\n')
+    cat('Loaded binned read counts from cache for ', basename(bamfile), '\n', sep='')
     return(readCounts)
   }
   hits <- NULL
-  hits <- loadCache(key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q), dirs='QDNAseq')
-if (!is.null(hits))
-cat('hits from cache\n')
-  if (is.null(hits)) {
+  if (cache==TRUE)
+    hits <- loadCache(key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq), sources=bamfile, dirs='QDNAseq')
+  if (!is.null(hits)) {
+    cat('Loaded reads from cache for ', basename(bamfile), ',', sep='')
+  } else {
+    cat('Extracting reads from ', basename(bamfile), ' ...', sep='')
     hitsfile <- tempfile()
-    # TO DO: This system call requires that 'samtools', 'cut', 'tr'
-    # and 'gzip' are on the PATH and available.  It cannot be expected
-    # that the latter three are available on Windows.
-    # Alternatives (cross-platform):
-    # (1) Rsamtools package on Bioconductor.
-    # (2) The samtoolsView() function of future aroma.seq package
-    system(paste(samtools, ' view -f "', f, '" -F "', F, '" -q ', q, ' "', file.path(path, bamfile), '" | cut -f3,4 | tr -d chr | gzip > "', hitsfile, '"', sep=''))
-    reads <- as.data.frame(scan(hitsfile, what=list(chromosome=character(), pos=integer()), sep='\t', quiet=TRUE), stringsAsFactors=FALSE)
+    reads <- scanBam(bamfile, param=ScanBamParam(flag=scanBamFlag(isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate), what=c('rname', 'pos', 'mapq')))[[1]]
     hits <- list()
-    for (chr in unique(reads$chromosome))
-      hits[[chr]] <- reads[reads$chromosome==chr, 'pos']
-    if (cache)
-      saveCache(hits, key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q), dirs='QDNAseq', compress=TRUE)
+    for (chr in unique(reads[['rname']]))
+      hits[[chr]] <- reads[['pos']][reads[['rname']]==chr & reads[['mapq']] >= minMapq]
+    names(hits) <- sub('^chr', '', names(hits))
+    rm(list=c('reads'))
+    gc(FALSE)
+    if (cache==TRUE || cache=='overwrite') {
+      cat(' saving in cache ...', sep='')
+      saveCache(hits, key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq), sources=bamfile, dirs='QDNAseq', compress=TRUE)
+    }
   }
+  cat(' binning ...', sep='')
   # TO DO: the binning is very memory intensive, and therefore should be done
   # to only a maximum of maxChunk reads at a time.
   readCounts <- numeric(length=nrow(bins))
@@ -156,10 +163,13 @@ cat('hits from cache\n')
     readCounts[bins$chromosome==chromosome] <- readCounts[bins$chromosome==chromosome] + count
   }
   # Not needed anymore
-  rm(list=c("hits", "count"))
+  rm(list=c("hits"))
   gc(FALSE)
-  if (cache)
-    saveCache(readCounts, key=list(bamfile=file.path(path, bamfile), f=f, F=F, q=q, binsize=binsize), dirs='QDNAseq', compress=TRUE)
+  if (cache==TRUE || cache=='overwrite') {
+    cat(' saving in cache ...', sep='')
+    saveCache(readCounts, key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize), sources=bamfile, dirs='QDNAseq', compress=TRUE)
+  }
+  cat('\n', sep='')
   readCounts
 }
 
