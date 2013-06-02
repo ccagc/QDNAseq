@@ -40,12 +40,12 @@ poolReadCounts <- function(obj, samples) {
   newphenodata <- data.frame(name=newsamples, reads=NA, loess.span=NA, loess.family=NA, row.names=newsamples, stringsAsFactors=FALSE)
   # FIXME: other phenodata variables get droppped, should be kept
   newcounts <- matrix(nrow=nrow(counts), ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
-  if ('corrected' %in% names(obj))
+  if ('corrected' %in% assayDataElementNames(obj))
     newcorrected <- matrix(nrow=nrow(counts), ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
   for (newsample in newsamples) {
     replicates <- samples == newsample
     newcounts[,newsample] <- rowSums(counts[,replicates, drop=FALSE])
-    if ('corrected' %in% names(obj))
+    if ('corrected' %in% assayDataElementNames(obj))
       newcorrected[,newsample] <- rowSums(corrected[,replicates, drop=FALSE])
     oldphenodata <- phenodata[replicates,]
     newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)

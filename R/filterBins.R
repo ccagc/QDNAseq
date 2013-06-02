@@ -15,7 +15,7 @@
 #   \item{mappability}{...}
 #   \item{tgr}{...}
 #   \item{bases}{...}
-#   \item{allosomes{...}
+#   \item{allosomes}{...}
 # }
 #
 # \value{
