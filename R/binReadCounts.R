@@ -87,6 +87,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 #   \item{bins}{...}
 #   \item{bamfile}{...}
 #   \item{cache}{...}
+#   \item{force}{...}
 #   \item{maxChunk}{...}
 #   \item{isPaired=NA}{...}
 #   \item{isProperPair=NA}{...}
@@ -116,22 +117,24 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
 # @keyword IO
 # @keyword internal
 #*/#########################################################################
-.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, maxChunk=100000000L, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
+.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, force=FALSE, maxChunk=100000000L, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
   linkTarget <- Sys.readlink(bamfile)
   if (linkTarget != '') {
     bamfile <- linkTarget
   }
+  readCountCache <- list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize)
   readCounts <- NULL
-  if (cache==TRUE)
-    readCounts <- loadCache(key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize), sources=bamfile, dirs='QDNAseq')
+  if (!force)
+    readCounts <- loadCache(key=readCountCache, sources=bamfile, dirs='QDNAseq')
   if (!is.null(readCounts)) {
     cat('Loaded binned read counts from cache for ', basename(bamfile), '\n', sep='')
     return(readCounts)
   }
+  readCache <- list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq)
   hits <- NULL
-  if (cache==TRUE)
-    hits <- loadCache(key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq), sources=bamfile, dirs='QDNAseq')
+  if (!force)
+    hits <- loadCache(key=readCache, sources=bamfile, dirs='QDNAseq')
   if (!is.null(hits)) {
     cat('Loaded reads from cache for ', basename(bamfile), ',', sep='')
   } else {
@@ -144,7 +147,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     names(hits) <- sub('^chr', '', names(hits))
     rm(list=c('reads'))
     gc(FALSE)
-    if (cache==TRUE || cache=='overwrite') {
+    if (cache) {
       cat(' saving in cache ...', sep='')
       saveCache(hits, key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq), sources=bamfile, dirs='QDNAseq', compress=TRUE)
     }
@@ -165,9 +168,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   # Not needed anymore
   rm(list=c("hits"))
   gc(FALSE)
-  if (cache==TRUE || cache=='overwrite') {
+  if (cache) {
     cat(' saving in cache ...', sep='')
-    saveCache(readCounts, key=list(bamfile=bamfile, isPaired=isPaired, isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead, isNotPassingQualityControls=isNotPassingQualityControls, isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize), sources=bamfile, dirs='QDNAseq', compress=TRUE)
+    saveCache(readCounts, key=readCountCache, sources=bamfile, dirs='QDNAseq', compress=TRUE)
   }
   cat('\n', sep='')
   readCounts

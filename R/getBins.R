@@ -13,6 +13,7 @@
 #   \item{binsize}{A @numeric scalar specifying ...}
 #   \item{genome}{A @character string ...}
 #   \item{cache}{A @logical ...}
+#   \item{force}{A @logical ...}
 # }
 #
 # \value{
@@ -27,7 +28,7 @@
 #
 # @keyword IO
 #*/#########################################################################
-getBins <- function(binsize, genome='hg19', cache=TRUE) {
+getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {
     genome.name <- 'hg19'
@@ -37,9 +38,10 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     stop('Unknown genome: ', genome)
   }
   bins <- NULL
-  if (cache==TRUE)
+  binCache <- list(genome=genome, binsize=binsize)
+  if (!force)
     # TO DO: somehow check if file available online is newer than cached one?
-    bins <- loadCache(key=list(genome=genome, binsize=binsize), dirs='QDNAseq')
+    bins <- loadCache(key=binCache, dirs='QDNAseq')
   if (!is.null(bins)) {
     cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp loaded from cache.\n', sep='')
     return(bins)
@@ -56,7 +58,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE) {
     stop('not found. Please generate them first.')
   bins <- readRDS(localfile)
   file.remove(localfile)
-  if (cache==TRUE || cache=='overwrite') {
+  if (cache) {
     cat(' saving in cache ...', sep='')
     saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq', compress=TRUE)
   }

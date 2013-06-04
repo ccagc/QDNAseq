@@ -13,7 +13,7 @@
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
-getBins(binsize, genome="hg19", cache=TRUE)
+getBins(binsize, genome="hg19", cache=TRUE, force=FALSE)
 }
 
 \description{
@@ -24,6 +24,7 @@ getBins(binsize, genome="hg19", cache=TRUE)
   \item{binsize}{A \code{\link[base]{numeric}} scalar specifying ...}
   \item{genome}{A \code{\link[base]{character}} string ...}
   \item{cache}{A \code{\link[base]{logical}} ...}
+  \item{force}{A \code{\link[base]{logical}} ...}
 }
 
 \value{

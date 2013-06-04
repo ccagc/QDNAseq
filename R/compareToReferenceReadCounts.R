@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction compareToReferenceReadCounts
 #
-# @title "Divide binned read counts with those of reference sample(s)"
+# @title "Divide binned read counts with those of reference samples"
 #
 # @synopsis
 #
@@ -11,7 +11,7 @@
 #
 # \arguments{
 #   \item{obj}{...}
-#   \item{reference}{...}
+#   \item{references}{...}
 # }
 #
 # \value{
