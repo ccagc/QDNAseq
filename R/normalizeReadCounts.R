@@ -27,7 +27,8 @@
 # }
 #
 #*/#########################################################################
-normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothOutliers=TRUE) {
+normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
+  smoothOutliers=TRUE) {
   if ('filter' %in% colnames(fData(obj))) {
     condition <- fData(obj)$filter
   } else {
@@ -37,24 +38,28 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE, smoothO
   if (logTransform)
     copynumber <- log2(copynumber + 1)
   if (method == 'none') {
-    cat('Skipping normalization ... \n')
+    message('Skipping normalization ...')
   } else {
     if (method == 'median') {
-      cat('Applying median normalization ... \n')
+      message('Applying median normalization ...')
       # TO DO: See matrixStats::rowMedians().
       values <- apply(copynumber, MARGIN=2L, FUN=median, na.rm=TRUE)
     } else if (method == 'mode') {
-      cat('Applying mode normalization ... \n')
-      values <- apply(copynumber, MARGIN=2L, FUN=function(x) { d <- density(x, na.rm=TRUE); d$x[which.max(d$y)] })
+      message('Applying mode normalization ... ')
+      values <- apply(copynumber, MARGIN=2L, FUN=function(x) { d <- density(x,
+        na.rm=TRUE); d$x[which.max(d$y)] })
     }
     copynumber <- t(t(copynumber) - values)
   }
   if (smoothOutliers) {
-    cat('Smoothing outliers ... \n')
-    CNA.object <- smooth.CNA(CNA(copynumber, fData(obj)[condition, 'chromosome'], fData(obj)[condition, 'start'], data.type='logratio', presorted=TRUE))
+    message('Smoothing outliers ...')
+    CNA.object <- smooth.CNA(CNA(copynumber, fData(obj)[condition,
+      'chromosome'], fData(obj)[condition, 'start'], data.type='logratio',
+      presorted=TRUE))
     copynumber <- as.matrix(CNA.object[,-(1:2), drop=FALSE])
   }
-  copynumber2 <- matrix(nrow=nrow(obj), ncol=ncol(obj), dimnames=list(featureNames(obj), sampleNames(obj)))
+  copynumber2 <- matrix(nrow=nrow(obj), ncol=ncol(obj),
+    dimnames=list(featureNames(obj), sampleNames(obj)))
   copynumber2[rownames(copynumber),] <- copynumber
   assayDataElement(obj, 'copynumber') <- copynumber2
   obj

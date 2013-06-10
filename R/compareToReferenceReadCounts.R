@@ -27,13 +27,19 @@
 #*/#########################################################################
 compareToReferenceReadCounts <- function(obj, references) {
   if (length(references) != ncol(obj))
-    stop('Vector references must be of equal length as there are samples in obj.')
+    stop('Parameter references must be a vector of equal length as there ',
+      'are samples in obj.')
   for (i in seq_along(references)) {
     if (!is.na(references[i]) && references[i]!=FALSE) {
-      assayDataElement(obj, 'counts')[,i] <- (assayDataElement(obj, 'counts')[,i]+1) / (assayDataElement(obj, 'counts')[,references[i]]+1)
+      assayDataElement(obj, 'counts')[,i] <- (assayDataElement(obj,
+        'counts')[,i]+1) / (assayDataElement(obj, 'counts')[,references[i]]+1)
+        - 1
       if ('corrected' %in% assayDataElementNames(obj))
-        assayDataElement(obj, 'corrected')[,i] <- (assayDataElement(obj, 'corrected')[,i]+1) / (assayDataElement(obj, 'corrected')[,references[i]]+1)
-      sampleNames(obj)[i] <- paste(sampleNames(obj)[i], ' vs. ', sampleNames(obj)[references[i]], sep='')
+        assayDataElement(obj, 'corrected')[,i] <- (assayDataElement(obj,
+          'corrected')[,i]+1) / (assayDataElement(obj,
+          'corrected')[,references[i]]+1)
+      sampleNames(obj)[i] <- paste(sampleNames(obj)[i], ' vs. ',
+        sampleNames(obj)[references[i]], sep='')
     }
   }
   toremove <- which(references==FALSE)

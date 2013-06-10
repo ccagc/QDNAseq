@@ -43,11 +43,15 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
     # TO DO: somehow check if file available online is newer than cached one?
     bins <- loadCache(key=binCache, dirs='QDNAseq')
   if (!is.null(bins)) {
-    cat('Bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp loaded from cache.\n', sep='')
+    message('Bin annotations for genome ', genome.name, ' and bin size of ',
+      binsize, 'kbp loaded from cache.')
     return(bins)
   }
-  cat('Downloading bin annotations for genome ', genome.name, ' and bin size of ', binsize, 'kbp ...', sep='')
-  remotefile <- paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.', genome.name, '.', binsize, 'kbp.rds', sep='')
+  message('Downloading bin annotations for genome ', genome.name,
+    ' and bin size of ', binsize, 'kbp ...', appendLF=FALSE)
+  remotefile <-
+    paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.',
+    genome.name, '.', binsize, 'kbp.rds', sep='')
   localfile <- tempfile()
   error <- TRUE
   try({
@@ -59,10 +63,11 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
   bins <- readRDS(localfile)
   file.remove(localfile)
   if (cache) {
-    cat(' saving in cache ...', sep='')
-    saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq', compress=TRUE)
+    message(' saving in cache ...')
+    saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq',
+      compress=TRUE)
   }
-  cat('\n', sep='')
+  message()
   bins
 }
 
@@ -98,10 +103,17 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
 createBins <- function(binsize, genome='hg19') {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {
-    genome <- c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663, 146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540, 102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 48129895, 51304566, 155270560, 59373566)
+    # this should not be hard-coded but read from some package
+    genome <- c(249250621, 243199373, 198022430, 191154276, 180915260,
+      171115067, 159138663, 146364022, 141213431, 135534747, 135006516,
+      133851895, 115169878, 107349540, 102531392, 90354753, 81195210,
+      78077248, 59128983, 63025520, 48129895, 51304566, 155270560, 59373566)
     names(genome) <- c(1:22, 'X', 'Y')
   } else if (genome.build %in% c(18, 36)) {
-    genome <- c(247249719, 242951149, 199501827, 191273063, 180857866, 170899992, 158821424, 146274826, 140273252, 135374737, 134452384, 132349534, 114142980, 106368585, 100338915, 88827254, 78774742, 76117153, 63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
+    genome <- c(247249719, 242951149, 199501827, 191273063, 180857866,
+      170899992, 158821424, 146274826, 140273252, 135374737, 134452384,
+      132349534, 114142980, 106368585, 100338915, 88827254, 78774742,
+      76117153, 63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
     names(genome) <- c(1:22, 'X', 'Y')
   } else {
     stop('Unknown genome: ', genome)
@@ -115,8 +127,10 @@ createBins <- function(binsize, genome='hg19') {
     start <- c(start, chromosome.starts)
     end <- c(end, chromosome.ends)
   }
-  bins <- data.frame(chromosome=rep(names(genome), times=ceiling(genome / (binsize*1000))), start, end, stringsAsFactors=FALSE)
-  rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end, sep='')
+  bins <- data.frame(chromosome=rep(names(genome), times=ceiling(genome /
+    (binsize*1000))), start, end, stringsAsFactors=FALSE)
+  rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end,
+    sep='')
   bins
 }
 

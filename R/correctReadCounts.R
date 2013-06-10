@@ -27,17 +27,20 @@
 #   Internally, @see "stats::loess" is used to fit the regression model.
 # }
 #*/#########################################################################
-correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE, ...) {
+correctReadCounts <- function(obj, span=0.65, family='symmetric',
+  plotting=FALSE, ...) {
   counts <- assayDataElement(obj, 'counts')
-  cat('Performing correction for GC content and mappability:\n')
+  message('Performing correction for GC content and mappability:')
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
   if (length(family) == 1L)
     family <- rep(family, times=ncol(counts))
   if (length(span) != ncol(counts))
-    stop('span has to be either a single value or a vector the same length as the number of columns in counts.')
+    stop('Parameter span has to be either a single value or a vector the ',
+      'same length as there are samples in obj.')
   if (length(family) != ncol(counts))
-    stop('family has to be either a single value or a vector the same length as the number of columns in counts.')
+    stop('Parameter family has to be either a single value or a vector the ',
+      'same length as there are samples in obj.')
   if ('filter' %in% colnames(fData(obj))) {
     condition <- fData(obj)$filter
   } else {
@@ -45,13 +48,17 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   }
   used.span <- rep(NA_real_, times=ncol(counts))
   used.family <- rep(NA_real_, times=ncol(counts))
-  corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
-  residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts), dimnames=dimnames(counts))
+  corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts),
+    dimnames=dimnames(counts))
+  residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts),
+    dimnames=dimnames(counts))
   gc <- round(fData(obj)$gc)
   mappability <- round(fData(obj)$mappability)
-  median.counts <- aggregate(counts[condition,], by=list(gc=gc[condition], mappability=mappability[condition]), median)
+  median.counts <- aggregate(counts[condition,], by=list(gc=gc[condition],
+    mappability=mappability[condition]), median)
   median.counts <- median.counts[!is.na(median.counts$gc),]
-  rownames(median.counts) <- paste(median.counts$gc, '-', median.counts$mappability, sep='')
+  rownames(median.counts) <- paste(median.counts$gc, '-',
+    median.counts$mappability, sep='')
   # if (plotting) {
     # x <- min(median.counts$mappability):max(median.counts$mappability)
     # y <- min(median.counts$gc):max(median.counts$gc)
@@ -63,14 +70,16 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   # }
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
-      cat('\tSkipping correction for sample ', colnames(counts)[i], '...\n', sep='')
+      message('\tSkipping correction for sample ', colnames(counts)[i], '...')
       next
     }
-    cat('\tUsing span=', span[i], '\tand family=', family[i], ',\tcorrecting sample ', colnames(counts)[i], '...\n', sep='')
+    message('\tUsing span=', span[i], '\tand family=', family[i],
+      ',\tcorrecting sample ', colnames(counts)[i], '...')
     vals <- median.counts[,i+2L]
     corvals <- counts[,i]
     try({
-      l <- loess(vals ~ median.counts$gc * median.counts$mappability, span=span[i], family=family[i]) # , ...)
+      l <- loess(vals ~ median.counts$gc * median.counts$mappability,
+        span=span[i], family=family[i]) # , ...)
       fit <- l$fitted
       names(fit) <- rownames(median.counts)
       residuals[,i] <- corvals - fit[paste(gc, '-', mappability, sep='')]
@@ -112,12 +121,13 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric', plotting=FALSE
   # }
   obj$loess.span <- used.span
   obj$loess.family <- used.family
-  cat('Done.\n')
+  message('Done.')
   assayDataElement(obj, 'corrected') <- corrected
   assayDataElement(obj, 'residuals') <- residuals
   obj
 }
 
-# a subfunction for performing the correction on one sample at a time could be defined here.
+# a subfunction for performing the correction on one sample at a time could
+# be defined here.
 
 # EOF
