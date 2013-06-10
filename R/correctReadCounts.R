@@ -54,9 +54,9 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
     dimnames=dimnames(counts))
   gc <- round(fData(obj)$gc)
   mappability <- round(fData(obj)$mappability)
-  median.counts <- aggregate(counts[condition,], by=list(gc=gc[condition],
+  median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
     mappability=mappability[condition]), median)
-  median.counts <- median.counts[!is.na(median.counts$gc),]
+  median.counts <- median.counts[!is.na(median.counts$gc), ]
   rownames(median.counts) <- paste(median.counts$gc, '-',
     median.counts$mappability, sep='')
   # if (plotting) {
@@ -75,14 +75,14 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
     }
     message('\tUsing span=', span[i], '\tand family=', family[i],
       ',\tcorrecting sample ', colnames(counts)[i], '...')
-    vals <- median.counts[,i+2L]
-    corvals <- counts[,i]
+    vals <- median.counts[, i+2L]
+    corvals <- counts[, i]
     try({
       l <- loess(vals ~ median.counts$gc * median.counts$mappability,
         span=span[i], family=family[i]) # , ...)
       fit <- l$fitted
       names(fit) <- rownames(median.counts)
-      residuals[,i] <- corvals - fit[paste(gc, '-', mappability, sep='')]
+      residuals[, i] <- corvals - fit[paste(gc, '-', mappability, sep='')]
       correction <- median(fit, na.rm=TRUE) - fit
       corvals <- corvals + correction[paste(gc, '-', mappability, sep='')]
       corvals <- corvals - min(corvals, na.rm=TRUE)
@@ -109,7 +109,7 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
         # dev.off()
       # }
     }, silent=TRUE)
-    corrected[,i] <- corvals
+    corrected[, i] <- corvals
   }
   corrected <- round(corrected, digits=2L)
   # if (plotting) {

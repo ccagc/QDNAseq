@@ -29,14 +29,14 @@
 #
 #*/#########################################################################
 segmentDataWithWeights <- function(input, weights=TRUE, ...) {
-  if (length(weights)==1L & weights) {
+  if (length(weights) == 1L & weights) {
     if (!'tgr' %in% colnames(fData(input)))
       stop('1000 Genomes residuals not found.')
     tgr <- fData(input)$tgr
-    input <- input[!is.na(tgr),]
+    input <- input[!is.na(tgr), ]
     tgr <- tgr[!is.na(tgr)]
     tgr <- abs(tgr)
-    tgr[tgr==0] <- min(tgr[tgr!=0], na.rm=TRUE)
+    tgr[tgr == 0] <- min(tgr[tgr!=0], na.rm=TRUE)
     weights <- 1/tgr
   }
   CNA.object <- CNA(genomdat=copynumber(input), chrom=chromosomes(input),
@@ -44,7 +44,7 @@ segmentDataWithWeights <- function(input, weights=TRUE, ...) {
     sampleid=paste(1:ncol(input), 'of', ncol(input), ' ', sampleNames(input),
       sep=''))
   message('Start data segmentation ...')
-  if (length(weights)==1L && !weights) {
+  if (length(weights) == 1L && !weights) {
     segmented <- segment(CNA.object, ...)
   } else {
     segmented <- segment(CNA.object, weights=weights, ...)
@@ -57,7 +57,7 @@ segmentDataWithWeights <- function(input, weights=TRUE, ...) {
   }
   makelist <- apply(numsmrat, MARGIN=1L, FUN=repdata)
   joined <- unlist(makelist)
-  # Not needed anymore
+  ## Not needed anymore
   rm(list="makelist")
   joined <- matrix(joined, ncol=ncol(input), byrow=FALSE)
   joined <- CGHcall:::.assignNames(joined, input)

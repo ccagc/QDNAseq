@@ -30,7 +30,7 @@ makeCghRaw <- function(obj) {
     condition <- rep(TRUE, times=nrow(obj))
   }
   cgh <- make_cghRaw(data.frame(bin=featureNames(obj)[condition],
-    fData(obj)[condition, c('chromosome', 'start', 'end'),],
+    fData(obj)[condition, c('chromosome', 'start', 'end'), ],
     assayDataElement(obj, 'copynumber')[condition, , drop=FALSE],
     check.names=FALSE, stringsAsFactors=FALSE))
   pData(cgh) <- pData(obj)

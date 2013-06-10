@@ -44,27 +44,33 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   } else if (length(bamfiles) != length(bamnames)) {
     stop('bamfiles and bamnames have to be of same length.')
   }
-  phenodata <- data.frame(name=bamnames, row.names=bamnames, stringsAsFactors=FALSE)
+  phenodata <- data.frame(name=bamnames, row.names=bamnames,
+    stringsAsFactors=FALSE)
   if (!is.null(phenofile)) {
-    pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE, row.names=1L)
-    phenodata <- cbind(phenodata, pdata[rownames(phenodata),])
+    pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
+      row.names=1L)
+    phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
   }
-  counts <- matrix(nrow=nrow(bins), ncol=length(bamnames), dimnames=list(rownames(bins), bamnames))
+  counts <- matrix(nrow=nrow(bins), ncol=length(bamnames),
+    dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
-    counts[,i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path, bamfiles[i]), ...)
+    counts[, i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path,
+      bamfiles[i]), ...)
     gc(FALSE)
   }
   phenodata$reads <- colSums(counts)
   condition <- condition <- rep(TRUE, times=nrow(bins))
-  if (allosomeBins=='flag')
+  if (allosomeBins == 'flag')
     condition <- condition & bins$chromosome %in% as.character(1:22)
-  if (incompleteBins=='flag') {
+  if (incompleteBins == 'flag') {
     condition <- condition & bins$bases == 100
-  } else if (incompleteBins=='adjust') {
-    counts[bins$bases==0] <- NA # theoretically, BWA might place reads where reference is all Ns
+  } else if (incompleteBins == 'adjust') {
+    ## Theoretically, BWA might place reads where reference is all Ns,
+    ## we don't want to adjust those.
+    counts[bins$bases == 0] <- NA
     counts <- counts / bins$bases * 100
   }
-  if (blacklistedBins=='flag')
+  if (blacklistedBins == 'flag')
     condition <- condition & bins$blacklist == 0
   bins$filter <- condition
   new('qdnaseq', bins=bins, counts=counts, phenodata=phenodata)
@@ -168,8 +174,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
       isDuplicate=isDuplicate), what=c('rname', 'pos', 'mapq')))[[1]]
     hits <- list()
     for (chr in unique(reads[['rname']]))
-      hits[[chr]] <- reads[['pos']][reads[['rname']]==chr & reads[['mapq']] >=
-        minMapq]
+      hits[[chr]] <- reads[['pos']][reads[['rname']] == chr &
+        reads[['mapq']] >= minMapq]
     names(hits) <- sub('^chr', '', names(hits))
     rm(list=c('reads'))
     gc(FALSE)
@@ -180,22 +186,22 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
     }
   }
   message(' binning ...', appendLF=FALSE)
-  # TO DO: the binning is very memory intensive, and therefore should be done
-  # to only a maximum of maxChunk reads at a time.
+  ## TO DO: the binning is very memory intensive, and therefore should be done
+  ## to only a maximum of maxChunk reads at a time.
   readCounts <- numeric(length=nrow(bins))
   for (chromosome in names(hits)) {
     if (!chromosome %in% unique(bins$chromosome))
       next
-    chromosome.breaks <- c(bins[bins$chromosome==chromosome, 'start'],
-      max(bins[bins$chromosome==chromosome, 'end']))
-    # without as.numeric(), command below gives an integer overflow warning:
+    chromosome.breaks <- c(bins[bins$chromosome == chromosome, 'start'],
+      max(bins[bins$chromosome == chromosome, 'end']))
+    ## without as.numeric(), command below gives an integer overflow warning:
     count <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks),
       right=FALSE, plot=FALSE)$count
-    # count <- binCounts(hits[[chromosome]], chromosome.breaks) # matrixStats
-    readCounts[bins$chromosome==chromosome] <-
-      readCounts[bins$chromosome==chromosome] + count
+    ## count <- binCounts(hits[[chromosome]], chromosome.breaks) # matrixStats
+    readCounts[bins$chromosome == chromosome] <-
+      readCounts[bins$chromosome == chromosome] + count
   }
-  # Not needed anymore
+  ## Not needed anymore
   rm(list=c("hits"))
   gc(FALSE)
   if (cache) {

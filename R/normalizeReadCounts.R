@@ -27,6 +27,7 @@
 # }
 #
 #*/#########################################################################
+## Adapted from package CGHcall
 normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
   smoothOutliers=TRUE) {
   if ('filter' %in% colnames(fData(obj))) {
@@ -42,7 +43,7 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
   } else {
     if (method == 'median') {
       message('Applying median normalization ...')
-      # TO DO: See matrixStats::rowMedians().
+      ## TO DO: See matrixStats::rowMedians().
       values <- apply(copynumber, MARGIN=2L, FUN=median, na.rm=TRUE)
     } else if (method == 'mode') {
       message('Applying mode normalization ... ')
@@ -56,11 +57,11 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
     CNA.object <- smooth.CNA(CNA(copynumber, fData(obj)[condition,
       'chromosome'], fData(obj)[condition, 'start'], data.type='logratio',
       presorted=TRUE))
-    copynumber <- as.matrix(CNA.object[,-(1:2), drop=FALSE])
+    copynumber <- as.matrix(CNA.object[, -(1:2), drop=FALSE])
   }
   copynumber2 <- matrix(nrow=nrow(obj), ncol=ncol(obj),
     dimnames=list(featureNames(obj), sampleNames(obj)))
-  copynumber2[rownames(copynumber),] <- copynumber
+  copynumber2[rownames(copynumber), ] <- copynumber
   assayDataElement(obj, 'copynumber') <- copynumber2
   obj
 }
