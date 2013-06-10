@@ -13,7 +13,7 @@
 \title{Adjusts the filter on which bins are used}
 
 \usage{
-filterBins(obj, blacklist=0, mappability=50, tgr=3, bases=100, allosomes=TRUE)
+filterBins(obj, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE)
 }
 
 \description{
