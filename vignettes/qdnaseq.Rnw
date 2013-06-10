@@ -1,0 +1,69 @@
+%\VignetteIndexEntry{An introduction to QDNAseq}
+
+\documentclass{article}
+
+\begin{document}
+
+\title{Introduction to QDNAseq}
+\author{Ilari Scheinin}
+\maketitle
+
+First load the package.
+
+<<reg>>=
+library(qdnaseq)
+@
+
+Load example data.
+
+<<reg>>=
+data(LGG150)
+@
+
+Perform correction for GC content and mappability.
+
+<<reg>>=
+LGG150 <- correctReadCounts(LGG150)
+@
+
+Perform median normalization.
+
+<<reg>>=
+LGG150 <- normalizeReadCounts(LGG150)
+@
+
+Filter out bins with mappabilities lower than 50 and the 1000 Genomes residuals larger than 2 standard deviations.
+
+<<reg>>=
+LGG150 <- filterBins(LGG150, mappability=50, tgr=2)
+@
+
+Convert to a cghRaw object, segment, and call gains and losses.
+
+<<reg>>=
+cgh <- makeCghRaw(LGG150)
+cgh <- segmentDataWithWeights(cgh)
+cgh <- postsegnormalize(cgh)
+cgh.cal <- CGHcall(cgh)
+cgh <- ExpandCGHcall(cgh.cal, cgh)
+@
+
+Plot.
+
+<<label=fig1plot,include=FALSE>>=
+plot(cgh, dotres=1)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig1,fig=TRUE,echo=FALSE>>=
+<<fig1plot>>
+@
+\end{center}
+\caption{A plot}
+\label{fig:one}
+\end{figure}
+
+\end{document}
+
+% EOF
