@@ -36,15 +36,15 @@ filterBins <- function(obj, blacklist=0, mappability=50, tgr=2, bases=100,
   condition <- condition & fData(obj)$bases >= bases
   condition <- condition & fData(obj)$blacklist <= blacklist
   condition <- condition & fData(obj)$mappability >= mappability
-  condition <- condition & fData(obj)$tgr <= tgr*sd(fData(obj)$tgr,
+  condition <- condition & abs(fData(obj)$tgr) <= tgr*sd(fData(obj)$tgr,
     na.rm=TRUE)
   if (allosomes)
     condition <- condition & fData(obj)$chromosome %in% as.character(1:22)
   fData(obj)$filter <- condition
   message('Total bins:\t', format(nrow(obj), trim=TRUE, big.mark=','))
-  message('Bins filtered:\t', format(sum(!condition), trim=TRUE,
+  message('Bins filtered:\t', format(sum(!condition, na.rm=TRUE), trim=TRUE,
     big.mark=','))
-  message('Final bins:\t', format(sum(condition), trim=TRUE, big.mark=','))
+  message('Final bins:\t', format(sum(condition, na.rm=TRUE), trim=TRUE, big.mark=','))
   obj
 }
 

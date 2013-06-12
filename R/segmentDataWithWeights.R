@@ -41,7 +41,7 @@ segmentDataWithWeights <- function(input, weights=TRUE, ...) {
   }
   CNA.object <- CNA(genomdat=copynumber(input), chrom=chromosomes(input),
     maploc=bpstart(input), data.type="logratio",
-    sampleid=paste(1:ncol(input), 'of', ncol(input), ' ', sampleNames(input),
+    sampleid=paste(sampleNames(input), ':', 1:ncol(input), 'of', ncol(input),
       sep=''))
   message('Start data segmentation ...')
   if (length(weights) == 1L && !weights) {
