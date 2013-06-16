@@ -1,19 +1,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  filterBins.R
+%  applyFilters.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{filterBins}
-\alias{filterBins}
+\name{applyFilters}
+\alias{applyFilters}
 
+
+\alias{applyFilters,QDNAseqReadCounts-method}
 
 \title{Adjusts the filter on which bins are used}
 
 \usage{
-filterBins(obj, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE)
+applyFilters(object, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE,
+  force=FALSE)
 }
 
 \description{
@@ -21,12 +24,13 @@ filterBins(obj, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE)
 }
 
 \arguments{
-  \item{obj}{A qdnaseq object ...}
+  \item{object}{A QDNAseqReadCounts object ...}
   \item{blacklist}{...}
   \item{mappability}{...}
   \item{tgr}{...}
   \item{bases}{...}
   \item{allosomes}{...}
+  \item{force}{...}
 }
 
 \value{

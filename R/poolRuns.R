@@ -1,5 +1,7 @@
 #########################################################################/**
-# @RdocFunction poolReadCounts
+# @RdocFunction poolRuns
+#
+# @alias poolRuns,QDNAseqReadCounts,character-method
 #
 # @title "Pools binned read counts across samples"
 #
@@ -10,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{obj}{...}
+#   \item{object}{...}
 #   \item{samples}{...}
 # }
 #
@@ -25,31 +27,32 @@
 # }
 #
 #*/#########################################################################
-poolReadCounts <- function(obj, samples) {
-  phenodata <- pData(obj)
-  bins <- fData(obj)
-  counts <- assayDataElement(obj, 'counts')
-  if ('corrected' %in% assayDataElementNames(obj))
-    corrected <- assayDataElement(obj, 'corrected')
+setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
+  samples='character'), definition=function(object, samples) {
+  phenodata <- pData(object)
+  bins <- fData(object)
+  counts <- assayDataElement(object, 'counts')
+  if ('corrected' %in% assayDataElementNames(object))
+    corrected <- assayDataElement(object, 'corrected')
   if (length(samples) != nrow(phenodata))
     stop('Parameter samples must be a vector of equal length as there are ',
-      ' samples in obj.')
+      ' samples in object.')
   newsamples <- sort(unique(samples))
   oldsamples <- phenodata$name
   if (length(newsamples) == nrow(phenodata))
-    return(obj)
+    return(object)
   newphenodata <- data.frame(name=newsamples, reads=NA, loess.span=NA,
     loess.family=NA, row.names=newsamples, stringsAsFactors=FALSE)
   ## FIXME: other phenodata variables get droppped, should be kept
   newcounts <- matrix(nrow=nrow(counts), ncol=length(newsamples),
     dimnames=list(rownames(counts), newsamples))
-  if ('corrected' %in% assayDataElementNames(obj))
+  if ('corrected' %in% assayDataElementNames(object))
     newcorrected <- matrix(nrow=nrow(counts), ncol=length(newsamples),
       dimnames=list(rownames(counts), newsamples))
   for (newsample in newsamples) {
     replicates <- samples == newsample
     newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
-    if ('corrected' %in% assayDataElementNames(obj))
+    if ('corrected' %in% assayDataElementNames(object))
       newcorrected[, newsample] <- rowSums(corrected[, replicates,
         drop=FALSE])
     oldphenodata <- phenodata[replicates, ]
@@ -60,10 +63,11 @@ poolReadCounts <- function(obj, samples) {
       newphenodata[newsample, 'loess.family'] <- oldphenodata[1,
         'loess.family']
   }
-  obj2 <- new('qdnaseq', bins=bins, counts=newcounts, phenodata=newphenodata)
-  if ('corrected' %in% assayDataElementNames(obj))
-    assayDataElement(obj2, 'corrected') <- newcorrected
-  obj2
-}
+  object2 <- new('QDNAseqReadCounts', bins=bins, counts=newcounts,
+    phenodata=newphenodata)
+  if ('corrected' %in% assayDataElementNames(object))
+    assayDataElement(object2, 'corrected') <- newcorrected
+  object2
+})
 
 # EOF

@@ -1,5 +1,7 @@
 #########################################################################/**
-# @RdocFunction correctReadCounts
+# @RdocFunction correct
+#
+# @alias correct,QDNAseqReadCounts-method
 #
 # @title "Correct binned read counts for GC content and mappability"
 #
@@ -10,11 +12,12 @@
 # }
 #
 # \arguments{
-#   \item{obj}{...}
+#   \item{object}{...}
 #   \item{span}{...}
 #   \item{family}{...}
-#   \item{plotting}{...}
-#   \item{...}{Not used.}
+#   \item{keepCounts}{...}
+#   \item{storeResiduals}{...}
+#   \item{...}{Further aguments to loess.}
 # }
 #
 # \value{
@@ -27,9 +30,13 @@
 #   Internally, @see "stats::loess" is used to fit the regression model.
 # }
 #*/#########################################################################
-correctReadCounts <- function(obj, span=0.65, family='symmetric',
-  plotting=FALSE, ...) {
-  counts <- assayDataElement(obj, 'counts')
+
+#setMethod('correct', signature=c(object='QDNAseqReadCounts', span='numeric',
+#  family='character', keepCounts='logical', storeResiduals='logical'),
+setMethod('correct', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, span=0.65, family='symmetric',
+  keepCounts=TRUE, storeResiduals=TRUE, ...) {
+  counts <- assayDataElement(object, 'counts')
   message('Performing correction for GC content and mappability:')
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
@@ -37,14 +44,14 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
     family <- rep(family, times=ncol(counts))
   if (length(span) != ncol(counts))
     stop('Parameter span has to be either a single value or a vector the ',
-      'same length as there are samples in obj.')
+      'same length as there are samples in object.')
   if (length(family) != ncol(counts))
     stop('Parameter family has to be either a single value or a vector the ',
-      'same length as there are samples in obj.')
-  if ('filter' %in% colnames(fData(obj))) {
-    condition <- fData(obj)$filter
+      'same length as there are samples in object.')
+  if ('filter' %in% colnames(fData(object))) {
+    condition <- fData(object)$filter
   } else {
-    condition <- rep(TRUE, times=nrow(obj))
+    condition <- rep(TRUE, times=nrow(object))
   }
   used.span <- rep(NA_real_, times=ncol(counts))
   used.family <- rep(NA_real_, times=ncol(counts))
@@ -52,8 +59,8 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
     dimnames=dimnames(counts))
   residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts),
     dimnames=dimnames(counts))
-  gc <- round(fData(obj)$gc)
-  mappability <- round(fData(obj)$mappability)
+  gc <- round(fData(object)$gc)
+  mappability <- round(fData(object)$mappability)
   median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
     mappability=mappability[condition]), median)
   median.counts <- median.counts[!is.na(median.counts$gc), ]
@@ -119,13 +126,16 @@ correctReadCounts <- function(obj, span=0.65, family='symmetric',
     # contour(x, y, m, nlevels=20, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
     # dev.off()
   # }
-  obj$loess.span <- used.span
-  obj$loess.family <- used.family
+  object$loess.span <- used.span
+  object$loess.family <- used.family
+  assayDataElement(object, 'corrected') <- corrected
+  if (!keepCounts)
+    assayDataElement(object, 'counts') <- NULL
+  if (storeResiduals)
+    assayDataElement(object, 'residuals') <- residuals
   message('Done.')
-  assayDataElement(obj, 'corrected') <- corrected
-  assayDataElement(obj, 'residuals') <- residuals
-  obj
-}
+  object
+})
 
 # a subfunction for performing the correction on one sample at a time could
 # be defined here.

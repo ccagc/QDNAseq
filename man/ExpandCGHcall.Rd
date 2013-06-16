@@ -1,28 +1,32 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  compareToReferenceReadCounts.R
+%  ExpandCGHcall.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{compareToReferenceReadCounts}
-\alias{compareToReferenceReadCounts}
+\name{ExpandCGHcall}
+\alias{ExpandCGHcall}
 
 
-\title{Divide binned read counts with those of reference samples}
+\alias{ExpandCGHcall,list,QDNAseqReadCounts-method}
+\alias{ExpandCGHcall,list,cghSeg-method}
+
+\title{Expands result from CGHcall to a QDNAseqReadCounts or CGHcall object}
 
 \usage{
-compareToReferenceReadCounts(obj, references)
+ExpandCGHcall(listcall, object, ...)
 }
 
 \description{
- Divide binned read counts with those of reference samples.
+ Expands result from CGHcall to a QDNAseqReadCounts or CGHcall object.
 }
 
 \arguments{
-  \item{obj}{...}
-  \item{references}{...}
+  \item{listcall}{...}
+  \item{object}{...}
+  \item{...}{...}
 }
 
 \value{

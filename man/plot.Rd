@@ -1,28 +1,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  poolReadCounts.R
+%  plot-methods.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{poolReadCounts}
-\alias{poolReadCounts}
+\name{plot}
+\alias{plot}
 
 
-\title{Pools binned read counts across samples}
+\alias{plot,QDNAseqReadCounts,missing-method}
+
+\title{Plot copy number profile}
 
 \usage{
-poolReadCounts(obj, samples)
+plot(x, y, ...)
 }
 
 \description{
- Pools binned read counts across samples.
+ Plot copy number profile.
 }
 
 \arguments{
-  \item{obj}{...}
-  \item{samples}{...}
+  \item{x}{...}
+  \item{y}{...}
+  \item{...}{...}
 }
 
 \value{

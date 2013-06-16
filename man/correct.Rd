@@ -1,19 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  correctReadCounts.R
+%  correct.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{correctReadCounts}
-\alias{correctReadCounts}
+\name{correct}
+\alias{correct}
 
+
+\alias{correct,QDNAseqReadCounts-method}
 
 \title{Correct binned read counts for GC content and mappability}
 
 \usage{
-correctReadCounts(obj, span=0.65, family="symmetric", plotting=FALSE, ...)
+correct(object, span=0.65, family="symmetric", keepCounts=TRUE, storeResiduals=TRUE, ...)
 }
 
 \description{
@@ -21,11 +23,12 @@ correctReadCounts(obj, span=0.65, family="symmetric", plotting=FALSE, ...)
 }
 
 \arguments{
-  \item{obj}{...}
+  \item{object}{...}
   \item{span}{...}
   \item{family}{...}
-  \item{plotting}{...}
-  \item{...}{Not used.}
+  \item{keepCounts}{...}
+  \item{storeResiduals}{...}
+  \item{...}{Further aguments to loess.}
 }
 
 \value{

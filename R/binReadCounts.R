@@ -73,7 +73,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   if (blacklistedBins == 'flag')
     condition <- condition & bins$blacklist == 0
   bins$filter <- condition
-  new('qdnaseq', bins=bins, counts=counts, phenodata=phenodata)
+  new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 
 
@@ -129,9 +129,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
-  while((linkTarget <- Sys.readlink(bamfile)) != '') {
-    bamfile <- linkTarget
-  }
+  bamfile <- normalizePath(bamfile)
   readCountCache <- list(bamfile=bamfile, isPaired=isPaired,
     isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
     hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,

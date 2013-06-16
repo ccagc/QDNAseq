@@ -1,20 +1,48 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IMPORTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-importFrom("Biobase", "pData")
-importFrom("Biobase", "pData<-")
+import(Biobase)
+import(CGHbase)
+import(CGHcall)
 
-importFrom("CGHbase", "copynumber")
-importFrom("CGHbase", "chromosomes")
-importFrom("CGHbase", "bpstart")
-importFrom("CGHbase", "make_cghRaw")
+importFrom('DNAcopy', 'CNA')
+importFrom('DNAcopy', 'segment')
+importFrom('DNAcopy', 'smooth.CNA')
 
-importFrom("DNAcopy", "CNA")
-importFrom("DNAcopy", "segment")
-importFrom("DNAcopy", "smooth.CNA")
+importFrom('matrixStats', 'madDiff')
+
+importFrom('R.cache', 'loadCache')
+importFrom('R.cache', 'saveCache')
+
+importFrom('R.utils', 'downloadFile')
+
+importFrom('Rsamtools', 'scanBam')
+importFrom('Rsamtools', 'ScanBamParam')
+importFrom('Rsamtools', 'scanBamFlag')
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-exportPattern("^[[:alpha:]]+")
+#exportPattern('^[[:alpha:]]+')
+
+export('addPhenodata')
+export('applyFilters')
+export('binReadCounts')
+export('CGHcall')
+export('compareToReference')
+export('correct')
+export('getBins')
+export('ExpandCGHcall')
+export('makeCgh')
+export('normalize')
+export('plot')
+export('poolRuns')
+export('postsegnormalize')
+export('segmentData')
+
+export('chromosomes')
+
+exportClasses('QDNAseqReadCounts')
+
+# EOF

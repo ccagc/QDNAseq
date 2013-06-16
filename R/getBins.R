@@ -53,13 +53,12 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
     paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.',
     genome.name, '.', binsize, 'kbp.rds', sep='')
   localfile <- tempfile()
-  error <- TRUE
-  try({
+  tryCatch({
     result <- downloadFile(remotefile, localfile)
-    error <- FALSE
-  }, silent=TRUE)
-  if (error || is.null(result))
-    stop('not found. Please generate them first.')
+  }, error=function(e) {
+    message(' not found. Please generate them first.')
+    stop(e)
+  })
   bins <- readRDS(localfile)
   file.remove(localfile)
   if (cache) {
@@ -133,6 +132,25 @@ createBins <- function(binsize, genome='hg19') {
     sep='')
   bins
 }
+
+
+# library(BSgenome.Hsapiens.UCSC.hg19)
+calculateBasesAndGC <- function(bins) {
+  get.bin.gc <- function(x) {
+    seq <- BSgenome::getSeq(Hsapiens, paste('chr', x['chromosome'], sep=''),
+      as.integer(x['start']), as.integer(x['end']))
+    acgt <- gsub('[^ACGT]', '', seq)
+    cg <- gsub('[^CG]', '', acgt)
+    c(nchar(acgt) / nchar(seq), nchar(cg) / nchar(acgt))
+  }
+  bins[,c('bases', 'gc')] <- apply(bins, 1, get.bin.gc)
+  bins
+}
+
+calculateMappability <- function(bins, bigWigAverageOverBed, bigWigs) {
+
+}
+
 
 # add functions for calculating for each bin:
 # - GC content

@@ -1,19 +1,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  segmentDataWithWeights.R
+%  segmentData.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{segmentDataWithWeights}
-\alias{segmentDataWithWeights}
+\name{segmentData}
+\alias{segmentData}
 
+
+\alias{segmentData,QDNAseqReadCounts,logical-method}
+\alias{segmentData,cghRaw,missing-method}
 
 \title{Segments and calls total copy numbers}
 
 \usage{
-segmentDataWithWeights(input, weights=TRUE, ...)
+segmentData(object, weights, ...)
 }
 
 \description{
@@ -21,7 +24,7 @@ segmentDataWithWeights(input, weights=TRUE, ...)
 }
 
 \arguments{
-  \item{input}{...}
+  \item{object}{...}
   \item{weights}{Either \code{\link[base:logical]{TRUE}} or a vector of weights. If \code{\link[base:logical]{TRUE}},
     the 1000 Genomes residuals are used as weights.}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}

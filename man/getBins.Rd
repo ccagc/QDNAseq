@@ -34,7 +34,7 @@ getBins(binsize, genome="hg19", cache=TRUE, force=FALSE)
 \author{Ilari Scheinin}
 
 \seealso{
-  \code{\link{createBins}}().
+  \code{\link{createBins}}.
 }
 
 

@@ -1,6 +1,9 @@
 #########################################################################/**
-# @RdocFunction normalizeReadCounts
+# @RdocFunction normalize
 #
+# @alias normalize,QDNAseqReadCounts-method
+# @alias normalize,cghRaw-method
+# 
 # @title "Normalizes binned read counts"
 #
 # @synopsis
@@ -10,10 +13,11 @@
 # }
 #
 # \arguments{
-#   \item{obj}{...}
+#   \item{object}{...}
 #   \item{method}{A @character string specifying ...}
 #   \item{logTransform}{If @TRUE, ..., otherwise, ...}
 #   \item{smoothOutliers}{If @TRUE, ..., otherwise, ...}
+#   \item{...}{Further arguments to DNAcopy::smooth.CNA}
 # }
 #
 # \value{
@@ -28,14 +32,15 @@
 #
 #*/#########################################################################
 ## Adapted from package CGHcall
-normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
-  smoothOutliers=TRUE) {
-  if ('filter' %in% colnames(fData(obj))) {
-    condition <- fData(obj)$filter
+setMethod('normalize', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, method='median', smoothOutliers=TRUE,
+  logTransform=TRUE, ...) {
+  if ('filter' %in% colnames(fData(object))) {
+    condition <- fData(object)$filter
   } else {
-    condition <- rep(TRUE, times=nrow(obj))
+    condition <- rep(TRUE, times=nrow(object))
   }
-  copynumber <- assayDataElement(obj, 'corrected')[condition, , drop=FALSE]
+  copynumber <- assayDataElement(object, 'corrected')[condition, , drop=FALSE]
   if (logTransform)
     copynumber <- log2(copynumber + 1)
   if (method == 'none') {
@@ -54,16 +59,23 @@ normalizeReadCounts <- function(obj, method='median', logTransform=TRUE,
   }
   if (smoothOutliers) {
     message('Smoothing outliers ...')
-    CNA.object <- smooth.CNA(CNA(copynumber, fData(obj)[condition,
-      'chromosome'], fData(obj)[condition, 'start'], data.type='logratio',
-      presorted=TRUE))
+    CNA.object <- smooth.CNA(CNA(copynumber, fData(object)[condition,
+      'chromosome'], fData(object)[condition, 'start'], data.type='logratio',
+      presorted=TRUE), ...)
     copynumber <- as.matrix(CNA.object[, -(1:2), drop=FALSE])
   }
-  copynumber2 <- matrix(nrow=nrow(obj), ncol=ncol(obj),
-    dimnames=list(featureNames(obj), sampleNames(obj)))
+  copynumber2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+    dimnames=list(featureNames(object), sampleNames(object)))
   copynumber2[rownames(copynumber), ] <- copynumber
-  assayDataElement(obj, 'copynumber') <- copynumber2
-  obj
-}
+  assayDataElement(object, 'copynumber') <- copynumber2
+  object
+})
+
+setMethod('normalize', signature=c(object='cghRaw'),
+  definition=function(object, method='median', smoothOutliers=TRUE,
+  logTransform=TRUE, ...) {
+  CGHcall::normalize(input=object, method=method,
+    smoothOutliers=smoothOutliers, ...)
+})
 
 # EOF
