@@ -17,7 +17,7 @@
 #   \item{mappability}{...}
 #   \item{tgr}{...}
 #   \item{bases}{...}
-#   \item{allosomes}{...}
+#   \item{autosomesOnly}{...}
 #   \item{force}{...}
 # }
 #
@@ -33,8 +33,9 @@
 #
 # @keyword IO
 #*/#########################################################################
-setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'), definition=function(object,
-  blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE,
+setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, blacklist=0, mappability=50, tgr=2, bases=100,
+  autosomesOnly=TRUE,
   force=FALSE) {
   if ('segmented' %in% assayDataElementNames(object) & !force)
     stop('Data has already been segmented. Changing the filters will ',
@@ -58,20 +59,19 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'), definition=fu
   condition <- condition & fData(object)$mappability >= mappability
   condition <- condition & abs(fData(object)$tgr) <= tgr*sd(fData(object)$tgr,
     na.rm=TRUE)
-  if (allosomes) {
+  if (autosomesOnly) {
     condition2 <- fData(object)$chromosome %in% as.character(1:22)
     condition <- condition & condition2
-    message('Excluding autosomes.')
+    message('Only including autosomes 1-22.')
   } else {
     condition2 <- rep(TRUE, times=nrow(object))
   }
   fData(object)$filter <- condition
-  message('Total bins:\t', format(nrow(object[condition2,]),
-    trim=TRUE, big.mark=','))
-  message('Bins filtered:\t', format(sum(!condition[condition2], na.rm=TRUE),
-    trim=TRUE, big.mark=','))
-  message('Final bins:\t', format(sum(condition[condition2], na.rm=TRUE),
-    trim=TRUE, big.mark=','))
+  message(paste(c('Total bins:', 'Bins filtered:', 'Final bins:'),
+    format(c(nrow(object[condition2,]),
+    sum(!condition[condition2], na.rm=TRUE),
+    sum(condition[condition2], na.rm=TRUE)),
+    big.mark=','), sep='\t', collapse='\n'))
   object
 })
 

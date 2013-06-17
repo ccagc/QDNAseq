@@ -10,10 +10,13 @@
 \alias{createBins}
 
 
+\alias{calculateMappability}
+\alias{calculateBlacklist}
+
 \title{Builds bin annotation data for a particular bin size}
 
 \usage{
-createBins(binsize, genome="hg19")
+createBins(bsgenome, binsize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
 }
 
 \description{
@@ -21,8 +24,11 @@ createBins(binsize, genome="hg19")
 }
 
 \arguments{
+  \item{bsgenome}{A BSgenome ...}
   \item{binsize}{A \code{\link[base]{numeric}} scalar specifying ...}
-  \item{genome}{A \code{\link[base]{character}} string ...}
+  \item{ignoreUnderscored}{Whether to ignore sequences with underscores
+    in their names ...}
+  \item{ignoreMitochondria}{Wheter to ignore mitochondrial DNA  ...}
 }
 
 \value{

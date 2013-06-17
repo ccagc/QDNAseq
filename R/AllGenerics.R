@@ -1,7 +1,7 @@
 #setGeneric('plot', function(x, y) standardGeneric('plot'))
 
 setGeneric('applyFilters', function(object, blacklist=0, mappability=50,
-  tgr=2, bases=100, allosomes=TRUE, force=FALSE)
+  tgr=2, bases=100, autosomesOnly=TRUE, force=FALSE)
    standardGeneric('applyFilters'))
 setGeneric('CGHcall', function(object, ...)
   standardGeneric('CGHcall'))

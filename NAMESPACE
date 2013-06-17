@@ -41,7 +41,14 @@ export('poolRuns')
 export('postsegnormalize')
 export('segmentData')
 
+export('createBins')
+export('calculateMappability')
+export('calculateBlacklist')
+
+
 export('chromosomes')
+export('bpstart')
+export('bpend')
 
 exportClasses('QDNAseqReadCounts')
 

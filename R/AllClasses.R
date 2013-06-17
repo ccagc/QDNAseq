@@ -2,6 +2,8 @@
 # @RdocClass QDNAseqReadCounts
 #
 # @alias chromosomes,QDNAseqReadCounts-method
+# @alias bpstart,QDNAseqReadCounts-method
+# @alias bpend,QDNAseqReadCounts-method
 #
 # @title "Container for qdnaseq data"
 # 

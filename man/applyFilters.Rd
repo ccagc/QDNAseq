@@ -15,7 +15,7 @@
 \title{Adjusts the filter on which bins are used}
 
 \usage{
-applyFilters(object, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TRUE,
+applyFilters(object, blacklist=0, mappability=50, tgr=2, bases=100, autosomesOnly=TRUE,
   force=FALSE)
 }
 
@@ -29,7 +29,7 @@ applyFilters(object, blacklist=0, mappability=50, tgr=2, bases=100, allosomes=TR
   \item{mappability}{...}
   \item{tgr}{...}
   \item{bases}{...}
-  \item{allosomes}{...}
+  \item{autosomesOnly}{...}
   \item{force}{...}
 }
 

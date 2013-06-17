@@ -76,6 +76,9 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
 #########################################################################/**
 # @RdocFunction createBins
 #
+# @alias calculateMappability
+# @alias calculateBlacklist
+#
 # @title "Builds bin annotation data for a particular bin size"
 #
 # @synopsis
@@ -85,8 +88,11 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
 # }
 #
 # \arguments{
+#   \item{bsgenome}{A BSgenome ...}
 #   \item{binsize}{A @numeric scalar specifying ...}
-#   \item{genome}{A @character string ...}
+#   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
+#     in their names ...}
+#   \item{ignoreMitochondria}{Wheter to ignore mitochondrial DNA  ...}
 # }
 #
 # \value{
@@ -99,63 +105,123 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
 #   @see "getBins".
 # }
 #*/#########################################################################
-createBins <- function(binsize, genome='hg19') {
-  genome.build <- as.integer(gsub('[^0-9]', '', genome))
-  if (genome.build %in% c(19, 37)) {
-    # this should not be hard-coded but read from some package
-    genome <- c(249250621, 243199373, 198022430, 191154276, 180915260,
-      171115067, 159138663, 146364022, 141213431, 135534747, 135006516,
-      133851895, 115169878, 107349540, 102531392, 90354753, 81195210,
-      78077248, 59128983, 63025520, 48129895, 51304566, 155270560, 59373566)
-    names(genome) <- c(1:22, 'X', 'Y')
-  } else if (genome.build %in% c(18, 36)) {
-    genome <- c(247249719, 242951149, 199501827, 191273063, 180857866,
-      170899992, 158821424, 146274826, 140273252, 135374737, 134452384,
-      132349534, 114142980, 106368585, 100338915, 88827254, 78774742,
-      76117153, 63811651, 62435964, 46944323, 49691432, 154913754, 57772954)
-    names(genome) <- c(1:22, 'X', 'Y')
-  } else {
-    stop('Unknown genome: ', genome)
-  }
+createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
+  ignoreMitochondria=TRUE) {
+  chrs <- GenomicRanges::seqnames(bsgenome)
+  if (ignoreUnderscored)
+    chrs <- chrs[-grep('_', chrs)]
+  if (ignoreMitochondria)
+    chrs <- chrs[-grep('^(chr)?M(T)?$', chrs)]
+  lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]
   start <- end <- integer()
-  for (chromosome in names(genome)) {
-    chromosome.size <- genome[chromosome]
-    chromosome.starts <- seq(from=1, to=chromosome.size, by=binsize*1000)
-    chromosome.ends <- chromosome.starts + binsize*1000 - 1
-    chromosome.ends[length(chromosome.ends)] <- chromosome.size
-    start <- c(start, chromosome.starts)
-    end <- c(end, chromosome.ends)
+  bases <- gc <- numeric()
+  for (chr in chrs) {
+    message('Processing ', chr, ' ...', appendLF=FALSE)
+    chr.size <- lengths[chr]
+    chr.starts <- seq(from=1, to=chr.size, by=binsize*1000L)
+    chr.ends <- chr.starts + binsize*1000L - 1L
+    chr.ends[length(chr.ends)] <- chr.size
+    chr.seq <- BSgenome::getSeq(bsgenome, chr, as.character=TRUE)
+    bin.seq <- substring(chr.seq, first=chr.starts, last=chr.ends)
+    acgt <- gsub('[^ACGT]', '', bin.seq)
+    cg <- gsub('[^CG]', '', acgt)
+    chr.bases <- nchar(acgt) / (binsize*1000L) * 100
+    chr.gc <- nchar(cg) / nchar(acgt) * 100
+    start <- c(start, chr.starts)
+    end <- c(end, chr.ends)
+    bases <- c(bases, chr.bases)
+    gc <- c(gc, chr.gc)
+    message()
   }
-  bins <- data.frame(chromosome=rep(names(genome), times=ceiling(genome /
-    (binsize*1000))), start, end, stringsAsFactors=FALSE)
+  gc[is.nan(gc)] <- NA
+  bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths /
+    (binsize*1000L))), start, end, bases, gc, stringsAsFactors=FALSE)
+  bins$chromosome <- sub('^chr', '', bins$chromosome)
   rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end,
     sep='')
   bins
 }
 
+calculateMappability <- function(bins, bigWigFile,
+  bigWigAverageOverBed='bigWigAverageOverBed') {
+  message('Calculating mappabilities per bin from file ', bigWigFile, ' ...',
+    appendLF=FALSE)
+  binbed <- tempfile(fileext='.bed')
+  mapbed <- tempfile(fileext='.bed')
+  bins <- bins[,c('chromosome', 'start', 'end')]
+  bins$chromosome <- paste('chr', bins$chromosome, sep='')
+  bins$start <- bins$start - 1
+  bins$name <- 1:nrow(bins)
+  scipen <- options('scipen')
+  options(scipen=10)
+  write.table(bins, binbed, quote=FALSE, sep='\t', row.names=FALSE,
+    col.names=FALSE)
+  options(scipen=scipen)
+  system(paste(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
+    '" -bedOut="', mapbed, '" /dev/null', sep=''))
+  map <- read.table(mapbed, sep='\t', as.is=TRUE)
+  map$V5 * 100
+}
 
-# library(BSgenome.Hsapiens.UCSC.hg19)
-calculateBasesAndGC <- function(bins) {
-  get.bin.gc <- function(x) {
-    seq <- BSgenome::getSeq(Hsapiens, paste('chr', x['chromosome'], sep=''),
-      as.integer(x['start']), as.integer(x['end']))
-    acgt <- gsub('[^ACGT]', '', seq)
-    cg <- gsub('[^CG]', '', acgt)
-    c(nchar(acgt) / nchar(seq), nchar(cg) / nchar(acgt))
+calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
+  message('Calculating overlaps per bin with BED files ', paste(bedFiles,
+    collapse=', '), ' ...', appendLF=FALSE)
+  beds <- list()
+  for (bed in bedFiles)
+    beds[[bed]] <- read.table(bed, sep='\t', as.is=TRUE)
+  combined <- beds[[1]]
+  if (length(beds) > 1)
+    for (i in 2:length(beds))
+      combined <- rbind(combined, beds[[i]])
+  combined <- combined[, 1:3]
+  colnames(combined) <- c('chromosome', 'start', 'end')
+  combined$chromosome <- sub('^chr', '', combined$chromosome)
+  combined <- combined[combined$chromosome %in% unique(bins$chromosome), ]
+  combined$chromosome[combined$chromosome=='X'] <- '23'
+  combined$chromosome[combined$chromosome=='Y'] <- '24'
+  combined$chromosome <- as.integer(combined$chromosome)
+  combined <- combined[!is.na(combined$chromosome), ]
+  combined$start <- combined$start + 1
+  combined <- combined[order(combined$chromosome, combined$start), ]
+  joined <- data.frame()
+  prev <- combined[1,]
+  for (i in 2:nrow(combined)) {
+    if (combined[i, 'chromosome'] != prev$chromosome ||
+      combined[i, 'start'] > (prev$end + 1)) {
+      joined <- rbind(joined, prev)
+      prev <- combined[i,]
+    } else {
+      prev$end <- max(prev$end, combined[i, 'end'])
+    }
   }
-  bins[,c('bases', 'gc')] <- apply(bins, 1, get.bin.gc)
-  bins
+  joined <- rbind(joined, prev)
+  bins$chromosome[bins$chromosome=='X'] <- '23'
+  bins$chromosome[bins$chromosome=='Y'] <- '24'
+  bins$chromosome <- as.integer(bins$chromosome)
+  overlap.counter <- function(x, joined) {
+    chr <- as.integer(x['chromosome'])
+    start <- as.integer(x['start'])
+    end <- as.integer(x['end'])
+    overlaps <- joined[joined$chromosome   == chr &
+                       joined$start        <= end &
+                       joined$end          >= start, ]
+    bases <- 0
+    for (i in rownames(overlaps))
+      bases <- bases + min(end, overlaps[i, 'end']) -
+        max(start, overlaps[i, 'start']) + 1
+    bases / (end - start + 1) * 100
+  }
+  if (ncpus > 1) {
+    snowfall::sfInit(parallel=TRUE, cpus=ncpus)
+    snowfall::sfExport(list=c('overlap.counter'))
+    blacklist <- snowfall::sfApply(bins, 1, overlap.counter, joined)
+    snowfall::sfStop()
+  } else {
+    blacklist <- apply(bins, 1, overlap.counter, joined)
+  }
+  blacklist
 }
 
-calculateMappability <- function(bins, bigWigAverageOverBed, bigWigs) {
-
-}
-
-
-# add functions for calculating for each bin:
-# - GC content
-# - mappability
-# - overlap with ENCODE blacklist
-# - 1000 Genomes residuals
+# 1000 Genomes residuals?
 
 # EOF
