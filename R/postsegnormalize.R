@@ -31,7 +31,7 @@
 setMethod('postsegnormalize', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, ...) {
   seg <- makeCgh(object)
-  psn <- postsegnormalize(seg, ...)
+  psn <- CGHcall::postsegnormalize(seg, ...)
   copynumber(object) <- copynumber(psn)
   segmented(object) <- segmented(psn)
   object

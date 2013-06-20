@@ -12,9 +12,9 @@
 # \arguments{
 #   \item{object}{A QDNAseqReadCounts object ...}
 #   \item{col}{...}
-#   \item{blacklist}{...}
 #   \item{mappability}{...}
-#   \item{tgr}{...}
+#   \item{blacklist}{...}
+#   \item{residual}{...}
 #   \item{bases}{...}
 #   \item{...}{Further arguments to points.}
 # }
@@ -27,10 +27,9 @@
 #
 # @keyword IO
 #*/#########################################################################
-setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts',
-  col='character', blacklist='numeric', mappability='numeric', tgr='numeric',
-  bases='numeric'), definition=function(object, col='red', blacklist=0,
-  mappability=50, tgr=2, bases=100, ...) {
+setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, col='red', mappability=50, blacklist=0,
+  residual=1, bases=100, ...) {
   condition <- condition <- rep(TRUE, times=nrow(object))
   if (!is.na(bases))
     condition <- condition & fData(object)$bases >= bases
@@ -38,9 +37,10 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts',
     condition <- condition & fData(object)$blacklist <= blacklist
   if (!is.na(mappability))
     condition <- condition & fData(object)$mappability >= mappability
-  if (!is.na(tgr))
-    condition <- condition & !is.na(fData(object)$tgr) &
-      abs(fData(object)$tgr) <= tgr*sd(fData(object)$tgr, na.rm=TRUE)
+  if (!is.na(residual))
+    condition <- condition & !is.na(fData(object)$residual) &
+      abs(fData(object)$residual) <= residual*sd(fData(object)$residual,
+      na.rm=TRUE)
   all.chrom <- chromosomes(object)
   all.chrom.lengths <- aggregate(bpend(object),
     by=list(chromosome=all.chrom), max)

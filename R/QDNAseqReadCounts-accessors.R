@@ -1,6 +1,6 @@
 setMethod('initialize', 'QDNAseqReadCounts', function(.Object, bins, counts,
   phenodata, ...) {
-  callNextMethod(.Object, featureData=AnnotatedDataFrame(bins),
+  callNextMethod(.Object, featureData=bins,
     assayData=assayDataNew(counts=counts),
     phenoData=AnnotatedDataFrame(phenodata), ...)
 })

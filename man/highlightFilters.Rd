@@ -13,7 +13,8 @@
 \title{Highlights data points in a plotted profile to evaluate filtering}
 
 \usage{
-highlightFilters(object, col, blacklist, mappability, tgr, bases, ...)
+highlightFilters(object, col="red", mappability=50, blacklist=0, residual=1, bases=100,
+  ...)
 }
 
 \description{
@@ -23,9 +24,9 @@ highlightFilters(object, col, blacklist, mappability, tgr, bases, ...)
 \arguments{
   \item{object}{A QDNAseqReadCounts object ...}
   \item{col}{...}
-  \item{blacklist}{...}
   \item{mappability}{...}
-  \item{tgr}{...}
+  \item{blacklist}{...}
+  \item{residual}{...}
   \item{bases}{...}
   \item{...}{Further arguments to points.}
 }

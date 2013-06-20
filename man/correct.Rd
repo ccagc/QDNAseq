@@ -15,7 +15,8 @@
 \title{Correct binned read counts for GC content and mappability}
 
 \usage{
-correct(object, span=0.65, family="symmetric", keepCounts=TRUE, storeResiduals=TRUE, ...)
+correct(object, span=0.65, family="symmetric", adjustIncompletes=TRUE, keepCounts=TRUE,
+  storeResiduals=TRUE, ...)
 }
 
 \description{
@@ -26,6 +27,7 @@ correct(object, span=0.65, family="symmetric", keepCounts=TRUE, storeResiduals=T
   \item{object}{...}
   \item{span}{...}
   \item{family}{...}
+  \item{adjustIncompletes}{...}
   \item{keepCounts}{...}
   \item{storeResiduals}{...}
   \item{...}{Further aguments to loess.}

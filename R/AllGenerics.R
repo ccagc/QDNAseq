@@ -1,25 +1,25 @@
 #setGeneric('plot', function(x, y) standardGeneric('plot'))
 
-setGeneric('applyFilters', function(object, blacklist=0, mappability=50,
-  tgr=2, bases=100, autosomesOnly=TRUE, force=FALSE)
+setGeneric('applyFilters', function(object, mappability=50, blacklist=0,
+  residual=1, bases=100, filterAllosomes=TRUE, force=FALSE)
    standardGeneric('applyFilters'))
 setGeneric('CGHcall', function(object, ...)
   standardGeneric('CGHcall'))
 setGeneric('compareToReference', function(object, references)
   standardGeneric('compareToReference'))
 setGeneric('correct', function(object, span=0.65, family='symmetric',
-  keepCounts=TRUE, storeResiduals=TRUE, ...) standardGeneric('correct'))
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...)
+  standardGeneric('correct'))
 setGeneric('ExpandCGHcall', function(listcall, object, ...)
   standardGeneric('ExpandCGHcall'))
-setGeneric('highlightFilters', function(object, col, blacklist, mappability,
-  tgr, bases, ...) standardGeneric('highlightFilters'))
+setGeneric('highlightFilters', function(object, col='red', mappability=50, blacklist=0, residual=1, bases=100, ...) standardGeneric('highlightFilters'))
 setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))
 setGeneric('normalize', function(object, method='median', smoothOutliers=TRUE,
   logTransform=TRUE, ...) standardGeneric('normalize'))
 setGeneric('poolRuns', function(object, samples) standardGeneric('poolRuns'))
 setGeneric('postsegnormalize', function(object, ...)
   standardGeneric('postsegnormalize'))
-setGeneric('segmentData', function(object, weights, ...)
+setGeneric('segmentData', function(object, weights=TRUE, ...)
   standardGeneric('segmentData'))
 
 

@@ -15,6 +15,7 @@
 #   \item{object}{...}
 #   \item{span}{...}
 #   \item{family}{...}
+#   \item{adjustIncompletes}{...}
 #   \item{keepCounts}{...}
 #   \item{storeResiduals}{...}
 #   \item{...}{Further aguments to loess.}
@@ -31,12 +32,14 @@
 # }
 #*/#########################################################################
 
-#setMethod('correct', signature=c(object='QDNAseqReadCounts', span='numeric',
-#  family='character', keepCounts='logical', storeResiduals='logical'),
 setMethod('correct', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  keepCounts=TRUE, storeResiduals=TRUE, ...) {
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...) {
   counts <- assayDataElement(object, 'counts')
+  if (adjustIncompletes) {
+    counts <- counts / fData(object)$bases * 100
+    counts[fData(object)$bases == 0] <- 0
+  }
   message('Performing correction for GC content and mappability:')
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
@@ -64,6 +67,7 @@ setMethod('correct', signature=c(object='QDNAseqReadCounts'),
   median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
     mappability=mappability[condition]), median)
   median.counts <- median.counts[!is.na(median.counts$gc), ]
+  median.counts <- median.counts[!is.na(median.counts$mappability), ]
   rownames(median.counts) <- paste(median.counts$gc, '-',
     median.counts$mappability, sep='')
   # if (plotting) {
@@ -77,10 +81,10 @@ setMethod('correct', signature=c(object='QDNAseqReadCounts'),
   # }
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
-      message('\tSkipping correction for sample ', colnames(counts)[i], '...')
+      message('  Skipping correction for sample ', colnames(counts)[i], '...')
       next
     }
-    message('\tUsing span=', span[i], '\tand family=', family[i],
+    message('  Using span=', span[i], '\tand family=', family[i],
       ',\tcorrecting sample ', colnames(counts)[i], '...')
     vals <- median.counts[, i+2L]
     corvals <- counts[, i]

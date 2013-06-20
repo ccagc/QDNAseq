@@ -33,7 +33,7 @@ setMethod('ExpandCGHcall', signature=
   c(listcall='list', object='QDNAseqReadCounts'),
   definition=function(listcall, object, ...) {
   seg <- makeCgh(object)
-  cgh <- ExpandCGHcall(listcall, seg)
+  cgh <- CGHcall::ExpandCGHcall(listcall, seg)
   calls(object) <- calls(cgh)
   probdloss(object) <- probdloss(cgh)
   probloss(object) <- probloss(cgh)

@@ -30,7 +30,7 @@
 setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
   samples='character'), definition=function(object, samples) {
   phenodata <- pData(object)
-  bins <- fData(object)
+  bins <- featureData(object)
   counts <- assayDataElement(object, 'counts')
   if ('corrected' %in% assayDataElementNames(object))
     corrected <- assayDataElement(object, 'corrected')

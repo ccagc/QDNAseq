@@ -14,7 +14,7 @@
 
 \usage{
 binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile=NULL,
-  allosomeBins="flag", incompleteBins="flag", blacklistedBins="flag", ...)
+  filterAllosomes=TRUE, ...)
 }
 
 \description{
@@ -28,9 +28,7 @@ binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile
   \item{ext}{...}
   \item{bamnames}{...}
   \item{phenofile}{...}
-  \item{allosomeBins}{...}
-  \item{incompleteBins}{...}
-  \item{blacklistedBins}{...}
+  \item{filterAllosomes}{...}
   \item{...}{Additional arguments passed to \code{\link{.binReadCountsPerSample}}}
 }
 

@@ -15,7 +15,7 @@
 # \arguments{
 #   \item{object}{...}
 #   \item{weights}{Either @TRUE or a vector of weights. If @TRUE,
-#     the 1000 Genomes residuals are used as weights.}
+#     loess residuals are used as weights.}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -31,21 +31,30 @@
 # }
 #
 #*/#########################################################################
-setMethod('segmentData', signature=c(object='QDNAseqReadCounts',
-  weights='logical'), definition=function(object, weights=TRUE, ...) {
+setMethod('segmentData', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, weights=TRUE, ...) {
   if (length(weights) == 1L & weights) {
-    if (!'tgr' %in% colnames(fData(object)))
-      stop('1000 Genomes residuals not found.')
-    tgr <- fData(object)[, 'tgr']
-    if (any(is.na(tgr[binFilter(object)]))) {
-      message('Filtering out ', sum(is.na(tgr[binFilter(object)])),
-        ' bins with missing 1000 Genomes residuals.')
-      binFilter(object) <- binFilter(object) & !is.na(tgr)
+    if ('residual' %in% colnames(fData(object))) {
+      message('Using median loess residuals of control data set as ',
+        'segmentation weights.')
+      residual <- fData(object)$residual
+    } else if ('residuals' %in% assayDataElementNames(object)) {
+      message('Using median loess residuals as segmentation weights.')
+      residual <- apply(assayDataElement(object, 'residuals'), 1, median,
+        na.rm=TRUE)
+    } else {
+      stop('No loess residuals found. Please provide a vector of weights ',
+        'or specify weights=FALSE.')
     }
-    tgr <- tgr[binFilter(object)]
-    tgr <- abs(tgr)
-    tgr[tgr == 0] <- min(tgr[tgr != 0], na.rm=TRUE)
-    weights <- 1/tgr
+    if (any(is.na(residual[binFilter(object)]))) {
+      message('Filtering out ', sum(is.na(residual[binFilter(object)])),
+        ' bins with missing residuals.')
+      binFilter(object) <- binFilter(object) & !is.na(residual)
+    }
+    residual <- residual[binFilter(object)]
+    residual <- abs(residual)
+    residual[residual == 0] <- min(residual[residual != 0], na.rm=TRUE)
+    weights <- 1/residual
   }
   copynumber <- copynumber(object)[binFilter(object), , drop=FALSE]
   CNA.object <- CNA(genomdat=copynumber, chrom=chromosomes(object)[binFilter(object)],
@@ -75,7 +84,7 @@ setMethod('segmentData', signature=c(object='QDNAseqReadCounts',
   object
 })
 
-setMethod('segmentData', signature=c(object='cghRaw', weights='missing'),
+setMethod('segmentData', signature=c(object='cghRaw'),
   definition=function(object, weights, ...) {
   CGHcall::segmentData(object, ...)
 })

@@ -16,9 +16,7 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{allosomeBins}{...}
-#   \item{incompleteBins}{...}
-#   \item{blacklistedBins}{...}
+#   \item{filterAllosomes}{...}
 #   \item{...}{Additional arguments passed to @see ".binReadCountsPerSample"}
 # }
 #
@@ -34,7 +32,8 @@
 #
 # @keyword IO
 #*/#########################################################################
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NULL, phenofile=NULL, allosomeBins='flag', incompleteBins='flag', blacklistedBins='flag', ...) {
+binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
+  bamnames=NULL, phenofile=NULL, filterAllosomes=TRUE, ...) {
   if (is.null(bamfiles))
     bamfiles <- list.files(path, pattern=paste(ext, '$', sep=''))
   if (length(bamfiles) == 0L)
@@ -60,18 +59,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam', bamnames=NUL
   }
   phenodata$reads <- colSums(counts)
   condition <- condition <- rep(TRUE, times=nrow(bins))
-  if (allosomeBins == 'flag')
+  if (filterAllosomes) {
+    message('Flagging allosomes for filtering.')
     condition <- condition & bins$chromosome %in% as.character(1:22)
-  if (incompleteBins == 'flag') {
-    condition <- condition & bins$bases == 100
-  } else if (incompleteBins == 'adjust') {
-    ## Theoretically, BWA might place reads where reference is all Ns,
-    ## we don't want to adjust those.
-    counts[bins$bases == 0] <- NA
-    counts <- counts / bins$bases * 100
   }
-  if (blacklistedBins == 'flag')
-    condition <- condition & bins$blacklist == 0
   bins$filter <- condition
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }

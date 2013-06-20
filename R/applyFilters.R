@@ -13,11 +13,11 @@
 #
 # \arguments{
 #   \item{object}{A QDNAseqReadCounts object ...}
-#   \item{blacklist}{...}
 #   \item{mappability}{...}
-#   \item{tgr}{...}
+#   \item{blacklist}{...}
+#   \item{residual}{...}
 #   \item{bases}{...}
-#   \item{autosomesOnly}{...}
+#   \item{filterAllosomes}{...}
 #   \item{force}{...}
 # }
 #
@@ -34,9 +34,8 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, blacklist=0, mappability=50, tgr=2, bases=100,
-  autosomesOnly=TRUE,
-  force=FALSE) {
+  definition=function(object, mappability=50, blacklist=0, residual=1,
+  bases=100, filterAllosomes=TRUE, force=FALSE) {
   if ('segmented' %in% assayDataElementNames(object) & !force)
     stop('Data has already been segmented. Changing the filters will ',
       'remove segmentation (and possible calling) results. Please specify ',
@@ -54,19 +53,25 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
       assayDataElement(object, 'probamp') <- NULL
   }
   condition <- condition <- rep(TRUE, times=nrow(object))
-  condition <- condition & fData(object)$bases >= bases
-  condition <- condition & fData(object)$blacklist <= blacklist
-  condition <- condition & fData(object)$mappability >= mappability
-  condition <- condition & abs(fData(object)$tgr) <= tgr*sd(fData(object)$tgr,
-    na.rm=TRUE)
-  if (autosomesOnly) {
+  if (!is.na(bases))
+    condition <- condition & fData(object)$bases >= bases
+  if (!is.na(blacklist))
+    condition <- condition & fData(object)$blacklist <= blacklist
+  if (!is.na(mappability))
+    condition <- condition & fData(object)$mappability >= mappability
+  if (!is.na(residual))
+    condition <- condition & abs(fData(object)$residual) <=
+      residual*sd(fData(object)$residual, na.rm=TRUE)
+  if (filterAllosomes) {
     condition2 <- fData(object)$chromosome %in% as.character(1:22)
     condition <- condition & condition2
-    message('Only including autosomes 1-22.')
+    message('Flagging allosomes for filtering. ',
+      'Statistics for autosomes 1-22:')
   } else {
     condition2 <- rep(TRUE, times=nrow(object))
   }
   fData(object)$filter <- condition
+  message('Statistics for all chromosomes:')
   message(paste(c('Total bins:', 'Bins filtered:', 'Final bins:'),
     format(c(nrow(object[condition2,]),
     sum(!condition[condition2], na.rm=TRUE),

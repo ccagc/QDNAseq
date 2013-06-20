@@ -33,7 +33,8 @@ setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
    'End'
   assayDataElement(object, 'counts') <- NULL
   assayDataElement(object, 'corrected') <- NULL
-  assayDataElement(object, 'residuals') <- NULL
+  if ('residuals' %in% assayDataElementNames(object))
+    assayDataElement(object, 'residuals') <- NULL
   if ('calls' %in% assayDataElementNames(object)) {
     className <- 'cghCall'
   } else if ('segmented' %in% assayDataElementNames(object)) {

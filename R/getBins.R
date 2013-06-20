@@ -115,8 +115,10 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
   lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]
   start <- end <- integer()
   bases <- gc <- numeric()
+  message('Creating bins of ', binsize, ' kbp for genome ',
+    substitute(bsgenome))
   for (chr in chrs) {
-    message('Processing ', chr, ' ...', appendLF=FALSE)
+    message('  Processing ', chr, ' ...', appendLF=FALSE)
     chr.size <- lengths[chr]
     chr.starts <- seq(from=1, to=chr.size, by=binsize*1000L)
     chr.ends <- chr.starts + binsize*1000L - 1L
@@ -144,7 +146,8 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
 
 calculateMappability <- function(bins, bigWigFile,
   bigWigAverageOverBed='bigWigAverageOverBed') {
-  message('Calculating mappabilities per bin from file ', bigWigFile, ' ...',
+  message('Calculating mappabilities per bin from file\n  ', bigWigFile,
+    '\n  ',
     appendLF=FALSE)
   binbed <- tempfile(fileext='.bed')
   mapbed <- tempfile(fileext='.bed')
@@ -164,8 +167,8 @@ calculateMappability <- function(bins, bigWigFile,
 }
 
 calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
-  message('Calculating overlaps per bin with BED files ', paste(bedFiles,
-    collapse=', '), ' ...', appendLF=FALSE)
+  message('Calculating overlaps per bin with BED files \n  ', paste(bedFiles,
+    collapse='\n  '), '\n  ...', appendLF=FALSE)
   beds <- list()
   for (bed in bedFiles)
     beds[[bed]] <- read.table(bed, sep='\t', as.is=TRUE)
@@ -219,6 +222,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   } else {
     blacklist <- apply(bins, 1, overlap.counter, joined)
   }
+  message()
   blacklist
 }
 

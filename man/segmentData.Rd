@@ -26,7 +26,7 @@ segmentData(object, weights, ...)
 \arguments{
   \item{object}{...}
   \item{weights}{Either \code{\link[base:logical]{TRUE}} or a vector of weights. If \code{\link[base:logical]{TRUE}},
-    the 1000 Genomes residuals are used as weights.}
+    loess residuals are used as weights.}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 
