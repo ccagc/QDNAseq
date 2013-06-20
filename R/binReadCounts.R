@@ -64,6 +64,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     condition <- condition & bins$chromosome %in% as.character(1:22)
   }
   bins$filter <- condition
+  varMetadata(bins)['filter','labelDescription'] <-
+    'Whether to include the bin in subsequent analyses'
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 

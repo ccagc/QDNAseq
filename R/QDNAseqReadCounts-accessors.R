@@ -1,5 +1,7 @@
 setMethod('initialize', 'QDNAseqReadCounts', function(.Object, bins, counts,
   phenodata, ...) {
+  if (class(bins) == 'data.frame')
+    bins <- AnnotatedDataFrame(bins)
   callNextMethod(.Object, featureData=bins,
     assayData=assayDataNew(counts=counts),
     phenoData=AnnotatedDataFrame(phenodata), ...)
@@ -170,7 +172,5 @@ setReplaceMethod('probamp', signature=c(object='QDNAseqReadCounts',
     assayDataElementReplace(object, 'probamp', value2)
   }
 })
-
-## adapted from CGHcall:
 
 # EOF

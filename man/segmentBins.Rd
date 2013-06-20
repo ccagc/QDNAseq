@@ -6,17 +6,16 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{segmentData}
-\alias{segmentData}
+\name{segmentBins}
+\alias{segmentBins}
 
 
-\alias{segmentData,QDNAseqReadCounts,logical-method}
-\alias{segmentData,cghRaw,missing-method}
+\alias{segmentBins,QDNAseqReadCounts-method}
 
 \title{Segments and calls total copy numbers}
 
 \usage{
-segmentData(object, weights, ...)
+segmentBins(object, weights=TRUE, normalize=TRUE, inter=c(-0.1, 0.1), ...)
 }
 
 \description{
@@ -27,6 +26,8 @@ segmentData(object, weights, ...)
   \item{object}{...}
   \item{weights}{Either \code{\link[base:logical]{TRUE}} or a vector of weights. If \code{\link[base:logical]{TRUE}},
     loess residuals are used as weights.}
+  \item{normalize}{...}
+  \item{inter}{...}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 

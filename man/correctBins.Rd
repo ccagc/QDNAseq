@@ -6,17 +6,17 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{correct}
-\alias{correct}
+\name{correctBins}
+\alias{correctBins}
 
 
-\alias{correct,QDNAseqReadCounts-method}
+\alias{correctBins,QDNAseqReadCounts-method}
 
 \title{Correct binned read counts for GC content and mappability}
 
 \usage{
-correct(object, span=0.65, family="symmetric", adjustIncompletes=TRUE, keepCounts=TRUE,
-  storeResiduals=TRUE, ...)
+correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
+  keepCounts=TRUE, storeResiduals=TRUE, ...)
 }
 
 \description{

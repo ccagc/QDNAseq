@@ -17,30 +17,36 @@ library(qdnaseq)
 To load all the bam files in the current directory, run:
 
 <<reg, echo=TRUE, eval=FALSE>>=
-readCounts <- binReadCounts(bins) # all files ending in .bam from the current working directory
+readCounts <- binReadCounts(bins)
+# all files ending in .bam from the current working directory
+
 # or
-readCounts <- binReadCounts(bins, bamfiles='tumor.bam') # file tumor.bam from the current working directory
+
+readCounts <- binReadCounts(bins, bamfiles='tumor.bam')
+# file 'tumor.bam' from the current working directory
+
 # or
-readCounts <- binReadCounts(bins, path='tumors') # all files ending in .bam from the subdirectory tumors of the current working directory
+
+readCounts <- binReadCounts(bins, path='tumors')
+# all files ending in .bam from the subdirectory 'tumors'
 @
 
 For the purpose of this tutorial, we are loading up data for chromosome 9 of low grade glioma sample LGG150:
 
 <<reg>>=
 data(LGG150)
-LGG150 <- 1:10
 @
 
 Perform correction for GC content and mappability.
 
 <<reg>>=
-#LGG150 <- correct(LGG150)
+LGG150 <- correctBins(LGG150)
 @
 
 Perform median normalization.
 
 <<reg>>=
-#LGG150 <- normalize(LGG150)
+LGG150 <- normalizeBins(LGG150)
 @
 
 To apply filtering, plot the profile and highlight bins to be filtered out for evaluation. By default, bins with mappabilities lower than 50 and the 1000 Genomes residuals larger than 2 standard deviations are filtered out.
@@ -49,7 +55,7 @@ To apply filtering, plot the profile and highlight bins to be filtered out for e
 
 <<label=filters,include=FALSE>>=
 plot(LGG150)
-#highlightFilters(LGG150, mappability=50, residual=1)
+highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
 @
 
 \begin{figure}
@@ -65,13 +71,14 @@ plot(LGG150)
 Apply filters.
 
 <<reg>>=
-#LGG150 <- applyFilters(LGG150, mappability=50, residual=1)
+LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=1,
+  bases=0)
 @
 
 Data now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
 
 <<reg>>=
-#LGG150 <- segmentData(LGG150)
+LGG150 <- segmentBins(LGG150)
 @
 
 Plot to evaluate segmentation.
@@ -93,9 +100,7 @@ plot(LGG150)
 Tune segmentation parameters and iterate until satisfied. Next, perform mode normalization and call aberrations, and plot the final results.
 
 <<reg>>=
-#LGG150 <- postsegnormalize(LGG150)
-#cal <- CGHcall(LGG150)
-#LGG150 <- ExpandCGHcall(cal, LGG150)
+LGG150 <- callBins(LGG150)
 @
 
 <<label=calls,include=FALSE>>=
@@ -117,7 +122,7 @@ plot(LGG150)
 Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
 
 <<reg>>=
-#cgh <- makeCgh(LGG150)
+cgh <- makeCgh(LGG150)
 @
 
 % EOF

@@ -69,9 +69,9 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
       'Statistics for autosomes 1-22:')
   } else {
     condition2 <- rep(TRUE, times=nrow(object))
+    message('Statistics for all chromosomes:')
   }
   fData(object)$filter <- condition
-  message('Statistics for all chromosomes:')
   message(paste(c('Total bins:', 'Bins filtered:', 'Final bins:'),
     format(c(nrow(object[condition2,]),
     sum(!condition[condition2], na.rm=TRUE),

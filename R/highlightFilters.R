@@ -1,6 +1,8 @@
 #########################################################################/**
 # @RdocFunction highlightFilters
 #
+# @alias highlightFilters,QDNAseqReadCounts-method
+#
 # @title "Highlights data points in a plotted profile to evaluate filtering"
 #
 # @synopsis

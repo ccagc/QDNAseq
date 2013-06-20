@@ -1,8 +1,7 @@
 #########################################################################/**
-# @RdocFunction normalize
+# @RdocFunction normalizeBins
 #
-# @alias normalize,QDNAseqReadCounts-method
-# @alias normalize,cghRaw-method
+# @alias normalizeBins,QDNAseqReadCounts-method
 # 
 # @title "Normalizes binned read counts"
 #
@@ -31,8 +30,8 @@
 # }
 #
 #*/#########################################################################
-## Adapted from package CGHcall
-setMethod('normalize', signature=c(object='QDNAseqReadCounts'),
+## Adapted from CGHcall::normalize()
+setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, method='median', smoothOutliers=TRUE,
   logTransform=TRUE, ...) {
   if ('filter' %in% colnames(fData(object))) {
@@ -69,13 +68,6 @@ setMethod('normalize', signature=c(object='QDNAseqReadCounts'),
   copynumber2[rownames(copynumber), ] <- copynumber
   assayDataElement(object, 'copynumber') <- copynumber2
   object
-})
-
-setMethod('normalize', signature=c(object='cghRaw'),
-  definition=function(object, method='median', smoothOutliers=TRUE,
-  logTransform=TRUE, ...) {
-  CGHcall::normalize(input=object, method=method,
-    smoothOutliers=smoothOutliers, ...)
 })
 
 # EOF

@@ -1,8 +1,7 @@
 #########################################################################/**
-# @RdocFunction segmentData
+# @RdocFunction segmentBins
 #
-# @alias segmentData,QDNAseqReadCounts,logical-method
-# @alias segmentData,cghRaw,missing-method
+# @alias segmentBins,QDNAseqReadCounts-method
 #
 # @title "Segments and calls total copy numbers"
 #
@@ -16,6 +15,8 @@
 #   \item{object}{...}
 #   \item{weights}{Either @TRUE or a vector of weights. If @TRUE,
 #     loess residuals are used as weights.}
+#   \item{normalize}{...}
+#   \item{inter}{...}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -31,8 +32,9 @@
 # }
 #
 #*/#########################################################################
-setMethod('segmentData', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, weights=TRUE, ...) {
+setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
+  definition=function(object, weights=TRUE, normalize=TRUE,
+  inter=c(-0.1,0.1), ...) {
   if (length(weights) == 1L & weights) {
     if ('residual' %in% colnames(fData(object))) {
       message('Using median loess residuals of control data set as ',
@@ -57,10 +59,11 @@ setMethod('segmentData', signature=c(object='QDNAseqReadCounts'),
     weights <- 1/residual
   }
   copynumber <- copynumber(object)[binFilter(object), , drop=FALSE]
-  CNA.object <- CNA(genomdat=copynumber, chrom=chromosomes(object)[binFilter(object)],
+  CNA.object <- CNA(genomdat=copynumber,
+    chrom=chromosomes(object)[binFilter(object)],
     maploc=bpstart(object)[binFilter(object)], data.type="logratio",
     sampleid=paste(sampleNames(object), ':', 1:ncol(object), 'of',
-      ncol(object), sep=''))
+      ncol(object), sep=''), presorted=TRUE)
   message('Start data segmentation ...')
   if (length(weights) == 1L && !weights) {
     segmented <- segment(CNA.object, ...)
@@ -80,13 +83,52 @@ setMethod('segmentData', signature=c(object='QDNAseqReadCounts'),
   joined <- matrix(joined, ncol=ncol(object), byrow=FALSE)
   rownames(joined) <- rownames(copynumber)
   colnames(joined) <- colnames(copynumber)
-  segmented(object) <- joined
-  object
-})
 
-setMethod('segmentData', signature=c(object='cghRaw'),
-  definition=function(object, weights, ...) {
-  CGHcall::segmentData(object, ...)
+  if (!normalize) {
+    segmented(object) <- joined
+    return(object)
+  }
+
+  ## adapted from CGHcall::postsegnormalize()
+  seg <- joined
+  values <- apply(seg, MARGIN=2L, FUN=median, na.rm=TRUE)
+  seg <- t(t(seg) - values)
+  countlevall <- apply(seg, 2, function(x) as.data.frame(table(x)))
+  
+  intcount <- function(int, sv){
+    sv1 <- as.numeric(as.vector(sv[, 1]))
+    wh <- which(sv1 <= int[2] & sv1 >= int[1])
+    return(sum(sv[wh, 2]))
+  }
+  
+  postsegnorm <- function(segvec, int=inter, intnr=3){
+    intlength <- (int[2]-int[1])/2
+    gri <- intlength/intnr
+    intst <- int[1]+(0:intnr)*gri
+    intend <- intst+intlength
+    ints <- cbind(intst, intend)
+    intct <- apply(ints, 1, intcount, sv=segvec)
+    whmax <- which.max(intct)
+    return(ints[whmax, ]) 
+  }
+  
+  postsegnorm_rec <- function(segvec, int, intnr=3){
+    newint <- postsegnorm(segvec, int, intnr)
+    newint <- postsegnorm(segvec, newint, intnr)
+    newint <- postsegnorm(segvec, newint, intnr)
+    newint <- postsegnorm(segvec, newint, intnr)
+    newint <- postsegnorm(segvec, newint, intnr)
+    return(newint[1]+(newint[2]-newint[1])/2)
+  }
+
+  listres <- lapply(countlevall, postsegnorm_rec, int=inter)
+  vecres <- c()
+  for(i in 1:length(listres))
+    vecres <- c(vecres,listres[[i]])
+  
+  segmented(object) <- t(t(seg) - vecres)
+  copynumber(object) <- t(t(copynumber) - values - vecres)
+  object
 })
 
 # EOF

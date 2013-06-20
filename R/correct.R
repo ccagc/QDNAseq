@@ -1,7 +1,7 @@
 #########################################################################/**
-# @RdocFunction correct
+# @RdocFunction correctBins
 #
-# @alias correct,QDNAseqReadCounts-method
+# @alias correctBins,QDNAseqReadCounts-method
 #
 # @title "Correct binned read counts for GC content and mappability"
 #
@@ -32,7 +32,7 @@
 # }
 #*/#########################################################################
 
-setMethod('correct', signature=c(object='QDNAseqReadCounts'),
+setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
   adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...) {
   counts <- assayDataElement(object, 'counts')

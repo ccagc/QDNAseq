@@ -1,30 +1,30 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  CGHcall.R
+%  plot-methods.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{CGHcall}
-\alias{CGHcall}
+\name{frequencyPlot}
+\alias{frequencyPlot}
 
 
-\alias{CGHcall,QDNAseqReadCounts-method}
-\alias{CGHcall,cghSeg-method}
+\alias{frequencyPlot,QDNAseqReadCounts,missing-method}
 
-\title{Call aberrations from copy number data}
+\title{Plot copy number aberration frequencies}
 
 \usage{
-CGHcall(object, ...)
+frequencyPlot(x, y, ...)
 }
 
 \description{
- Call aberrations from copy number data.
+ Plot copy number aberration frequencies.
 }
 
 \arguments{
-  \item{object}{...}
+  \item{x}{...}
+  \item{y}{...}
   \item{...}{...}
 }
 

@@ -1,30 +1,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  ExpandCGHcall.R
+%  CGHcall.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{ExpandCGHcall}
-\alias{ExpandCGHcall}
+\name{callBins}
+\alias{callBins}
 
 
-\alias{ExpandCGHcall,list,QDNAseqReadCounts-method}
-\alias{ExpandCGHcall,list,cghSeg-method}
+\alias{callBins,QDNAseqReadCounts-method}
 
-\title{Expands result from CGHcall to a QDNAseqReadCounts or CGHcall object}
+\title{Call aberrations from copy number data}
 
 \usage{
-ExpandCGHcall(listcall, object, ...)
+callBins(object, ...)
 }
 
 \description{
- Expands result from CGHcall to a QDNAseqReadCounts or CGHcall object.
+ Call aberrations from copy number data.
 }
 
 \arguments{
-  \item{listcall}{...}
   \item{object}{...}
   \item{...}{...}
 }

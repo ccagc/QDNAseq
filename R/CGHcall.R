@@ -1,8 +1,7 @@
 #########################################################################/**
-# @RdocFunction CGHcall
+# @RdocFunction callBins
 #
-# @alias CGHcall,QDNAseqReadCounts-method
-# @alias CGHcall,cghSeg-method
+# @alias callBins,QDNAseqReadCounts-method
 #
 # @title "Call aberrations from copy number data"
 #
@@ -28,15 +27,18 @@
 # }
 #
 #*/#########################################################################
-setMethod('CGHcall', signature=c(object='QDNAseqReadCounts'),
+setMethod('callBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, ...) {
   seg <- makeCgh(object)
-  CGHcall::CGHcall(seg, ...)
-})
-
-setMethod('CGHcall', signature=c(object='cghSeg'),
-  definition=function(object, ...) {
-  CGHcall::CGHcall(object, ...)
+  listcall <- CGHcall(seg, ...)
+  cgh <- ExpandCGHcall(listcall, seg)
+  calls(object) <- calls(cgh)
+  probdloss(object) <- probdloss(cgh)
+  probloss(object) <- probloss(cgh)
+  probnorm(object) <- probnorm(cgh)
+  probgain(object) <- probgain(cgh)
+  probamp(object) <- probamp(cgh)
+  object
 })
 
 # EOF

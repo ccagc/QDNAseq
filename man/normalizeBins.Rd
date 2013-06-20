@@ -6,17 +6,16 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- \name{normalize}
-\alias{normalize}
+ \name{normalizeBins}
+\alias{normalizeBins}
 
 
- \alias{normalize,QDNAseqReadCounts-method}
- \alias{normalize,cghRaw-method}
+ \alias{normalizeBins,QDNAseqReadCounts-method}
 
  \title{Normalizes binned read counts}
 
  \usage{
-normalize(object, method="median", smoothOutliers=TRUE, logTransform=TRUE, ...)
+normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE, ...)
 }
 
  \description{
