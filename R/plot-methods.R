@@ -101,11 +101,9 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
           col=losscol, border=losscol)
         rect(pos[segment[,2]], 1, pos2[segment[,3]], 1-gains[segment[,2]],
           col=gaincol, border=gaincol)
-        # if (!is.null(probamp(x)))
         axis(3, at=pos[which(probamp(x)[condition,i] >= 0.5)],
           labels=FALSE, col=ampcol, col.axis='black', srt=270, las=1,
           cex.axis=1, cex.lab=1)
-        # if (!is.null(probdloss(x)))
         axis(1, at=pos[which(probdloss(x)[condition,i] >= 0.5)],
           labels=FALSE, col=delcol, col.axis='black', srt=270, las=1,
           cex.axis=1, cex.lab=1)

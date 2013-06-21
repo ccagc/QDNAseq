@@ -33,11 +33,21 @@ setMethod('callBins', signature=c(object='QDNAseqReadCounts'),
   listcall <- CGHcall(seg, ...)
   cgh <- ExpandCGHcall(listcall, seg)
   calls(object) <- calls(cgh)
-  probdloss(object) <- probdloss(cgh)
+  if ('probdloss' %in% assayDataElementNames(cgh)) {
+    probdloss(object) <- probdloss(cgh)
+  } else {
+    if ('probdloss' %in% assayDataElementNames(object))
+      probdloss(object) <- NULL
+  }
   probloss(object) <- probloss(cgh)
   probnorm(object) <- probnorm(cgh)
   probgain(object) <- probgain(cgh)
-  probamp(object) <- probamp(cgh)
+  if ('probamp' %in% assayDataElementNames(cgh)) {
+    probamp(object) <- probamp(cgh)
+  } else {
+    if ('probamp' %in% assayDataElementNames(object))
+      probamp(object) <- NULL
+  }
   object
 })
 
