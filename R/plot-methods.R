@@ -48,7 +48,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
     if ('filter' %in% colnames(fData(x))) {
       condition <- fData(x)$filter
     } else {
-      conditon <- rep(TRUE, times=nrow(x))
+      condition <- rep(TRUE, times=nrow(x))
     }
     all.chrom <- chromosomes(x)
     all.chrom.lengths <- aggregate(bpend(x),
@@ -72,6 +72,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
     copynumber <- copynumber(x)[condition, , drop=FALSE]
     for (i in 1:ncol(x)) {
       message('Plotting sample ', main[i])
+      cn <- copynumber[, i]
       if ('segmented' %in% assayDataElementNames(x))
         segment <- CGHbase:::.makeSegments(segmented(x)
           [condition, i], chrom)
@@ -110,9 +111,9 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         box()
         lim[3:4] <- ylim
         par(usr=lim)
-        points(pos, copynumber[, i], cex=.1, col=pointcol)
+        points(pos, cn, cex=.1, col=pointcol)
       } else {
-        plot(pos, copynumber[, i], cex=.1, col=pointcol, main=main[i],
+        plot(pos, cn, cex=.1, col=pointcol, main=main[i],
           xlab='chromosomes', ylab=ylab, ylim=ylim, xaxt='n', xaxs='i',
           yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs='i')
       }
@@ -127,10 +128,10 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
             segment[jjj,1], col=segcol, lwd=3)        
         }
       }
-      amps <- copynumber[, i]
+      amps <- cn
       amps[amps < ylim[2]] <- NA
       amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
-      dels <- copynumber[, i]
+      dels <- cn
       dels[dels > ylim[1]] <- NA
       dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
       par(xpd=TRUE)
@@ -139,10 +140,10 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       par(xpd=FALSE)
       ### MAD
       mtext(substitute(hat(sigma)[Delta]==sd, list(sd=sprintf('%.3g',
-        madDiff(copynumber[, i], na.rm=TRUE)))), side=3, line=0,
+        madDiff(cn, na.rm=TRUE)))), side=3, line=0,
         adj=1, cex=par('cex'))
       ### number of data points
-      str <- paste(round(length(chrom) / 1000), 'k x ', sep='')
+      str <- paste(round(sum(!is.na(cn)) / 1000), 'k x ', sep='')
       probe <- median(bpend(x)-bpstart(x)+1)
       if (probe < 1000) {
         str <- paste(str, probe, ' bp', sep='')
@@ -194,7 +195,7 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   if ('filter' %in% colnames(fData(x))) {
     condition <- fData(x)$filter
   } else {
-    conditon <- rep(TRUE, times=nrow(x))
+    condition <- rep(TRUE, times=nrow(x))
   }
   all.chrom <- chromosomes(x)
   all.chrom.lengths <- aggregate(bpend(x),

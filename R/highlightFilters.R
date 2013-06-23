@@ -31,7 +31,7 @@
 #*/#########################################################################
 setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, col='red', mappability=50, blacklist=0,
-  residual=1, bases=100, ...) {
+  residual=2, bases=100, ...) {
   condition <- condition <- rep(TRUE, times=nrow(object))
   if (!is.na(bases))
     condition <- condition & fData(object)$bases >= bases
@@ -55,6 +55,9 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   for (i in uni.chrom)
     pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
   copynumber <- copynumber(object)[!condition, , drop=FALSE]
+  if (ncol(object) > 1)
+    message('Multiple samples present in input, only using first sample: ',
+      sampleNames(object)[1])
   i <- 1
   pointcol <- col
   ylim <- par('usr')[3:4]

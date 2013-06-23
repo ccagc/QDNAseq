@@ -34,7 +34,7 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, mappability=50, blacklist=0, residual=1,
+  definition=function(object, mappability=50, blacklist=0, residual=2,
   bases=100, filterAllosomes=TRUE, force=FALSE) {
   if ('segmented' %in% assayDataElementNames(object) & !force)
     stop('Data has already been segmented. Changing the filters will ',

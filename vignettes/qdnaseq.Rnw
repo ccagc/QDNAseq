@@ -55,7 +55,7 @@ To apply filtering, plot the profile and highlight bins to be filtered out for e
 
 <<label=filters,include=FALSE>>=
 plot(LGG150)
-highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
+highlightFilters(LGG150, mappability=50, blacklist=0, residual=2, bases=0)
 @
 
 \begin{figure}
@@ -71,7 +71,7 @@ highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
 Apply filters.
 
 <<reg>>=
-LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=1,
+LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=2,
   bases=0)
 @
 

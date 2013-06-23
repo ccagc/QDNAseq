@@ -10,10 +10,10 @@ setGeneric('normalizeBins', function(object, method='median',
   smoothOutliers=TRUE, logTransform=TRUE, ...)
   standardGeneric('normalizeBins'))
 setGeneric('highlightFilters', function(object, col='red', mappability=50,
-  blacklist=0, residual=1, bases=100, ...)
+  blacklist=0, residual=2, bases=100, ...)
   standardGeneric('highlightFilters'))
 setGeneric('applyFilters', function(object, mappability=50,
-  blacklist=0, residual=1, bases=100, filterAllosomes=TRUE, force=FALSE)
+  blacklist=0, residual=2, bases=100, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
 setGeneric('segmentBins', function(object, weights=TRUE, normalize=TRUE,
   inter=c(-0.1,0.1), ...) standardGeneric('segmentBins'))
