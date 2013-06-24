@@ -39,8 +39,11 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
       ' samples in object.')
   newsamples <- sort(unique(samples))
   oldsamples <- phenodata$name
-  if (length(newsamples) == nrow(phenodata))
+  if (length(newsamples) == nrow(phenodata)) {
+    sampleNames(object) <- samples
+    object <- object[,order(samples)]
     return(object)
+  }
   newphenodata <- data.frame(name=newsamples, reads=NA, loess.span=NA,
     loess.family=NA, row.names=newsamples, stringsAsFactors=FALSE)
   ## FIXME: other phenodata variables get droppped, should be kept
