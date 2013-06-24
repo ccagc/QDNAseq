@@ -42,8 +42,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
       residual <- fData(object)$residual
     } else if ('residuals' %in% assayDataElementNames(object)) {
       message('Using median loess residuals as segmentation weights.')
-      residual <- apply(assayDataElement(object, 'residuals'), 1, median,
-        na.rm=TRUE)
+      residual <- rowMedians(assayDataElement(object, 'residuals'), na.rm=TRUE)
     } else {
       stop('No loess residuals found. Please provide a vector of weights ',
         'or specify weights=FALSE.')
@@ -91,16 +90,16 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
 
   ## adapted from CGHcall::postsegnormalize()
   seg <- joined
-  values <- apply(seg, MARGIN=2L, FUN=median, na.rm=TRUE)
+  values <- colMedians(seg, na.rm=TRUE)
   seg <- t(t(seg) - values)
   countlevall <- apply(seg, 2, function(x) as.data.frame(table(x)))
-  
+
   intcount <- function(int, sv){
     sv1 <- as.numeric(as.vector(sv[, 1]))
     wh <- which(sv1 <= int[2] & sv1 >= int[1])
     return(sum(sv[wh, 2]))
   }
-  
+
   postsegnorm <- function(segvec, int=inter, intnr=3){
     intlength <- (int[2]-int[1])/2
     gri <- intlength/intnr
@@ -109,9 +108,9 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     ints <- cbind(intst, intend)
     intct <- apply(ints, 1, intcount, sv=segvec)
     whmax <- which.max(intct)
-    return(ints[whmax, ]) 
+    return(ints[whmax, ])
   }
-  
+
   postsegnorm_rec <- function(segvec, int, intnr=3){
     newint <- postsegnorm(segvec, int, intnr)
     newint <- postsegnorm(segvec, newint, intnr)
@@ -125,7 +124,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   vecres <- c()
   for(i in 1:length(listres))
     vecres <- c(vecres,listres[[i]])
-  
+
   segmented(object) <- t(t(seg) - vecres)
   copynumber(object) <- t(t(copynumber) - values - vecres)
   object
