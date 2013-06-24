@@ -65,7 +65,7 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   gc <- round(fData(object)$gc)
   mappability <- round(fData(object)$mappability)
   median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
-    mappability=mappability[condition]), median)
+    mappability=mappability[condition]), FUN=median)
   median.counts <- median.counts[!is.na(median.counts$gc), ]
   median.counts <- median.counts[!is.na(median.counts$mappability), ]
   rownames(median.counts) <- paste(median.counts$gc, '-',

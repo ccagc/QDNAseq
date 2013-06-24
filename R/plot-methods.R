@@ -52,7 +52,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
     }
     all.chrom <- chromosomes(x)
     all.chrom.lengths <- aggregate(bpend(x),
-      by=list(chromosome=all.chrom), max)
+      by=list(chromosome=all.chrom), FUN=max)
     chrom.lengths <- all.chrom.lengths$x
     names(chrom.lengths) <- all.chrom.lengths$chromosome
     chrom <- all.chrom[condition]
@@ -125,7 +125,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       if ('segmented' %in% assayDataElementNames(x)) {
         for (jjj in (1:nrow(segment))) {
           segments(pos[segment[jjj,2]], segment[jjj,1], pos[segment[jjj,3]],
-            segment[jjj,1], col=segcol, lwd=3)        
+            segment[jjj,1], col=segcol, lwd=3)
         }
       }
       amps <- cn
@@ -199,7 +199,7 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   }
   all.chrom <- chromosomes(x)
   all.chrom.lengths <- aggregate(bpend(x),
-    by=list(chromosome=all.chrom), max)
+    by=list(chromosome=all.chrom), FUN=max)
   chrom.lengths <- all.chrom.lengths$x
   names(chrom.lengths) <- all.chrom.lengths$chromosome
   chrom <- all.chrom[condition]

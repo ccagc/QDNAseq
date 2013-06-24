@@ -58,9 +58,9 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
     oldphenodata <- phenodata[replicates, ]
     newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)
     if (length(unique(oldphenodata$loess.span)) == 1L)
-      newphenodata[newsample, 'loess.span'] <- oldphenodata[1, 'loess.span']
+      newphenodata[newsample, 'loess.span'] <- oldphenodata[1L, 'loess.span']
     if (length(unique(oldphenodata$loess.family)) == 1L)
-      newphenodata[newsample, 'loess.family'] <- oldphenodata[1,
+      newphenodata[newsample, 'loess.family'] <- oldphenodata[1L,
         'loess.family']
   }
   object2 <- new('QDNAseqReadCounts', bins=bins, counts=newcounts,

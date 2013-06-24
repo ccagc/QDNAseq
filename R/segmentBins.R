@@ -92,21 +92,21 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   seg <- joined
   values <- colMedians(seg, na.rm=TRUE)
   seg <- t(t(seg) - values)
-  countlevall <- apply(seg, 2, function(x) as.data.frame(table(x)))
+  countlevall <- apply(seg, MARGIN=2L, FUN=function(x) as.data.frame(table(x)))
 
   intcount <- function(int, sv){
-    sv1 <- as.numeric(as.vector(sv[, 1]))
-    wh <- which(sv1 <= int[2] & sv1 >= int[1])
-    return(sum(sv[wh, 2]))
+    sv1 <- as.numeric(as.vector(sv[, 1L]))
+    wh <- which(sv1 <= int[2L] & sv1 >= int[1L])
+    return(sum(sv[wh, 2L]))
   }
 
   postsegnorm <- function(segvec, int=inter, intnr=3){
-    intlength <- (int[2]-int[1])/2
+    intlength <- (int[2L]-int[1L])/2
     gri <- intlength/intnr
-    intst <- int[1]+(0:intnr)*gri
+    intst <- int[1L]+(0:intnr)*gri
     intend <- intst+intlength
     ints <- cbind(intst, intend)
-    intct <- apply(ints, 1, intcount, sv=segvec)
+    intct <- apply(ints, MARGIN=1L, FUN=intcount, sv=segvec)
     whmax <- which.max(intct)
     return(ints[whmax, ])
   }
@@ -117,13 +117,13 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     newint <- postsegnorm(segvec, newint, intnr)
     newint <- postsegnorm(segvec, newint, intnr)
     newint <- postsegnorm(segvec, newint, intnr)
-    return(newint[1]+(newint[2]-newint[1])/2)
+    return(newint[1L]+(newint[2L]-newint[1L])/2)
   }
 
   listres <- lapply(countlevall, postsegnorm_rec, int=inter)
   vecres <- c()
   for(i in 1:length(listres))
-    vecres <- c(vecres,listres[[i]])
+    vecres <- c(vecres, listres[[i]])
 
   segmented(object) <- t(t(seg) - vecres)
   copynumber(object) <- t(t(copynumber) - values - vecres)

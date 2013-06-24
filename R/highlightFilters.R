@@ -45,7 +45,7 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
       na.rm=TRUE)
   all.chrom <- chromosomes(object)
   all.chrom.lengths <- aggregate(bpend(object),
-    by=list(chromosome=all.chrom), max)
+    by=list(chromosome=all.chrom), FUN=max)
   chrom.lengths <- all.chrom.lengths$x
   names(chrom.lengths) <- all.chrom.lengths$chromosome
   chrom <- all.chrom[!condition]
@@ -55,13 +55,13 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   for (i in uni.chrom)
     pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
   copynumber <- copynumber(object)[!condition, , drop=FALSE]
-  if (ncol(object) > 1)
+  if (ncol(object) > 1L)
     message('Multiple samples present in input, only using first sample: ',
-      sampleNames(object)[1])
+      sampleNames(object)[1L])
   i <- 1
   pointcol <- col
   ylim <- par('usr')[3:4]
-  points(pos, copynumber[, i], cex=.1, col=pointcol)
+  points(pos, copynumber[, i], cex=0.1, col=pointcol)
   amps <- copynumber[, i]
   amps[amps < ylim[2]] <- NA
   amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
