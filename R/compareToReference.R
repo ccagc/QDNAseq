@@ -45,8 +45,8 @@ setMethod('compareToReference', signature=c(object='QDNAseqReadCounts',
         sampleNames(object)[references[i]], sep='')
     }
   }
-  toremove <- which(references == FALSE)
-  if (length(toremove)>0)
+  toremove <- which(!references)
+  if (length(toremove) > 0L)
     object <- object[, -toremove]
   object
 })

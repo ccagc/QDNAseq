@@ -172,8 +172,8 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   beds <- list()
   for (bed in bedFiles)
     beds[[bed]] <- read.table(bed, sep='\t', as.is=TRUE)
-  combined <- beds[[1]]
-  if (length(beds) > 1)
+  combined <- beds[[1L]]
+  if (length(beds) >= 2L)
     for (i in 2:length(beds))
       combined <- rbind(combined, beds[[i]])
   combined <- combined[, 1:3]
@@ -187,7 +187,9 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   combined$start <- combined$start + 1
   combined <- combined[order(combined$chromosome, combined$start), ]
   joined <- data.frame()
-  prev <- combined[1,]
+  prev <- combined[1L,]
+  # Sanity check
+  stopifnot(nrow(combined) >= 2L);
   for (i in 2:nrow(combined)) {
     if (combined[i, 'chromosome'] != prev$chromosome ||
       combined[i, 'start'] > (prev$end + 1)) {
@@ -214,13 +216,13 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
         max(start, overlaps[i, 'start']) + 1
     bases / (end - start + 1) * 100
   }
-  if (ncpus > 1) {
+  if (ncpus > 1L) {
     snowfall::sfInit(parallel=TRUE, cpus=ncpus)
     snowfall::sfExport(list=c('overlap.counter'))
     blacklist <- snowfall::sfApply(bins, 1, overlap.counter, joined)
     snowfall::sfStop()
   } else {
-    blacklist <- apply(bins, 1, overlap.counter, joined)
+    blacklist <- apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
   }
   message()
   blacklist

@@ -2,7 +2,7 @@
 # @RdocFunction normalizeBins
 #
 # @alias normalizeBins,QDNAseqReadCounts-method
-# 
+#
 # @title "Normalizes binned read counts"
 #
 # @synopsis
@@ -47,8 +47,7 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   } else {
     if (method == 'median') {
       message('Applying median normalization ...')
-      ## TO DO: See matrixStats::rowMedians().
-      values <- apply(copynumber, MARGIN=2L, FUN=median, na.rm=TRUE)
+      values <- colMedians(copynumber, na.rm=TRUE)
     } else if (method == 'mode') {
       message('Applying mode normalization ... ')
       values <- apply(copynumber, MARGIN=2L, FUN=function(x) { d <- density(x,

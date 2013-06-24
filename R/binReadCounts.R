@@ -162,7 +162,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
       isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
       isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
       isNotPassingQualityControls=isNotPassingQualityControls,
-      isDuplicate=isDuplicate), what=c('rname', 'pos', 'mapq')))[[1]]
+      isDuplicate=isDuplicate), what=c('rname', 'pos', 'mapq')))[[1L]]
     hits <- list()
     for (chr in unique(reads[['rname']]))
       hits[[chr]] <- reads[['pos']][reads[['rname']] == chr &
