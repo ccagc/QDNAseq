@@ -120,9 +120,9 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     return(newint[1L]+(newint[2L]-newint[1L])/2)
   }
 
-  listres <- lapply(countlevall, postsegnorm_rec, int=inter)
+  listres <- lapply(countlevall, FUN=postsegnorm_rec, int=inter)
   vecres <- c()
-  for(i in 1:length(listres))
+  for (i in seq_len(listres))
     vecres <- c(vecres, listres[[i]])
 
   segmented(object) <- t(t(seg) - vecres)

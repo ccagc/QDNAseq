@@ -173,7 +173,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   for (bed in bedFiles)
     beds[[bed]] <- read.table(bed, sep='\t', as.is=TRUE)
   combined <- beds[[1L]]
-  if (length(beds) > 1L)
+  if (length(beds) >= 2L)
     for (i in 2:length(beds))
       combined <- rbind(combined, beds[[i]])
   combined <- combined[, 1:3]
@@ -188,6 +188,8 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   combined <- combined[order(combined$chromosome, combined$start), ]
   joined <- data.frame()
   prev <- combined[1L,]
+  # Sanity check
+  stopifnot(nrow(combined) >= 2L);
   for (i in 2:nrow(combined)) {
     if (combined[i, 'chromosome'] != prev$chromosome ||
       combined[i, 'start'] > (prev$end + 1)) {
