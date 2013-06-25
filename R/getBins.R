@@ -154,7 +154,7 @@ calculateMappability <- function(bins, bigWigFile,
   bins <- bins[,c('chromosome', 'start', 'end')]
   bins$chromosome <- paste('chr', bins$chromosome, sep='')
   bins$start <- bins$start - 1
-  bins$name <- 1:nrow(bins)
+  bins$name <- seq_len(nrow(bins))
   scipen <- options('scipen')
   options(scipen=10)
   write.table(bins, binbed, quote=FALSE, sep='\t', row.names=FALSE,
