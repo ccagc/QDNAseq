@@ -183,8 +183,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   for (chromosome in names(hits)) {
     if (!chromosome %in% unique(bins$chromosome))
       next
-    chromosome.breaks <- c(bins[bins$chromosome == chromosome, 'start'],
-      max(bins[bins$chromosome == chromosome, 'end']))
+    chromosome.breaks <- c(bins$start[bins$chromosome == chromosome],
+      max(bins$end[bins$chromosome == chromosome]))
     ## without as.numeric(), command below gives an integer overflow warning:
     count <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks),
       right=FALSE, plot=FALSE)$count
