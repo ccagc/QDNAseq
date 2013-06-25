@@ -13,7 +13,7 @@
 
 
 # library(qdnaseq)
-# bins <- getBins(15) / bins <-
+# bins <- getBinAnnotations(15) / bins <-
 #   readRDS('/data/ref/hg19/MPScall/QDNAseq.hg19.15kbp.rds')
 # LGG150 <- binReadCounts(bins, bamfiles='LGG150.bam',
 #   path='/storage/shark1/data/SeqLanes/120123_D0N32ACXX_L5/bam')

@@ -1,19 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  getBins.R
+%  getBinAnnotations.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{getBins}
-\alias{getBins}
+\name{getBinAnnotations}
+\alias{getBinAnnotations}
 
 
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
-getBins(binsize, genome="hg19", cache=TRUE, force=FALSE)
+getBinAnnotations(binsize, genome="hg19", cache=TRUE, force=FALSE)
 }
 
 \description{

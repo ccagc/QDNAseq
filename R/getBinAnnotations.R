@@ -1,5 +1,5 @@
 #########################################################################/**
-# @RdocFunction getBins
+# @RdocFunction getBinAnnotations
 #
 # @title "Gets bin annotation data for a particular bin size"
 #
@@ -28,7 +28,8 @@
 #
 # @keyword IO
 #*/#########################################################################
-getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
+getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
+  force=FALSE) {
   genome.build <- as.integer(gsub('[^0-9]', '', genome))
   if (genome.build %in% c(19, 37)) {
     genome.name <- 'hg19'
@@ -39,9 +40,10 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
   }
   bins <- NULL
   binCache <- list(genome=genome, binsize=binsize)
+  dirCache <- c('QDNAseq', 'binAnnotations')
   if (!force)
     # TO DO: somehow check if file available online is newer than cached one?
-    bins <- loadCache(key=binCache, dirs='QDNAseq')
+    bins <- loadCache(key=binCache, dirs=dirCache)
   if (!is.null(bins)) {
     message('Bin annotations for genome ', genome.name, ' and bin size of ',
       binsize, 'kbp loaded from cache.')
@@ -63,8 +65,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
   file.remove(localfile)
   if (cache) {
     message(' saving in cache ...')
-    saveCache(bins, key=list(genome=genome, binsize=binsize), dirs='QDNAseq',
-      compress=TRUE)
+    saveCache(bins, key=binCache, dirs=dirCache, compress=TRUE)
   }
   message()
   bins
@@ -102,7 +103,7 @@ getBins <- function(binsize, genome='hg19', cache=TRUE, force=FALSE) {
 # @author "IS"
 #
 # \seealso{
-#   @see "getBins".
+#   @see "getBinAnnotations".
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,

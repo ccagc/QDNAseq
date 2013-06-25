@@ -28,7 +28,7 @@ importFrom('Rsamtools', 'scanBamFlag')
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #exportPattern('^[[:alpha:]]+')
 
-export('getBins')
+export('getBinAnnotations')
 export('binReadCounts')
 export('correctBins')
 export('poolRuns')

@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  getBins.R
+%  getBinAnnotations.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,6 +38,6 @@ createBins(bsgenome, binsize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
 \author{Ilari Scheinin}
 
 \seealso{
-  \code{\link{getBins}}().
+  \code{\link{getBinAnnotations}}().
 }
 
