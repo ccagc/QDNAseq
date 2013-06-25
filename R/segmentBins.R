@@ -61,7 +61,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   CNA.object <- CNA(genomdat=copynumber,
     chrom=chromosomes(object)[binFilter(object)],
     maploc=bpstart(object)[binFilter(object)], data.type="logratio",
-    sampleid=paste(sampleNames(object), ':', 1:ncol(object), 'of',
+    sampleid=paste(sampleNames(object), ':', seq_len(ncol(object)), 'of',
       ncol(object), sep=''), presorted=TRUE)
   message('Start data segmentation ...')
   if (length(weights) == 1L && !weights) {
