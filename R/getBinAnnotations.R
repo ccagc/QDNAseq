@@ -39,11 +39,12 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
     stop('Unknown genome: ', genome)
   }
   bins <- NULL
-  binCache <- list(genome=genome, binsize=binsize)
-  dirCache <- c('QDNAseq', 'binAnnotations')
+  cacheKey <- list(genome=genome.name, binsize=binsize)
+  cacheDir <- c('QDNAseq', 'binAnnotations')
+  cacheSuffix <- paste('.', genome.name, '.', binsize, 'kbp', sep='')
   if (!force)
     # TO DO: somehow check if file available online is newer than cached one?
-    bins <- loadCache(key=binCache, dirs=dirCache)
+    bins <- loadCache(key=cacheKey, suffix=cacheSuffix, dirs=cacheDir)
   if (!is.null(bins)) {
     message('Bin annotations for genome ', genome.name, ' and bin size of ',
       binsize, 'kbp loaded from cache.')
@@ -56,6 +57,7 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
     genome.name, '.', binsize, 'kbp.rds', sep='')
   localfile <- tempfile()
   tryCatch({
+    library('R.utils')
     result <- downloadFile(remotefile, localfile)
   }, error=function(e) {
     message(' not found. Please generate them first.')
@@ -65,7 +67,8 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
   file.remove(localfile)
   if (cache) {
     message(' saving in cache ...')
-    saveCache(bins, key=binCache, dirs=dirCache, compress=TRUE)
+    saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
+      compress=TRUE)
   }
   message()
   bins

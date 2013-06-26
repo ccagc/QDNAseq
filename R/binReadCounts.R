@@ -123,31 +123,38 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
   bamfile <- normalizePath(bamfile)
-  readCountCache <- list(bamfile=bamfile, isPaired=isPaired,
+  readCountCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
     isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
     hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
     isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
     isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize)
+  readCountCacheDir <- c('QDNAseq', 'readCounts')
+  readCountCacheSuffix <- paste('.', sub('\\.[^.]*$', '',
+    basename(bamfile)), '.', binsize, 'kbp', sep='')
   readCounts <- NULL
   if (!force)
-    readCounts <- loadCache(key=readCountCache, sources=bamfile,
-      dirs='QDNAseq')
+    readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
+      suffix=readCountCacheSuffix, dirs=readCountCacheDir)
   if (!is.null(readCounts)) {
     message('Loaded binned read counts from cache for ', basename(bamfile))
     return(readCounts)
   }
-  readCache <- list(bamfile=bamfile, isPaired=isPaired,
+  readCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
     isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
     hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
     isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
     isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq)
+  readCacheDir <- c('QDNAseq', 'reads')
+  readCacheSuffix <- paste('.', sub('\\.[^.]*$', '',
+    basename(bamfile)), sep='')
   hits <- NULL
   if (!force)
-    hits <- loadCache(key=readCache, sources=bamfile, dirs='QDNAseq')
+    hits <- loadCache(key=readCacheKey, sources=bamfile,
+      suffix=readCacheSuffix, dirs=readCacheDir)
   if (!is.null(hits)) {
     message('Loaded reads from cache for ', basename(bamfile), ',',
       appendLF=FALSE)
@@ -172,8 +179,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     gc(FALSE)
     if (cache) {
       message(' saving in cache ...', appendLF=FALSE)
-      saveCache(hits, key=readCache, sources=bamfile, dirs='QDNAseq',
-        compress=TRUE)
+      saveCache(hits, key=readCacheKey, sources=bamfile,
+        suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
     }
   }
   message(' binning ...', appendLF=FALSE)
@@ -197,8 +204,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   gc(FALSE)
   if (cache) {
     message(' saving in cache ...', appendLF=FALSE)
-    saveCache(readCounts, key=readCountCache, sources=bamfile, dirs='QDNAseq',
-      compress=TRUE)
+    saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
+      suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
   }
   message()
   readCounts
