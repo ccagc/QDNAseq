@@ -143,8 +143,7 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
   bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths /
     (binsize*1000L))), start, end, bases, gc, stringsAsFactors=FALSE)
   bins$chromosome <- sub('^chr', '', bins$chromosome)
-  rownames(bins) <- paste(bins$chromosome, ':', bins$start, '-', bins$end,
-    sep='')
+  rownames(bins) <- sprintf('%s:%i-%i', bins$chromosome, bins$start, bins$end)
   bins
 }
 
