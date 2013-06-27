@@ -288,8 +288,8 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
     main <- paste(sampleNames(x), 'median read counts')
   counts <- assayDataElement(x, 'counts')
   if (adjustIncompletes) {
-    counts <- counts / fData(x)$bases * 100
-    counts[fData(x)$bases == 0] <- 0
+    counts <- counts / fData(x)$bases * 100L
+    counts[fData(x)$bases == 0] <- 0L
   }
   if ('filter' %in% colnames(fData(x))) {
     condition <- fData(x)$filter
@@ -311,12 +311,15 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
     message('Plotting sample ', main[i])
     for (j in 1:nrow(median.counts))
       m[as.character(median.counts[j, 'mappability']),
-        as.character(median.counts[j, 'gc'])] <- median.counts[j, i+2]
-    image(xx, yy, m, col=paste('#', c(sprintf('%02X', 0:255), rep('FF', 256)),
-      c(rep('FF', 256), sprintf('%02X', 255:0)), sprintf('%02X', 255),
-      sep=''), xlab='mappability', ylab='GC content', main=main[i],
-      zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m,
-      finite=TRUE)))), ...)
-    contour(xx, yy, m, nlevels=20, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
+        as.character(median.counts[j, 'gc'])] <- median.counts[j, i+2L]
+      ## For the loess fit, the line above would be " <- fit[j]"
+      ## For residuals, the line above would be " <- l$residuals[j]"
+      ## Both naturally also require the actual loess fitting.
+    image(xx, yy, m, col=paste('#', c(sprintf('%02X', 0L:255L),
+      rep('FF', 256L)), c(rep('FF', 256L), sprintf('%02X', 255L:0L)),
+      sprintf('%02X', 255L), sep=''), xlab='mappability', ylab='GC content',
+      main=main[i], zlim=c(-max(abs(range(m, finite=TRUE))),
+      max(abs(range(m, finite=TRUE)))), ...)
+    contour(xx, yy, m, nlevels=20L, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
   }
 })
