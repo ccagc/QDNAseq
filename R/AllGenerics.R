@@ -1,5 +1,3 @@
-#setGeneric('plot', function(x, y) standardGeneric('plot'))
-
 setGeneric('correctBins', function(object, span=0.65, family='symmetric',
   adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...)
   standardGeneric('correctBins'))
@@ -21,6 +19,8 @@ setGeneric('callBins', function(object, ...)
   standardGeneric('callBins'))
 setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))
 
+setGeneric('readCountPlot', function(x, y, ...)
+  standardGeneric('readCountPlot'))
 
 
 

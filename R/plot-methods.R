@@ -248,3 +248,75 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   }
   mtext(str, side=3, line=0, adj=0)
 })
+
+
+
+
+#########################################################################/**
+# @RdocFunction readCountPlot
+#
+# @alias readCountPlot,QDNAseqReadCounts,missing-method
+#
+# @title "Plot median read counts as a function of GC content and mappability"
+#
+# @synopsis
+#
+# \description{
+#  @get "title".
+# }
+#
+# \arguments{
+#   \item{x}{...}
+#   \item{y}{...}
+#   \item{...}{...}
+# }
+#
+# \value{
+#   Returns a named @list containing elements ...
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#   Internally, ...
+# }
+#
+#*/#########################################################################
+setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
+  definition=function(x, y, main=NULL, adjustIncompletes=TRUE, ...) {
+  if (is.null(main))
+    main <- paste(sampleNames(x), 'median read counts')
+  counts <- assayDataElement(x, 'counts')
+  if (adjustIncompletes) {
+    counts <- counts / fData(x)$bases * 100
+    counts[fData(x)$bases == 0] <- 0
+  }
+  if ('filter' %in% colnames(fData(x))) {
+    condition <- fData(x)$filter
+  } else {
+    condition <- rep(TRUE, times=nrow(x))
+  }
+  gc <- round(fData(x)$gc)
+  mappability <- round(fData(x)$mappability)
+  median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
+    mappability=mappability[condition]), FUN=median)
+  median.counts <- median.counts[!is.na(median.counts$gc), ]
+  median.counts <- median.counts[!is.na(median.counts$mappability), ]
+  rownames(median.counts) <- paste(median.counts$gc, '-',
+    median.counts$mappability, sep='')
+  xx <- min(median.counts$mappability):max(median.counts$mappability)
+  yy <- min(median.counts$gc):max(median.counts$gc)
+  m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
+  for (i in seq_len(ncol(counts))) {
+    message('Plotting sample ', main[i])
+    for (j in 1:nrow(median.counts))
+      m[as.character(median.counts[j, 'mappability']),
+        as.character(median.counts[j, 'gc'])] <- median.counts[j, i+2]
+    image(xx, yy, m, col=paste('#', c(sprintf('%02X', 0:255), rep('FF', 256)),
+      c(rep('FF', 256), sprintf('%02X', 255:0)), sprintf('%02X', 255),
+      sep=''), xlab='mappability', ylab='GC content', main=main[i],
+      zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m,
+      finite=TRUE)))), ...)
+    contour(xx, yy, m, nlevels=20, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
+  }
+})

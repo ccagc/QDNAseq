@@ -30,6 +30,7 @@ importFrom('Rsamtools', 'scanBamFlag')
 
 export('getBinAnnotations')
 export('binReadCounts')
+export('readCountPlot')
 export('correctBins')
 export('poolRuns')
 export('addPhenodata')

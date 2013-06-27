@@ -31,11 +31,28 @@ readCounts <- binReadCounts(bins, path='tumors')
 # all files ending in .bam from the subdirectory 'tumors'
 @
 
-For the purpose of this tutorial, we are loading up data for chromosome 9 of low grade glioma sample LGG150:
+For the purpose of this tutorial, we load the example data set of chromosome 9 of low grade glioma sample LGG150.
 
 <<reg>>=
 data(LGG150)
 @
+
+Plot median read counts as a function of GC content and mappability. As the example data set only contains chromosome 9 and not the whole genome, this looks jagged. Normally, a smoother distribution is to be expected.
+
+<<label=readcounts,include=FALSE>>=
+readCountPlot(LGG150)
+@
+
+\begin{figure}
+\begin{center}
+<<label=readcounts,fig=TRUE,echo=FALSE>>=
+<<readcounts>>
+@
+\end{center}
+\caption{A plot}
+\label{fig:readcounts}
+\end{figure}
+
 
 Perform correction for GC content and mappability.
 
@@ -60,12 +77,12 @@ highlightFilters(LGG150, mappability=50, blacklist=0, residual=2, bases=0)
 
 \begin{figure}
 \begin{center}
-<<label=fig1,fig=TRUE,echo=FALSE>>=
+<<label=filters,fig=TRUE,echo=FALSE>>=
 <<filters>>
 @
 \end{center}
 \caption{A plot}
-\label{fig:one}
+\label{fig:filters}
 \end{figure}
 
 Apply filters.
@@ -89,12 +106,12 @@ plot(LGG150)
 
 \begin{figure}
 \begin{center}
-<<label=fig2,fig=TRUE,echo=FALSE>>=
+<<label=segmentation,fig=TRUE,echo=FALSE>>=
 <<segmentation>>
 @
 \end{center}
 \caption{A plot}
-\label{fig:two}
+\label{fig:segmentation}
 \end{figure}
 
 Tune segmentation parameters and iterate until satisfied. Next, perform mode normalization and call aberrations, and plot the final results.
@@ -109,13 +126,28 @@ plot(LGG150)
 
 \begin{figure}
 \begin{center}
-<<label=fig3,fig=TRUE,echo=FALSE>>=
+<<label=calls,fig=TRUE,echo=FALSE>>=
 <<calls>>
 @
 \end{center}
 \caption{A plot}
-\label{fig:three}
+\label{fig:calls}
 \end{figure}
+
+% caching
+
+% 661 bam files = 445G
+% cache/reads = 13G
+% cache/readCounts/15kbp = 139M
+% cache/readCounts/30kbp = 82M
+% cache/readCounts/100kbp = 32M
+% cache/readCounts/1000kbp = 5.2M
+
+% generating bin annotations
+% script
+% how 1000 genomes were downloaded
+% script
+
 
 \end{document}
 
