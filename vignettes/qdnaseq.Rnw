@@ -8,11 +8,21 @@
 \author{Ilari Scheinin}
 \maketitle
 
+\section{Running QDNAseq}
+
 First load the package.
 
 <<reg>>=
 library(qdnaseq)
 @
+
+Next we need the bin annotations. These are available pre-calculated for genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp. They can be loaded for example with:
+
+<<reg, eval=FALSE>>=
+bins <- getBinAnnotations(binsize=15)
+@
+
+If you are working with another genome build (or another species), see the section on generating the bin annotations.
 
 To load all the bam files in the current directory, run:
 
@@ -134,6 +144,12 @@ plot(LGG150)
 \label{fig:calls}
 \end{figure}
 
+Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
+
+<<reg>>=
+cgh <- makeCgh(LGG150)
+@
+
 % caching
 
 % 661 bam files = 445G
@@ -143,18 +159,42 @@ plot(LGG150)
 % cache/readCounts/100kbp = 32M
 % cache/readCounts/1000kbp = 5.2M
 
-% generating bin annotations
-% script
-% how 1000 genomes were downloaded
-% script
+\section{Generating bin annotations}
 
+<<reg, eval=FALSE>>=
+library(qdnaseq)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+binsize <- 15
+
+bins <- createBins(bsgenome=BSgenome.Hsapiens.UCSC.hg19, binsize=binsize)
+bins$mappability <- calculateMappability(bins,
+  bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
+  bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+bins$blacklist <- calculateBlacklist(bins,
+  bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
+  '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+tg <- binReadCounts(bins,
+  path='/path/to/1000Genomes/bam/files')
+tg <- correctBins(tg)
+bins$residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
+  median, na.rm=TRUE)
+bins <- AnnotatedDataFrame(bins,
+  varMetadata=data.frame(labelDescription=c(
+  'Chromosome name',
+  'Base pair start position',
+  'Base pair end position',
+  'Percentage of non-N nucleotides (of full bin size)',
+  'Percentage of C and G nucleotides (of non-N nucleotides)',
+  'Average mappability of 50mers with a maximum of 2 mismatches',
+  'Percent overlap with ENCODE blacklisted regions',
+  'Median loess residual from 1000 Genomes (50mers)'),
+  rownames=colnames(bins)))
+@
+
+% where to download ENCODE
+% how 1000 genomes were downloaded
 
 \end{document}
-
-Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
-
-<<reg>>=
-cgh <- makeCgh(LGG150)
-@
 
 % EOF
