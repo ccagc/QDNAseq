@@ -39,7 +39,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
-    bamnames <- sub(paste('\\.?', ext, '$', sep=''), '', bamfiles)
+    bamnames <- basename(bamfiles)
+    bamnames <- sub(paste('\\.?', ext, '$', sep=''), '', bamnames)
   } else if (length(bamfiles) != length(bamnames)) {
     stop('bamfiles and bamnames have to be of same length.')
   }
@@ -50,7 +51,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
       row.names=1L)
     phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
   }
-  counts <- matrix(nrow=nrow(bins), ncol=length(bamnames),
+  counts <- matrix(NA_real_, nrow=nrow(bins), ncol=length(bamnames),
     dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path,
@@ -58,7 +59,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     gc(FALSE)
   }
   phenodata$reads <- colSums(counts)
-  condition <- condition <- rep(TRUE, times=nrow(bins))
+  condition <- rep(TRUE, times=nrow(bins))
   if (filterAllosomes) {
     message('Flagging allosomes for filtering.')
     condition <- condition & bins$chromosome %in% as.character(1:22)
@@ -121,8 +122,14 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA,
   isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
+
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
   bamfile <- normalizePath(bamfile)
+  fullname <- sub('\\.[^.]*$', '', basename(bamfile))
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Check for cached results
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   readCountCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
     isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
     hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
@@ -131,16 +138,20 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize)
   readCountCacheDir <- c('QDNAseq', 'readCounts')
-  readCountCacheSuffix <- paste('.', sub('\\.[^.]*$', '',
-    basename(bamfile)), '.', binsize, 'kbp', sep='')
-  readCounts <- NULL
-  if (!force)
+  readCountCacheSuffix <- paste('.', fullname, '.', binsize, 'kbp', sep='')
+  if (!force) {
     readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir)
-  if (!is.null(readCounts)) {
-    message('Loaded binned read counts from cache for ', basename(bamfile))
-    return(readCounts)
+    if (!is.null(readCounts)) {
+      message('Loaded binned read counts from cache for ', basename(bamfile))
+      return(readCounts)
+    }
   }
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Retrieve counts per chromosome
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   readCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
     isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
     hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
@@ -149,40 +160,56 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq)
   readCacheDir <- c('QDNAseq', 'reads')
-  readCacheSuffix <- paste('.', sub('\\.[^.]*$', '',
-    basename(bamfile)), sep='')
+  readCacheSuffix <- paste('.', fullname, sep='')
   hits <- NULL
   if (!force)
     hits <- loadCache(key=readCacheKey, sources=bamfile,
       suffix=readCacheSuffix, dirs=readCacheDir)
+
   if (!is.null(hits)) {
     message('Loaded reads from cache for ', basename(bamfile), ',',
       appendLF=FALSE)
   } else {
     message('Extracting reads from ', basename(bamfile), ' ...',
       appendLF=FALSE)
-    hitsfile <- tempfile()
-    reads <- scanBam(bamfile,
-      param=ScanBamParam(flag=scanBamFlag(isPaired=isPaired,
+    flag <- scanBamFlag(isPaired=isPaired,
       isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
       hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
       isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
       isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
       isNotPassingQualityControls=isNotPassingQualityControls,
-      isDuplicate=isDuplicate), what=c('rname', 'pos', 'mapq')))[[1L]]
+      isDuplicate=isDuplicate)
+    params <- ScanBamParam(flag=flag, what=c('rname', 'pos', 'mapq'))
+    reads <- scanBam(bamfile, param=params)
+    reads <-reads[[1L]]
+
+    # Sort counts by chromosome
+    mapq <- reads[['mapq']]
+    hasMapq <- any(is.finite(mapq))
     hits <- list()
-    for (chr in unique(reads[['rname']]))
-      hits[[chr]] <- reads[['pos']][reads[['rname']] == chr &
-        reads[['mapq']] >= minMapq]
+    chrs <- unique(reads[['rname']])
+    for (chr in chrs) {
+      keep <- which(reads[['rname']] == chr)
+      if (hasMapq) {
+        keep <- keep[mapq[keep] >= minMapq]
+      }
+      hits[[chr]] <- reads[['pos']][keep]
+    }
     names(hits) <- sub('^chr', '', names(hits))
     rm(list=c('reads'))
     gc(FALSE)
+
     if (cache) {
       message(' saving in cache ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
     }
   }
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Bin by chromosome
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   message(' binning ...', appendLF=FALSE)
   ## TO DO: the binning is very memory intensive, and therefore should be done
   ## to only a maximum of maxChunk reads at a time.
@@ -202,11 +229,17 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   ## Not needed anymore
   rm(list=c("hits"))
   gc(FALSE)
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Store results in cache
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (cache) {
     message(' saving in cache ...', appendLF=FALSE)
     saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
   }
+
   message()
   readCounts
 }
