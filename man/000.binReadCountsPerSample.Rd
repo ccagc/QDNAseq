@@ -44,7 +44,7 @@
 }
 
 \value{
-  Returns ...
+  Returns an \code{\link[base]{integer}} \code{\link[base]{vector}}.
 }
 
 \author{Ilari Scheinin}

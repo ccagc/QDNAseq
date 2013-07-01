@@ -35,12 +35,12 @@
 binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   bamnames=NULL, phenofile=NULL, filterAllosomes=TRUE, ...) {
   if (is.null(bamfiles))
-    bamfiles <- list.files(path, pattern=paste(ext, '$', sep=''))
+    bamfiles <- list.files(path, pattern=sprintf('[.]?%s$', ext))
   if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
     bamnames <- basename(bamfiles)
-    bamnames <- sub(paste('\\.?', ext, '$', sep=''), '', bamnames)
+    bamnames <- sub(sprintf('[.]?%s$', ext), '', bamnames)
   } else if (length(bamfiles) != length(bamnames)) {
     stop('bamfiles and bamnames have to be of same length.')
   }
@@ -51,13 +51,15 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
       row.names=1L)
     phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
   }
-  counts <- matrix(NA_real_, nrow=nrow(bins), ncol=length(bamnames),
+
+  counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
     dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path,
       bamfiles[i]), ...)
     gc(FALSE)
   }
+
   phenodata$reads <- colSums(counts)
   condition <- rep(TRUE, times=nrow(bins))
   if (filterAllosomes) {
@@ -104,7 +106,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
 # }
 #
 # \value{
-#   Returns ...
+#   Returns an @integer @vector.
 # }
 #
 # @author "IS"
@@ -124,6 +126,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
 
   binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
+
   bamfile <- normalizePath(bamfile)
   fullname <- sub('\\.[^.]*$', '', basename(bamfile))
 
@@ -213,18 +216,24 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   message(' binning ...', appendLF=FALSE)
   ## TO DO: the binning is very memory intensive, and therefore should be done
   ## to only a maximum of maxChunk reads at a time.
-  readCounts <- numeric(length=nrow(bins))
+  readCounts <- integer(length=nrow(bins))
   for (chromosome in names(hits)) {
-    if (!chromosome %in% unique(bins$chromosome))
+    keep <- which(bins$chromosome == chromosome);
+
+    # No reads on this chromosome?
+    if (length(keep) == 0L)
       next
-    chromosome.breaks <- c(bins$start[bins$chromosome == chromosome],
-      max(bins$end[bins$chromosome == chromosome]))
+
+    chromosome.breaks <- c(bins$start[keep], max(bins$end[keep]))
     ## without as.numeric(), command below gives an integer overflow warning:
-    count <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks),
+    counts <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks),
       right=FALSE, plot=FALSE)$count
+
     ## count <- binCounts(hits[[chromosome]], chromosome.breaks) # matrixStats
-    readCounts[bins$chromosome == chromosome] <-
-      readCounts[bins$chromosome == chromosome] + count
+    readCounts[keep] <- readCounts[keep] + counts
+
+    ## Not needed anymore
+    chromosome.breaks <- keep <- count <- NULL
   }
   ## Not needed anymore
   rm(list=c("hits"))
