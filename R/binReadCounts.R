@@ -102,7 +102,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
 #   \item{isNotPrimaryRead=NA}{...}
 #   \item{isNotPassingQualityControls=NA}{...}
 #   \item{isDuplicate=FALSE}{...}
-#   \item{minMapq=37}{...}
+#   \item{minMapq}{If quality scores exists, the minimum quality score required in order to keep a read, otherwise all reads are kept.}
 # }
 #
 # \value{
@@ -184,18 +184,23 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
       isDuplicate=isDuplicate)
     params <- ScanBamParam(flag=flag, what=c('rname', 'pos', 'mapq'))
     reads <- scanBam(bamfile, param=params)
-    reads <-reads[[1L]]
+    reads <- reads[[1L]]
+
+    # Filter by read quality scores?
+    hasMapq <- any(is.finite(reads[['mapq']]))
+    if (hasMapq) {
+      keep <- which(reads[['mapq']] >= minMapq)
+      reads <- lapply(reads, FUN=function(x) x[keep])
+    }
+
+    # Drop quality scores - not needed anymore
+    reads[['mapq']] <- NULL
 
     # Sort counts by chromosome
-    mapq <- reads[['mapq']]
-    hasMapq <- any(is.finite(mapq))
     hits <- list()
     chrs <- unique(reads[['rname']])
     for (chr in chrs) {
       keep <- which(reads[['rname']] == chr)
-      if (hasMapq) {
-        keep <- keep[mapq[keep] >= minMapq]
-      }
       hits[[chr]] <- reads[['pos']][keep]
     }
     names(hits) <- sub('^chr', '', names(hits))
