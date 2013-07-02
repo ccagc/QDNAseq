@@ -52,7 +52,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     if ('probamp' %in% assayDataElementNames(object))
       assayDataElement(object, 'probamp') <- NULL
   }
-  condition <- condition <- rep(TRUE, times=nrow(object))
+  condition <- rep(TRUE, times=nrow(object))
   if (!is.na(bases))
     condition <- condition & fData(object)$bases >= bases
   if (!is.na(blacklist))
