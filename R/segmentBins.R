@@ -35,7 +35,7 @@
 setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, weights=TRUE, normalize=TRUE,
   inter=c(-0.1,0.1), ...) {
-  if (length(weights) == 1L & weights) {
+  if (length(weights) == 1L && weights) {
     if ('residual' %in% colnames(fData(object))) {
       message('Using median loess residuals of control data set as ',
         'segmentation weights.')
@@ -57,6 +57,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     residual[residual == 0] <- min(residual[residual != 0], na.rm=TRUE)
     weights <- 1/residual
   }
+
   copynumber <- copynumber(object)[binFilter(object), , drop=FALSE]
   CNA.object <- CNA(genomdat=copynumber,
     chrom=chromosomes(object)[binFilter(object)],

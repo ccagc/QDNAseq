@@ -36,7 +36,7 @@
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, mappability=50, blacklist=0, residual=2,
   bases=100, filterAllosomes=TRUE, force=FALSE) {
-  if ('segmented' %in% assayDataElementNames(object) & !force)
+  if (!force && 'segmented' %in% assayDataElementNames(object))
     stop('Data has already been segmented. Changing the filters will ',
       'remove segmentation (and possible calling) results. Please specify ',
       'force=TRUE, if you want this.')
