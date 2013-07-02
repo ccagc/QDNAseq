@@ -25,7 +25,9 @@ createBins(bsgenome, binsize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
 
 \arguments{
   \item{bsgenome}{A BSgenome ...}
-  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying ...}
+  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
+   in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+   to 15 kbp bins.}
   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
     in their names ...}
   \item{ignoreMitochondria}{Wheter to ignore mitochondrial DNA  ...}

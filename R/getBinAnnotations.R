@@ -10,14 +10,19 @@
 # }
 #
 # \arguments{
-#   \item{binsize}{A @numeric scalar specifying ...}
-#   \item{genome}{A @character string ...}
-#   \item{cache}{A @logical ...}
-#   \item{force}{A @logical ...}
+#   \item{binsize}{A @numeric scalar specifying the width of the bins
+#    in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+#    to 15 kbp bins.}
+#   \item{genome}{A @character string specify the genome and genome version
+#    to be used.}
+#   \item{cache}{If @TRUE, the retrieved bin annotation data is cached
+#    on the file system, otherwise not.}
+#   \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
+#    regardless of it already exists in the cache or not.}
 # }
 #
 # \value{
-#   Returns ...
+#   Returns a @see "Biobase::AnnotatedDataFrame" object.
 # }
 #
 # @author "IS"
@@ -38,23 +43,24 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
   } else {
     stop('Unknown genome: ', genome)
   }
-  bins <- NULL
   cacheKey <- list(genome=genome.name, binsize=binsize)
   cacheDir <- c('QDNAseq', 'binAnnotations')
   cacheSuffix <- paste('.', genome.name, '.', binsize, 'kbp', sep='')
-  if (!force)
+  if (!force) {
     # TO DO: somehow check if file available online is newer than cached one?
     bins <- loadCache(key=cacheKey, suffix=cacheSuffix, dirs=cacheDir)
-  if (!is.null(bins)) {
-    message('Bin annotations for genome ', genome.name, ' and bin size of ',
-      binsize, 'kbp loaded from cache.')
-    return(bins)
+    if (!is.null(bins)) {
+      message('Bin annotations for genome ', genome.name, ' and bin size of ',
+        binsize, 'kbp loaded from cache.')
+      return(bins)
+    }
   }
+
   message('Downloading bin annotations for genome ', genome.name,
     ' and bin size of ', binsize, 'kbp ...', appendLF=FALSE)
-  remotefile <-
-    paste('http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.',
-    genome.name, '.', binsize, 'kbp.rds', sep='')
+  filename <- sprintf('QDNAseq.%s.%gkbp.rds', genome.name, binsize)
+  urlPath <- 'http://cdn.bitbucket.org/ccagc/qdnaseq/downloads'
+  remotefile <- file.path(urlPath, filename, fsep='/')
   localfile <- tempfile()
   tryCatch({
     library('R.utils')
@@ -93,7 +99,9 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
 #
 # \arguments{
 #   \item{bsgenome}{A BSgenome ...}
-#   \item{binsize}{A @numeric scalar specifying ...}
+#   \item{binsize}{A @numeric scalar specifying the width of the bins
+#    in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+#    to 15 kbp bins.}
 #   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
 #     in their names ...}
 #   \item{ignoreMitochondria}{Wheter to ignore mitochondrial DNA  ...}
@@ -121,17 +129,21 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
   bases <- gc <- numeric()
   message('Creating bins of ', binsize, ' kbp for genome ',
     substitute(bsgenome))
+
+  # Bin size in units of base pairs
+  binWidth <- binsize*1000L
+
   for (chr in chrs) {
     message('  Processing ', chr, ' ...', appendLF=FALSE)
     chr.size <- lengths[chr]
-    chr.starts <- seq(from=1, to=chr.size, by=binsize*1000L)
-    chr.ends <- chr.starts + binsize*1000L - 1L
+    chr.starts <- seq(from=1, to=chr.size, by=binWidth)
+    chr.ends <- chr.starts + binWidth - 1L
     chr.ends[length(chr.ends)] <- chr.size
     chr.seq <- BSgenome::getSeq(bsgenome, chr, as.character=TRUE)
     bin.seq <- substring(chr.seq, first=chr.starts, last=chr.ends)
     acgt <- gsub('[^ACGT]', '', bin.seq)
     cg <- gsub('[^CG]', '', acgt)
-    chr.bases <- nchar(acgt) / (binsize*1000L) * 100
+    chr.bases <- nchar(acgt) / (binWidth) * 100
     chr.gc <- nchar(cg) / nchar(acgt) * 100
     start <- c(start, chr.starts)
     end <- c(end, chr.ends)
@@ -139,9 +151,9 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
     gc <- c(gc, chr.gc)
     message()
   }
-  gc[is.nan(gc)] <- NA
-  bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths /
-    (binsize*1000L))), start, end, bases, gc, stringsAsFactors=FALSE)
+  gc[is.nan(gc)] <- NA_real_
+  bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
+                     start, end, bases, gc, stringsAsFactors=FALSE)
   bins$chromosome <- sub('^chr', '', bins$chromosome)
   rownames(bins) <- sprintf('%s:%i-%i', bins$chromosome, bins$start, bins$end)
   bins
@@ -163,8 +175,9 @@ calculateMappability <- function(bins, bigWigFile,
   write.table(bins, binbed, quote=FALSE, sep='\t', row.names=FALSE,
     col.names=FALSE)
   options(scipen=scipen)
-  system(paste(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
-    '" -bedOut="', mapbed, '" /dev/null', sep=''))
+  cmd <- paste(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
+    '" -bedOut="', mapbed, '" /dev/null', sep='')
+  system(cmd)
   map <- read.table(mapbed, sep='\t', as.is=TRUE)
   map$V5 * 100
 }

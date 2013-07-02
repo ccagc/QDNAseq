@@ -21,14 +21,19 @@ getBinAnnotations(binsize, genome="hg19", cache=TRUE, force=FALSE)
 }
 
 \arguments{
-  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying ...}
-  \item{genome}{A \code{\link[base]{character}} string ...}
-  \item{cache}{A \code{\link[base]{logical}} ...}
-  \item{force}{A \code{\link[base]{logical}} ...}
+  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
+   in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+   to 15 kbp bins.}
+  \item{genome}{A \code{\link[base]{character}} string specify the genome and genome version
+   to be used.}
+  \item{cache}{If \code{\link[base:logical]{TRUE}}, the retrieved bin annotation data is cached
+   on the file system, otherwise not.}
+  \item{force}{If \code{\link[base:logical]{TRUE}}, the bin anonnation data is retrieved/calculated
+   regardless of it already exists in the cache or not.}
 }
 
 \value{
-  Returns ...
+  Returns a \code{\link[Biobase]{AnnotatedDataFrame}} object.
 }
 
 \author{Ilari Scheinin}
