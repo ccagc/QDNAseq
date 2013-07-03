@@ -129,10 +129,10 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         }
       }
       amps <- cn
-      amps[amps < ylim[2]] <- NA
+      amps[amps < ylim[2]] <- NA_real_
       amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
       dels <- cn
-      dels[dels > ylim[1]] <- NA
+      dels[dels > ylim[1]] <- NA_real_
       dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
       par(xpd=TRUE)
       points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)

@@ -44,8 +44,8 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
     object <- object[,order(samples)]
     return(object)
   }
-  newphenodata <- data.frame(name=newsamples, reads=NA, loess.span=NA,
-    loess.family=NA, row.names=newsamples, stringsAsFactors=FALSE)
+  newphenodata <- data.frame(name=newsamples, reads=NA_integer_, loess.span=NA_real_,
+    loess.family=NA_character_, row.names=newsamples, stringsAsFactors=FALSE)
   ## FIXME: other phenodata variables get droppped, should be kept
   newcounts <- matrix(nrow=nrow(counts), ncol=length(newsamples),
     dimnames=list(rownames(counts), newsamples))
