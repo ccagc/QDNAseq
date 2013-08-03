@@ -34,7 +34,7 @@
 
 setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...) {
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE, ...) {
   counts <- assayDataElement(object, 'counts')
   if (adjustIncompletes) {
     counts <- counts / fData(object)$bases * 100L
@@ -84,7 +84,8 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
         span=span[i], family=family[i]) # , ...)
       fit <- l$fitted
       names(fit) <- rownames(median.counts)
-      residuals[, i] <- corvals - fit[paste(gc, '-', mappability, sep='')]
+      residuals[, i] <- (corvals - fit[paste(gc, '-', mappability, sep='')]) /
+        fit[paste(gc, '-', mappability, sep='')]
       correction <- median(fit, na.rm=TRUE) - fit
       corvals <- corvals + correction[paste(gc, '-', mappability, sep='')]
       corvals <- corvals - min(corvals, na.rm=TRUE)
