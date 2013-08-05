@@ -76,13 +76,13 @@ Perform median normalization.
 LGG150 <- normalizeBins(LGG150)
 @
 
-To apply filtering, plot the profile and highlight bins to be filtered out for evaluation. By default, bins with mappabilities lower than 50 and the 1000 Genomes residuals larger than 2 standard deviations are filtered out.
+To apply filtering, plot the profile and highlight bins to be filtered out for evaluation. By default, bins with mappabilities lower than 50 and the 1000 Genomes residuals larger than 1 standard deviations are filtered out.
 
 % png? https://stat.ethz.ch/pipermail/r-help/2009-November/218795.html
 
 <<label=filters,include=FALSE>>=
 plot(LGG150)
-highlightFilters(LGG150, mappability=50, blacklist=0, residual=2, bases=0)
+highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
 @
 
 \begin{figure}
@@ -98,7 +98,7 @@ highlightFilters(LGG150, mappability=50, blacklist=0, residual=2, bases=0)
 Apply filters.
 
 <<reg>>=
-LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=2,
+LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=1,
   bases=0)
 @
 
@@ -162,23 +162,38 @@ cgh <- makeCgh(LGG150)
 \section{Generating bin annotations}
 
 <<reg, eval=FALSE>>=
+# load required packages for human reference genome build hg19
 library(qdnaseq)
 library(BSgenome.Hsapiens.UCSC.hg19)
 
+# set the bin size
 binsize <- 15
 
+# create bins from the reference genome
 bins <- createBins(bsgenome=BSgenome.Hsapiens.UCSC.hg19, binsize=binsize)
+
+# calculate mappabilites per bin from ENCODE mapability tracks
 bins$mappability <- calculateMappability(bins,
   bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
   bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+
+# calculate overlap with ENCODE blacklisted regions
 bins$blacklist <- calculateBlacklist(bins,
   bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+
+# load data for the 1000 Genomes (or similar) data set
 tg <- binReadCounts(bins,
   path='/path/to/1000Genomes/bam/files')
-tg <- correctBins(tg)
-bins$residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
+# perform correction for GC content and mappbility
+tg <- correctBins(tg, storeResiduals=TRUE)
+# calculate median residual across samples
+residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
   median, na.rm=TRUE)
+# transform the median residuals to z-scores
+bins$residual <- scale(residual)[, 1]
+
+# generate an AnnotatedDataFrame object
 bins <- AnnotatedDataFrame(bins,
   varMetadata=data.frame(labelDescription=c(
   'Chromosome name',
@@ -191,6 +206,20 @@ bins <- AnnotatedDataFrame(bins,
   'Median loess residual from 1000 Genomes (50mers)'),
   rownames=colnames(bins)))
 @
+
+% library(qdnaseq)
+% for (binsize in c(1, 5, 10, 15, 30, 50, 100, 500, 1000)) {
+%   bins <- getBinAnnotations(binsize)
+%   tg <- binReadCounts(bins,
+%     path='/storage/shark1/data/SeqAnalysis/1000Genomes/read.length.50/bam/')
+%   tg <- correctBins(tg, storeResiduals=TRUE)
+%   residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
+%     median, na.rm=TRUE)
+%   residual[!bins$chromosome %in% as.character(1:22)] <- NA
+%   # bins$residual <- scale(residual)[, 1]
+%   saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.rds', sep=''),
+%     compress='xz')
+% }
 
 % where to download ENCODE
 % how 1000 genomes were downloaded

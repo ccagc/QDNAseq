@@ -31,7 +31,7 @@
 #*/#########################################################################
 setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, col='red', mappability=50, blacklist=0,
-  residual=2, bases=100, ...) {
+  residual=1, bases=100, ...) {
   condition <- condition <- rep(TRUE, times=nrow(object))
   if (!is.na(bases))
     condition <- condition & fData(object)$bases >= bases

@@ -15,7 +15,7 @@
 \title{Highlights data points in a plotted profile to evaluate filtering}
 
 \usage{
-highlightFilters(object, col="red", mappability=50, blacklist=0, residual=2, bases=100,
+highlightFilters(object, col="red", mappability=50, blacklist=0, residual=1, bases=100,
   ...)
 }
 

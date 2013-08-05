@@ -34,7 +34,7 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, mappability=50, blacklist=0, residual=2,
+  definition=function(object, mappability=50, blacklist=0, residual=1,
   bases=100, filterAllosomes=TRUE, force=FALSE) {
   if (!force && 'segmented' %in% assayDataElementNames(object))
     stop('Data has already been segmented. Changing the filters will ',
@@ -60,8 +60,9 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   if (!is.na(mappability))
     condition <- condition & fData(object)$mappability >= mappability
   if (!is.na(residual))
-    condition <- condition & abs(fData(object)$residual) <=
-      residual*sd(fData(object)$residual, na.rm=TRUE)
+    condition <- condition & (is.na(fData(object)$residual) |
+      abs(fData(object)$residual) <= residual*sd(fData(object)$residual,
+      na.rm=TRUE))
   if (filterAllosomes) {
     condition2 <- fData(object)$chromosome %in% as.character(1:22)
     condition <- condition & condition2
