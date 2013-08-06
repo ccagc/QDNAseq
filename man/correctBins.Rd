@@ -16,7 +16,7 @@
 
 \usage{
 correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
-  keepCounts=TRUE, storeResiduals=TRUE, ...)
+  keepCounts=TRUE, storeResiduals=TRUE, force=FALSE, ...)
 }
 
 \description{
@@ -31,6 +31,7 @@ correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
   \item{keepCounts}{...}
   \item{storeResiduals}{...}
   \item{...}{Further aguments to loess.}
+  \item{force}{...}
 }
 
 \value{

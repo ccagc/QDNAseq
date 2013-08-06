@@ -37,7 +37,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       if ('calls' %in% assayDataElementNames(x)) {
         ylim <- c(-5, 5)
       } else {
-        ylim <- c(-2, 5)
+        ylim <- c(-3, 5)
       }
     }
     if (is.null(main))

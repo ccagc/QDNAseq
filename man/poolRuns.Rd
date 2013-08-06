@@ -15,7 +15,7 @@
 \title{Pools binned read counts across samples}
 
 \usage{
-poolRuns(object, samples)
+poolRuns(object, samples, force=FALSE)
 }
 
 \description{
@@ -25,6 +25,7 @@ poolRuns(object, samples)
 \arguments{
   \item{object}{...}
   \item{samples}{...}
+  \item{force}{...}
 }
 
 \value{

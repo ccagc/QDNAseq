@@ -15,7 +15,7 @@
 \title{Segments and calls total copy numbers}
 
 \usage{
-segmentBins(object, weights=TRUE, normalize=TRUE, inter=c(-0.1, 0.1), ...)
+segmentBins(object, weights=FALSE, normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...)
 }
 
 \description{
@@ -28,6 +28,7 @@ segmentBins(object, weights=TRUE, normalize=TRUE, inter=c(-0.1, 0.1), ...)
     loess residuals are used as weights.}
   \item{normalize}{...}
   \item{inter}{...}
+  \item{force}{...}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 

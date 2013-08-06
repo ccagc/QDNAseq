@@ -40,7 +40,7 @@
   \item{isNotPrimaryRead=NA}{...}
   \item{isNotPassingQualityControls=NA}{...}
   \item{isDuplicate=FALSE}{...}
-  \item{minMapq=37}{...}
+  \item{minMapq}{If quality scores exists, the minimum quality score required in order to keep a read, otherwise all reads are kept.}
 }
 
 \value{

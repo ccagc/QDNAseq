@@ -15,7 +15,8 @@
 \title{Normalizes binned read counts}
 
 \usage{
-normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE, ...)
+normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
+  force=FALSE, ...)
 }
 
 \description{
@@ -27,6 +28,7 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE, .
   \item{method}{A \code{\link[base]{character}} string specifying ...}
   \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
   \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
+  \item{force}{...}
   \item{...}{Further arguments to DNAcopy::smooth.CNA}
 }
 

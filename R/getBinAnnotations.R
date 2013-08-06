@@ -244,6 +244,4 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   blacklist
 }
 
-# 1000 Genomes residuals?
-
 # EOF

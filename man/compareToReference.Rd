@@ -15,7 +15,7 @@
 \title{Divide binned read counts with those of reference samples}
 
 \usage{
-compareToReference(object, references)
+compareToReference(object, references, force=FALSE)
 }
 
 \description{
@@ -25,6 +25,7 @@ compareToReference(object, references)
 \arguments{
   \item{object}{...}
   \item{references}{...}
+  \item{force}{...}
 }
 
 \value{
