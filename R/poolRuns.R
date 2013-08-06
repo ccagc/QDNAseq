@@ -14,6 +14,7 @@
 # \arguments{
 #   \item{object}{...}
 #   \item{samples}{...}
+#   \item{force}{...}
 # }
 #
 # \value{
@@ -28,7 +29,27 @@
 #
 #*/#########################################################################
 setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
-  samples='character'), definition=function(object, samples) {
+  samples='character'), definition=function(object, samples, force=FALSE) {
+
+  if (!force && 'normalized' %in% assayDataElementNames(object))
+    stop('Data has already been normalized. Pooling runs will ',
+      'remove normalization (and possible segmentation and calling) ',
+      'results. Please specify force=TRUE, if you want this.')
+  if ('normalized' %in% assayDataElementNames(object))
+    assayDataElement(object, 'normalized') <- NULL
+  if ('segmented' %in% assayDataElementNames(object))
+    assayDataElement(object, 'segmented') <- NULL
+  if ('calls' %in% assayDataElementNames(object)) {
+    assayDataElement(object, 'calls') <- NULL
+    assayDataElement(object, 'probloss') <- NULL
+    assayDataElement(object, 'probnorm') <- NULL
+    assayDataElement(object, 'probgain') <- NULL
+    if ('probdloss' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probdloss') <- NULL
+    if ('probamp' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probamp') <- NULL
+  }
+
   phenodata <- pData(object)
   bins <- featureData(object)
   counts <- assayDataElement(object, 'counts')

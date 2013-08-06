@@ -60,9 +60,9 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   if (!is.na(mappability))
     condition <- condition & fData(object)$mappability >= mappability
   if (!is.na(residual))
-    condition <- condition & (is.na(fData(object)$residual) |
+    condition <- condition & !is.na(fData(object)$residual) &
       abs(fData(object)$residual) <= residual*sd(fData(object)$residual,
-      na.rm=TRUE))
+      na.rm=TRUE)
   if (filterAllosomes) {
     condition2 <- fData(object)$chromosome %in% as.character(1:22)
     condition <- condition & condition2

@@ -19,6 +19,7 @@
 #   \item{keepCounts}{...}
 #   \item{storeResiduals}{...}
 #   \item{...}{Further aguments to loess.}
+#   \item{force}{...}
 # }
 #
 # \value{
@@ -34,7 +35,26 @@
 
 setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE, ...) {
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE, force=FALSE,
+  ...) {
+  if (!force && 'normalized' %in% assayDataElementNames(object))
+    stop('Data has already been normalized. Changing the correction will ',
+      'remove normalization (and possible segmentation and calling) ',
+      'results. Please specify force=TRUE, if you want this.')
+  if ('normalized' %in% assayDataElementNames(object))
+    assayDataElement(object, 'normalized') <- NULL
+  if ('segmented' %in% assayDataElementNames(object))
+    assayDataElement(object, 'segmented') <- NULL
+  if ('calls' %in% assayDataElementNames(object)) {
+    assayDataElement(object, 'calls') <- NULL
+    assayDataElement(object, 'probloss') <- NULL
+    assayDataElement(object, 'probnorm') <- NULL
+    assayDataElement(object, 'probgain') <- NULL
+    if ('probdloss' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probdloss') <- NULL
+    if ('probamp' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probamp') <- NULL
+  }
   counts <- assayDataElement(object, 'counts')
   if (adjustIncompletes) {
     counts <- counts / fData(object)$bases * 100L

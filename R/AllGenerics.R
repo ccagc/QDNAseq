@@ -1,20 +1,22 @@
 setGeneric('correctBins', function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, ...)
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, force=FALSE,
+  ...)
   standardGeneric('correctBins'))
-setGeneric('poolRuns', function(object, samples) standardGeneric('poolRuns'))
-setGeneric('compareToReference', function(object, references)
+setGeneric('poolRuns', function(object, samples, force=FALSE)
+  standardGeneric('poolRuns'))
+setGeneric('compareToReference', function(object, references, force=FALSE)
   standardGeneric('compareToReference'))
 setGeneric('normalizeBins', function(object, method='median',
-  smoothOutliers=TRUE, logTransform=TRUE, ...)
+  smoothOutliers=TRUE, logTransform=TRUE, force=FALSE, ...)
   standardGeneric('normalizeBins'))
 setGeneric('highlightFilters', function(object, col='red', mappability=50,
-  blacklist=0, residual=2, bases=100, ...)
+  blacklist=0, residual=1, bases=100, ...)
   standardGeneric('highlightFilters'))
 setGeneric('applyFilters', function(object, mappability=50,
-  blacklist=0, residual=2, bases=100, filterAllosomes=TRUE, force=FALSE)
+  blacklist=0, residual=1, bases=100, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
-setGeneric('segmentBins', function(object, weights=TRUE, normalize=TRUE,
-  inter=c(-0.1,0.1), ...) standardGeneric('segmentBins'))
+setGeneric('segmentBins', function(object, weights=FALSE, normalize=TRUE,
+  inter=c(-0.1,0.1), force=FALSE, ...) standardGeneric('segmentBins'))
 setGeneric('callBins', function(object, ...)
   standardGeneric('callBins'))
 setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))

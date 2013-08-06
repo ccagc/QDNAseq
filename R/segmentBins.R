@@ -17,6 +17,7 @@
 #     loess residuals are used as weights.}
 #   \item{normalize}{...}
 #   \item{inter}{...}
+#   \item{force}{...}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -33,8 +34,24 @@
 #
 #*/#########################################################################
 setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, weights=TRUE, normalize=TRUE,
-  inter=c(-0.1,0.1), ...) {
+  definition=function(object, weights=FALSE, normalize=TRUE,
+  inter=c(-0.1,0.1), force=FALSE, ...) {
+
+  if (!force && 'calls' %in% assayDataElementNames(object))
+    stop('Data has already been called. Changing the segmentation will ',
+      'remove calling ',
+      'results. Please specify force=TRUE, if you want this.')
+  if ('calls' %in% assayDataElementNames(object)) {
+    assayDataElement(object, 'calls') <- NULL
+    assayDataElement(object, 'probloss') <- NULL
+    assayDataElement(object, 'probnorm') <- NULL
+    assayDataElement(object, 'probgain') <- NULL
+    if ('probdloss' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probdloss') <- NULL
+    if ('probamp' %in% assayDataElementNames(object))
+      assayDataElement(object, 'probamp') <- NULL
+  }
+
   if (length(weights) == 1L && weights) {
     if ('residual' %in% colnames(fData(object))) {
       message('Using median loess residuals of control data set as ',
@@ -42,7 +59,9 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
       residual <- fData(object)$residual
     } else if ('residuals' %in% assayDataElementNames(object)) {
       message('Using median loess residuals as segmentation weights.')
-      residual <- rowMedians(assayDataElement(object, 'residuals'), na.rm=TRUE)
+      residual <- rowMedians(assayDataElement(object, 'residuals'),
+        na.rm=TRUE)
+      # residual <- scale(residual)[, 1]
     } else {
       stop('No loess residuals found. Please provide a vector of weights ',
         'or specify weights=FALSE.')
