@@ -143,7 +143,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         madDiff(cn, na.rm=TRUE)))), side=3, line=0,
         adj=1, cex=par('cex'))
       ### number of data points
-      str <- paste(round(sum(!is.na(cn)) / 1000), 'k x ', sep='')
+      str <- paste(round(sum(condition) / 1000), 'k x ', sep='')
       probe <- median(bpend(x)-bpstart(x)+1)
       if (probe < 1000) {
         str <- paste(str, probe, ' bp', sep='')
@@ -239,7 +239,7 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   mtext('gains', side=2, line=3, at=0.5)
   mtext('losses', side=2, line=3, at=-0.5)
   ### number of data points
-  str <- paste(round(nrow(x) / 1000), 'k x ', sep='')
+  str <- paste(round(sum(condition) / 1000), 'k x ', sep='')
   probe <- median(bpend(x)-bpstart(x)+1)
   if (probe < 1000) {
     str <- paste(str, probe, ' bp', sep='')
@@ -307,6 +307,7 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   xx <- min(median.counts$mappability):max(median.counts$mappability)
   yy <- min(median.counts$gc):max(median.counts$gc)
   m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
+
   for (i in seq_len(ncol(counts))) {
     message('Plotting sample ', main[i])
     for (j in 1:nrow(median.counts))
@@ -320,6 +321,22 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
       sprintf('%02X', 255L), sep=''), xlab='mappability', ylab='GC content',
       main=main[i], zlim=c(-max(abs(range(m, finite=TRUE))),
       max(abs(range(m, finite=TRUE)))), ...)
-    contour(xx, yy, m, nlevels=20L, zlim=c(-max(abs(range(m, finite=TRUE))), max(abs(range(m, finite=TRUE)))), add=TRUE)
+    contour(xx, yy, m, nlevels=20L, zlim=c(-max(abs(range(m, finite=TRUE))),
+      max(abs(range(m, finite=TRUE)))), add=TRUE)
+
+    str <- paste(round(sum(condition) / 1000), 'k x ', sep='')
+    probe <- median(bpend(x)-bpstart(x)+1)
+    if (probe < 1000) {
+      str <- paste(str, probe, ' bp', sep='')
+    } else {
+      str <- paste(str, round(probe / 1000), ' kbp', sep='')
+    }
+    # str <- paste(str, ', ', format(nrow(median.counts), big.mark=','),
+    #   ' combinations of GC content and mappability', sep='')
+    mtext(str, side=3, line=0, adj=0)
+
+    if ('reads' %in% names(pData(x)))
+      mtext(paste(format(x$reads[i], trim=TRUE, big.mark=','), ' reads',
+        sep=''), side=3, line=0, adj=1, cex=par('cex'))
   }
 })
