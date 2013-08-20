@@ -74,8 +74,9 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   par(xpd=FALSE)
   chrom.in.plot <- unique(chromosomes(object)[binFilter(object)])
   has.data <- !is.na(copynumber(object)[, i])
-  message('Highlighted ', format(sum(!condition[has.data &
-    chromosomes(object) %in% chrom.in.plot]), big.mark=','), ' bins.')
+  num <- sum(!condition[has.data & chromosomes(object) %in% chrom.in.plot])
+  message('Highlighted ', format(num, big.mark=','), ' bins.')
+  return(invisible(num))
 })
 
 # EOF
