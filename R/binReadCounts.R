@@ -61,7 +61,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   }
 
   phenodata$reads <- colSums(counts)
-  condition <- rep(TRUE, times=nrow(bins))
+  condition <- !is.na(bins$gc)
   if (filterAllosomes) {
     message('Flagging allosomes for filtering.')
     condition <- condition & bins$chromosome %in% as.character(1:22)
@@ -146,7 +146,15 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir)
     if (!is.null(readCounts)) {
-      message('Loaded binned read counts from cache for ', basename(bamfile))
+      message('Loaded binned read counts from cache for ', basename(bamfile),
+        appendLF=FALSE)
+      if (is.null(attr(readCounts, 'QDNAseqVersion'))) {
+        attr(readCounts, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+        message(', re-caching with version number ...', appendLF=FALSE)
+        saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
+          suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
+      }
+      message()
       return(readCounts)
     }
   }
@@ -172,6 +180,12 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   if (!is.null(hits)) {
     message('Loaded reads from cache for ', basename(bamfile), ',',
       appendLF=FALSE)
+    if (is.null(attr(hits, 'QDNAseqVersion'))) {
+      attr(hits, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+      message(' re-caching with version number ...', appendLF=FALSE)
+      saveCache(hits, key=readCacheKey, sources=bamfile,
+        suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
+    }
   } else {
     message('Extracting reads from ', basename(bamfile), ' ...',
       appendLF=FALSE)
