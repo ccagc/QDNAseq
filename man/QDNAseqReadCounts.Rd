@@ -16,10 +16,10 @@
  \alias{bpstart,QDNAseqReadCounts-method}
  \alias{bpend,QDNAseqReadCounts-method}
 
- \title{Container for qdnaseq data}
+ \title{Container for qdnaseq read count data}
 
  \description{
-   Container for qdnaseq data
+   Container for qdnaseq read count data
  }
 
  \author{Ilari Scheinin}

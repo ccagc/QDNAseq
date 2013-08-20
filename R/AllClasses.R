@@ -5,7 +5,7 @@
 # @alias bpstart,QDNAseqReadCounts-method
 # @alias bpend,QDNAseqReadCounts-method
 #
-# @title "Container for qdnaseq data"
+# @title "Container for qdnaseq read count data"
 # 
 # \description{
 #   @get "title"
@@ -18,7 +18,7 @@
 setClass('QDNAseqReadCounts',
   contains    = 'eSet',
   prototype   = prototype(new('VersionedBiobase',
-  versions    = c(classVersion('eSet'), qdnaseq='1.0.0')))
+  versions    = c(classVersion('eSet'), qdnaseq=packageVersion('qdnaseq'))))
 )
 
 # EOF

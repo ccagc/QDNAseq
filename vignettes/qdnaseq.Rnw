@@ -164,6 +164,7 @@ cgh <- makeCgh(LGG150)
 <<reg, eval=FALSE>>=
 # load required packages for human reference genome build hg19
 library(qdnaseq)
+library(Biobase)
 library(BSgenome.Hsapiens.UCSC.hg19)
 
 # set the bin size
@@ -217,6 +218,8 @@ bins <- AnnotatedDataFrame(bins,
 %     median, na.rm=TRUE)
 %   residual[!bins$chromosome %in% as.character(1:22)] <- NA
 %   # bins$residual <- scale(residual)[, 1]
+%   attr(bins, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+%   attr(bins, 'QDNAseqDownloaded') <- TRUE
 %   saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.rds', sep=''),
 %     compress='xz')
 % }
