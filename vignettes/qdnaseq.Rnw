@@ -82,7 +82,7 @@ To apply filtering, plot the profile and highlight bins to be filtered out for e
 
 <<label=filters,include=FALSE>>=
 plot(LGG150)
-highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
+highlightFilters(LGG150, mappability=50, blacklist=0, residual=4, bases=0)
 @
 
 \begin{figure}
@@ -98,8 +98,8 @@ highlightFilters(LGG150, mappability=50, blacklist=0, residual=1, bases=0)
 Apply filters.
 
 <<reg>>=
-LGG150 <- applyFilters(LGG150, mappability=50, blacklist=0, residual=1,
-  bases=0)
+LGG150 <- applyFilters(LGG150, residual=4, blacklist=0,
+  mappability=50, bases=0)
 @
 
 Data now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
@@ -220,6 +220,8 @@ bins <- AnnotatedDataFrame(bins,
 %   # bins$residual <- scale(residual)[, 1]
 %   attr(bins, 'QDNAseqVersion') <- packageVersion('qdnaseq')
 %   attr(bins, 'QDNAseqDownloaded') <- TRUE
+%   attr(bins, 'residualMadDiff') <-
+%     matrixStats::madDiff(bins$residual, na.rm=TRUE)
 %   saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.rds', sep=''),
 %     compress='xz')
 % }

@@ -52,9 +52,16 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
     if (!is.null(bins)) {
       message('Bin annotations for genome ', genome.name, ' and bin size of ',
         binsize, 'kbp loaded from cache.')
+
       if (is.null(attr(bins, 'QDNAseqVersion'))) {
         message('Old version detected, ignoring.')
       } else {
+        if (is.null(attr(bins, 'residualMadDiff'))) {
+          message('Old version detected, updating ....')
+          attr(bins, 'residualMadDiff') <- madDiff(bins$residual, na.rm=TRUE)
+          saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
+            compress=TRUE)
+        }
         return(bins)
       }
     }

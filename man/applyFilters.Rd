@@ -15,7 +15,7 @@
 \title{Adjusts the filter on which bins are used}
 
 \usage{
-applyFilters(object, mappability=50, blacklist=0, residual=1, bases=100,
+applyFilters(object, residual=4, blacklist=0, mappability=50, bases=100,
   filterAllosomes=TRUE, force=FALSE)
 }
 
@@ -25,9 +25,9 @@ applyFilters(object, mappability=50, blacklist=0, residual=1, bases=100,
 
 \arguments{
   \item{object}{A QDNAseqReadCounts object ...}
-  \item{mappability}{...}
-  \item{blacklist}{...}
   \item{residual}{...}
+  \item{blacklist}{...}
+  \item{mappability}{...}
   \item{bases}{...}
   \item{filterAllosomes}{...}
   \item{force}{...}

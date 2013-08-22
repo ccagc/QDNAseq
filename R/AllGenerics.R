@@ -9,11 +9,11 @@ setGeneric('compareToReference', function(object, references, force=FALSE)
 setGeneric('normalizeBins', function(object, method='median',
   smoothOutliers=TRUE, logTransform=TRUE, force=FALSE, ...)
   standardGeneric('normalizeBins'))
-setGeneric('highlightFilters', function(object, col='red', mappability=50,
-  blacklist=0, residual=1, bases=100, ...)
+setGeneric('highlightFilters', function(object, col='red', residual=NA,
+  blacklist=NA, mappability=NA, bases=NA, type='union', ...)
   standardGeneric('highlightFilters'))
-setGeneric('applyFilters', function(object, mappability=50,
-  blacklist=0, residual=1, bases=100, filterAllosomes=TRUE, force=FALSE)
+setGeneric('applyFilters', function(object, residual=4, blacklist=0,
+  mappability=50, bases=100, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
 setGeneric('segmentBins', function(object, weights=FALSE, normalize=TRUE,
   inter=c(-0.1,0.1), force=FALSE, ...) standardGeneric('segmentBins'))

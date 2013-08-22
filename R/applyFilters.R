@@ -13,9 +13,9 @@
 #
 # \arguments{
 #   \item{object}{A QDNAseqReadCounts object ...}
-#   \item{mappability}{...}
-#   \item{blacklist}{...}
 #   \item{residual}{...}
+#   \item{blacklist}{...}
+#   \item{mappability}{...}
 #   \item{bases}{...}
 #   \item{filterAllosomes}{...}
 #   \item{force}{...}
@@ -34,7 +34,7 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, mappability=50, blacklist=0, residual=1,
+  definition=function(object, residual=4, blacklist=0, mappability=50,
   bases=100, filterAllosomes=TRUE, force=FALSE) {
   if (!force && 'segmented' %in% assayDataElementNames(object))
     stop('Data has already been segmented. Changing the filters will ',
@@ -52,32 +52,35 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     if ('probamp' %in% assayDataElementNames(object))
       assayDataElement(object, 'probamp') <- NULL
   }
+
   condition <- rep(TRUE, times=nrow(object))
-  if (!is.na(bases))
-    condition <- condition & fData(object)$bases >= bases
+  msg <- c('total bins'=sum(condition))
+  if (filterAllosomes) {
+    condition <- fData(object)$chromosome %in% as.character(1:22)
+    msg <- c(msg, 'autosomal bins'=sum(condition))
+  }
+  condition <- condition & !is.na(fData(object)$gc)
+  msg <- c(msg, 'bins with reference sequence'=sum(condition))
+  
+  if (!is.na(residual)) {
+    if (is.null(attr(featureData(object), 'residualMadDiff')))
+      attr(featureData(object), 'residualMadDiff') <-
+        madDiff(fData(object)$residual, na.rm=TRUE)
+    condition <- condition & !is.na(fData(object)$residual) &
+      abs(fData(object)$residual) <=
+      residual * attr(featureData(object), 'residualMadDiff')
+  }
   if (!is.na(blacklist))
     condition <- condition & fData(object)$blacklist <= blacklist
   if (!is.na(mappability))
     condition <- condition & fData(object)$mappability >= mappability
-  if (!is.na(residual))
-    condition <- condition & !is.na(fData(object)$residual) &
-      abs(fData(object)$residual) <= residual*sd(fData(object)$residual,
-      na.rm=TRUE)
-  if (filterAllosomes) {
-    condition2 <- fData(object)$chromosome %in% as.character(1:22)
-    condition <- condition & condition2
-    message('Flagging allosomes for filtering. ',
-      'Statistics for autosomes 1-22:')
-  } else {
-    condition2 <- rep(TRUE, times=nrow(object))
-    message('Statistics for all chromosomes:')
-  }
+  if (!is.na(bases))
+    condition <- condition & fData(object)$bases >= bases
+  msg <- c(msg, 'final bins'=sum(condition))
+
   fData(object)$filter <- condition
-  message(paste(c('Total bins:', 'Bins filtered:', 'Final bins:'),
-    format(c(nrow(object[condition2,]),
-    sum(!condition[condition2], na.rm=TRUE),
-    sum(condition[condition2], na.rm=TRUE)),
-    big.mark=','), sep='\t', collapse='\n'))
+  message(paste(format(msg, big.mark=','), names(msg),
+    sep='\t', collapse='\n'))
   object
 })
 
