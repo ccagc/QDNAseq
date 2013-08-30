@@ -61,14 +61,19 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   }
 
   phenodata$reads <- colSums(counts)
-  condition <- !is.na(bins$gc)
+  condition <- rep(TRUE, times=nrow(bins))
+  msg <- c('total bins'=sum(condition))
   if (filterAllosomes) {
-    message('Flagging allosomes for filtering.')
-    condition <- condition & bins$chromosome %in% as.character(1:22)
+    condition <- bins$chromosome %in% as.character(1:22)
+    msg <- c(msg, 'autosomal bins'=sum(condition))
   }
+  condition <- condition & !is.na(bins$gc)
+  msg <- c(msg, 'bins with reference sequence'=sum(condition))
   bins$filter <- condition
   varMetadata(bins)['filter','labelDescription'] <-
     'Whether to include the bin in subsequent analyses'
+  message(paste(format(msg, big.mark=','), names(msg),
+    sep='\t', collapse='\n'))
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 
