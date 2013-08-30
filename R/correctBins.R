@@ -90,6 +90,10 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   median.counts <- median.counts[!is.na(median.counts$mappability), ]
   rownames(median.counts) <- paste(median.counts$gc, '-',
     median.counts$mappability, sep='')
+  all.combinations <- expand.grid(gc=unique(gc[!is.na(gc)]),
+    mappability=unique(mappability[!is.na(mappability)]))
+  rownames(all.combinations) <- paste(all.combinations$gc, '-',
+    all.combinations$mappability, sep='')
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
       message('  Skipping correction for sample ', colnames(counts)[i], '...')
@@ -100,10 +104,10 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     vals <- median.counts[, i+2L]
     corvals <- counts[, i]
     try({
-      l <- loess(vals ~ median.counts$gc * median.counts$mappability,
+      l <- loess(vals ~ gc * mappability, data=median.counts,
         span=span[i], family=family[i]) # , ...)
-      fit <- l$fitted
-      names(fit) <- rownames(median.counts)
+      fit <- as.vector(predict(l, all.combinations))
+      names(fit) <- rownames(all.combinations)
       residuals[, i] <- (corvals - fit[paste(gc, '-', mappability, sep='')]) /
         fit[paste(gc, '-', mappability, sep='')]
       correction <- median(fit, na.rm=TRUE) - fit
