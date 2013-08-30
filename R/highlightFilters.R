@@ -31,8 +31,8 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, col='red', residual=4, blacklist=0,
-  mappability=50, bases=100, type='union', ...) {
+  definition=function(object, col='red', residual=NA, blacklist=NA,
+  mappability=NA, bases=NA, type='union', ...) {
 
   if (is.null(attr(featureData(object), 'residualMadDiff')))
     stop('Old bin annotation data detected, ',
