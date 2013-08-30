@@ -54,23 +54,21 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   }
 
   # Extract corrected counts
-  counts <- assayDataElement(object, 'corrected')
+  copynumber <- assayDataElement(object, 'corrected')
 
   # Sanity check
-  if (is.null(counts)) {
+  if (is.null(copynumber)) {
     stop(sprintf("Cannot normalize bins. %s object has no 'corrected' assay data.", class(object)[1L]))
   }
 
   # Extract annotation data
-  fData <- fData(object);
+  fData <- fData(object)
 
   # Filter?
   if ('filter' %in% colnames(fData(object))) {
-    keep <- fData$filter
-    copynumber <- counts[keep, , drop=FALSE]
-    fData <- fData[keep, , drop=FALSE];
+    condition <- fData(object)$filter
   } else {
-    copynumber <- counts
+    condition <- rep(TRUE, times=nrow(object))
   }
 
   # Sanity check
@@ -85,10 +83,11 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   } else {
     if (method == 'median') {
       message('Applying median normalization ...')
-      values <- colMedians(copynumber, na.rm=TRUE)
+      values <- colMedians(copynumber[condition, , drop=FALSE], na.rm=TRUE)
     } else if (method == 'mode') {
       message('Applying mode normalization ... ')
-      values <- apply(copynumber, MARGIN=2L, FUN=function(x) {
+      values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
+        FUN=function(x) {
         d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
       })
     }
