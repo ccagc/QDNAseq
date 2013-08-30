@@ -333,7 +333,7 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
     }
     # str <- paste(str, ', ', format(nrow(median.counts), big.mark=','),
     #   ' combinations of GC content and mappability', sep='')
-    mtext(str, side=3, line=0, adj=0)
+    mtext(str, side=3, line=0, adj=0, cex=par('cex'))
 
     if ('reads' %in% names(pData(x)))
       mtext(paste(format(x$reads[i], trim=TRUE, big.mark=','), ' reads',
