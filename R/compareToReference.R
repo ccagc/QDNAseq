@@ -32,12 +32,12 @@ setMethod('compareToReference', signature=c(object='QDNAseqReadCounts',
   references='numeric'), definition=function(object, references,
   force=FALSE) {
 
-  if (!force && 'normalized' %in% assayDataElementNames(object))
+  if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Comparing to reference will ',
       'remove normalization (and possible segmentation and calling) ',
       'results. Please specify force=TRUE, if you want this.')
-  if ('normalized' %in% assayDataElementNames(object))
-    assayDataElement(object, 'normalized') <- NULL
+  if ('copynumber' %in% assayDataElementNames(object))
+    assayDataElement(object, 'copynumber') <- NULL
   if ('segmented' %in% assayDataElementNames(object))
     assayDataElement(object, 'segmented') <- NULL
   if ('calls' %in% assayDataElementNames(object)) {

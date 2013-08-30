@@ -31,12 +31,12 @@
 setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
   samples='character'), definition=function(object, samples, force=FALSE) {
 
-  if (!force && 'normalized' %in% assayDataElementNames(object))
+  if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Pooling runs will ',
       'remove normalization (and possible segmentation and calling) ',
       'results. Please specify force=TRUE, if you want this.')
-  if ('normalized' %in% assayDataElementNames(object))
-    assayDataElement(object, 'normalized') <- NULL
+  if ('copynumber' %in% assayDataElementNames(object))
+    assayDataElement(object, 'copynumber') <- NULL
   if ('segmented' %in% assayDataElementNames(object))
     assayDataElement(object, 'segmented') <- NULL
   if ('calls' %in% assayDataElementNames(object)) {

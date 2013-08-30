@@ -37,12 +37,12 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
   adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE, force=FALSE,
   ...) {
-  if (!force && 'normalized' %in% assayDataElementNames(object))
+  if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Changing the correction will ',
       'remove normalization (and possible segmentation and calling) ',
       'results. Please specify force=TRUE, if you want this.')
-  if ('normalized' %in% assayDataElementNames(object))
-    assayDataElement(object, 'normalized') <- NULL
+  if ('copynumber' %in% assayDataElementNames(object))
+    assayDataElement(object, 'copynumber') <- NULL
   if ('segmented' %in% assayDataElementNames(object))
     assayDataElement(object, 'segmented') <- NULL
   if ('calls' %in% assayDataElementNames(object)) {
