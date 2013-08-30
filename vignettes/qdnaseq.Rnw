@@ -217,11 +217,12 @@ bins <- AnnotatedDataFrame(bins,
 %   residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
 %     median, na.rm=TRUE)
 %   residual[!bins$chromosome %in% as.character(1:22)] <- NA
-%   # bins$residual <- scale(residual)[, 1]
-%   attr(bins, 'QDNAseqVersion') <- packageVersion('qdnaseq')
-%   attr(bins, 'QDNAseqDownloaded') <- TRUE
+%   # residual <- scale(residual)[, 1]
+%   bins$residual <- residual
 %   attr(bins, 'residualMadDiff') <-
 %     matrixStats::madDiff(bins$residual, na.rm=TRUE)
+%   attr(bins, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+%   attr(bins, 'QDNAseqDownloaded') <- TRUE
 %   saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.rds', sep=''),
 %     compress='xz')
 % }
