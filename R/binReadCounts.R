@@ -70,8 +70,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   condition <- condition & !is.na(bins$gc)
   msg <- c(msg, 'bins with reference sequence'=sum(condition))
   bins$filter <- condition
-  varMetadata(bins)['filter','labelDescription'] <-
-    'Whether to include the bin in subsequent analyses'
+  if (class(bins) == 'AnnotatedDataFrame')
+    varMetadata(bins)['filter','labelDescription'] <-
+      'Whether to include the bin in subsequent analyses'
   message(paste(format(msg, big.mark=','), names(msg),
     sep='\t', collapse='\n'))
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
