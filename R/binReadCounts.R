@@ -228,6 +228,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
     gc(FALSE)
 
     if (cache) {
+      attr(hits, 'QDNAseqVersion') <- packageVersion('qdnaseq')
       message(' saving in cache ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
@@ -269,6 +270,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
   # Store results in cache
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (cache) {
+    attr(readCounts, 'QDNAseqVersion') <- packageVersion('qdnaseq')
     message(' saving in cache ...', appendLF=FALSE)
     saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
