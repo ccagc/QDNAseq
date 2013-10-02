@@ -36,7 +36,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   bamnames=NULL, phenofile=NULL, filterAllosomes=TRUE, ...) {
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
-      pattern=sprintf('%s$', ext))
+      pattern=sprintf('%s$', ext), full.names=TRUE)
   if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
@@ -56,8 +56,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
     dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
-    counts[, i] <- .binReadCountsPerSample(bins=bins, bamfile=file.path(path,
-      bamfiles[i]), ...)
+    counts[, i] <- .binReadCountsPerSample(bins=bins,
+      bamfile=bamfiles[i], ...)
     gc(FALSE)
   }
 
