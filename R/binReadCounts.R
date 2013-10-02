@@ -32,15 +32,16 @@
 #
 # @keyword IO
 #*/#########################################################################
-binReadCounts <- function(bins, bamfiles=NULL, path='.', ext='bam',
+binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   bamnames=NULL, phenofile=NULL, filterAllosomes=TRUE, ...) {
   if (is.null(bamfiles))
-    bamfiles <- list.files(path, pattern=sprintf('[.]?%s$', ext))
+    bamfiles <- list.files(ifelse(is.null(path), '.', path),
+      pattern=sprintf('%s$', ext))
   if (length(bamfiles) == 0L)
     stop('No files to process.')
   if (is.null(bamnames)) {
     bamnames <- basename(bamfiles)
-    bamnames <- sub(sprintf('[.]?%s$', ext), '', bamnames)
+    bamnames <- sub(sprintf('[\\.]?%s$', ext), '', bamnames)
   } else if (length(bamfiles) != length(bamnames)) {
     stop('bamfiles and bamnames have to be of same length.')
   }
