@@ -13,7 +13,7 @@ setGeneric('highlightFilters', function(object, col='red', residual=NA,
   blacklist=NA, mappability=NA, bases=NA, type='union', ...)
   standardGeneric('highlightFilters'))
 setGeneric('applyFilters', function(object, residual=4, blacklist=0,
-  mappability=50, bases=100, filterAllosomes=TRUE, force=FALSE)
+  mappability=50, bases=99, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
 setGeneric('segmentBins', function(object, weights=FALSE, normalize=TRUE,
   inter=c(-0.1,0.1), force=FALSE, ...) standardGeneric('segmentBins'))
