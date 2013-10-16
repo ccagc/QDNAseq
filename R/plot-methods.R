@@ -84,16 +84,18 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         if (!is.null(probamp(x)))
           gains <- gains + probamp(x)[condition, i]
         par(mar=c(5, 4, 4, 4) + 0.2)
-        plot(NA, main=main[i], xlab='chromosomes', ylab=ylab, las=1,
+        plot(NA, main=main[i], xlab=NA, ylab=NA, las=1,
           xlim=c(0, max(pos2)), ylim=ylim, xaxs='i', xaxt='n',
           yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs='i')
         lim <- par('usr')
         lim[3:4] <- c(0, 1)
         par(usr=lim)
         dticks <- seq(0, 1, by=0.2)
+        axis(4, at=dticks, labels=NA, srt=270, las=1, cex.axis=1,
+          cex.lab=1, tck=-0.015)
         axis(4, at=dticks, labels=dticks, srt=270, las=1, cex.axis=1,
-          cex.lab=1)
-        mtext('probability', side=4, line=3, cex=par('cex'))
+          cex.lab=1, line=-0.4, lwd=0)
+        mtext('probability', side=4, line=2, cex=par('cex'))
         if (!is.na(misscol)) {
           rect(0, -1, max(pos2), 1, col=misscol, border=NA)
           rect(pos, -1, pos2, 1, col='white', border=NA)
@@ -114,14 +116,18 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         points(pos, cn, cex=.1, col=pointcol)
       } else {
         plot(pos, cn, cex=.1, col=pointcol, main=main[i],
-          xlab='chromosomes', ylab=ylab, ylim=ylim, xaxt='n', xaxs='i',
-          yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs='i')
+          xlab=NA, ylab=NA, ylim=ylim, xaxt='n', xaxs='i', yaxs='i',
+          yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), tck=-0.015, las=1)
       }
+      mtext(text='chromosomes', side=1, line=2)
+      mtext(text=ylab, side=2, line=2)
       abline(h=0)
       abline(v=chrom.ends[-length(chrom.ends)], lty='dashed')
       ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-      axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=.5, las=1, cex.axis=1,
-        cex.lab=1)
+      axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1, cex.axis=1,
+        cex.lab=1, tck=-0.015)
+      axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1, cex.axis=1,
+        cex.lab=1, tck=-0.015, line=-0.4)
       if ('segmented' %in% assayDataElementNames(x)) {
         for (jjj in seq_len(nrow(segment))) {
           segments(pos[segment[jjj,2]], segment[jjj,1], pos[segment[jjj,3]],
