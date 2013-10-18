@@ -29,6 +29,6 @@ print(fit)
 plot(fit)
 
 # Call copy-number segments
-fitC <- callBins(fit)
-print(fitC)
-plot(fitC)
+#fitC <- callBins(fit)
+#print(fitC)
+#plot(fitC)

@@ -105,7 +105,7 @@ LGG150 <- applyFilters(LGG150, residual=4, blacklist=0,
 Data now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
 
 <<reg>>=
-LGG150 <- segmentBins(LGG150)
+# LGG150 <- segmentBins(LGG150)
 @
 
 Plot to evaluate segmentation.
@@ -127,7 +127,7 @@ plot(LGG150)
 Tune segmentation parameters and iterate until satisfied. Next, perform mode normalization and call aberrations, and plot the final results.
 
 <<reg>>=
-LGG150 <- callBins(LGG150)
+# LGG150 <- callBins(LGG150)
 @
 
 <<label=calls,include=FALSE>>=
