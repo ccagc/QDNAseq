@@ -13,8 +13,10 @@
 #
 # \arguments{
 #   \item{object}{...}
-#   \item{weights}{Either @TRUE or a vector of weights. If @TRUE,
-#     loess residuals are used as weights.}
+#   \item{smoothBy}{...}
+#   \item{alpha}{...}
+#   \item{undo.splits}{...}
+#   \item{undo.SD}{...}
 #   \item{normalize}{...}
 #   \item{inter}{...}
 #   \item{force}{...}
@@ -34,8 +36,9 @@
 #
 #*/#########################################################################
 setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, weights=FALSE, normalize=TRUE,
-  inter=c(-0.1,0.1), force=FALSE, ...) {
+  definition=function(object, smoothBy=FALSE, alpha=1e-10,
+  undo.splits='sdundo', undo.SD=1.0, normalize=TRUE,
+  inter=c(-0.1, 0.1), force=FALSE, ...) {
 
   if (!force && 'calls' %in% assayDataElementNames(object))
     stop('Data has already been called. Changing the segmentation will ',
@@ -51,68 +54,77 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     if ('probamp' %in% assayDataElementNames(object))
       assayDataElement(object, 'probamp') <- NULL
   }
-
-  if (length(weights) == 1L && weights) {
-    if ('residual' %in% colnames(fData(object))) {
-      message('Using median loess residuals of control data set as ',
-        'segmentation weights.')
-      residual <- fData(object)$residual
-    } else if ('residuals' %in% assayDataElementNames(object)) {
-      message('Using median loess residuals as segmentation weights.')
-      residual <- rowMedians(assayDataElement(object, 'residuals'),
-        na.rm=TRUE)
-      # residual <- scale(residual)[, 1]
-    } else {
-      stop('No loess residuals found. Please provide a vector of weights ',
-        'or specify weights=FALSE.')
-    }
-    if (any(is.na(residual[binFilter(object)]))) {
-      message('Filtering out ', sum(is.na(residual[binFilter(object)])),
-        ' bins with missing residuals.')
-      binFilter(object) <- binFilter(object) & !is.na(residual)
-    }
-    residual <- residual[binFilter(object)]
-    residual <- abs(residual)
-    residual[residual == 0] <- min(residual[residual != 0], na.rm=TRUE)
-    weights <- 1/residual
-  }
-
-  copynumber <- copynumber(object)[binFilter(object), , drop=FALSE]
-  CNA.object <- CNA(genomdat=copynumber,
-    chrom=chromosomes(object)[binFilter(object)],
-    maploc=bpstart(object)[binFilter(object)], data.type="logratio",
-    sampleid=paste(sampleNames(object), ':', seq_len(ncol(object)), 'of',
-      ncol(object), sep=''), presorted=TRUE)
-  message('Start data segmentation ...')
-  if (length(weights) == 1L && !weights) {
-    segmented <- segment(CNA.object, ...)
+  if ('filter' %in% colnames(fData(object))) {
+    condition <- fData(object)$filter
   } else {
-    segmented <- segment(CNA.object, weights=weights, ...)
+    condition <- rep(TRUE, times=nrow(object))
   }
-  numclone <- segmented$output$num.mark
-  smrat <- segmented$output$seg
-  numsmrat <- cbind(smrat, numclone)
-  repdata <- function(row) {
-    rep(row[1L], times=row[2L])
+
+  if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+    message('Performing segmentation:')
+  } else {
+    message('Performing segmentation with smoothing over ',
+      smoothBy, ' bins:')
   }
-  makelist <- apply(numsmrat, MARGIN=1L, FUN=repdata)
-  joined <- unlist(makelist)
-  ## Not needed anymore
-  rm(list="makelist")
-  joined <- matrix(joined, ncol=ncol(object), byrow=FALSE)
-  rownames(joined) <- rownames(copynumber)
-  colnames(joined) <- colnames(copynumber)
+
+  copynumber <- copynumber(object)
+  copynumber[!condition, ] <- NA_real_
+  segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
+    dimnames=dimnames(copynumber))
+
+  ## loop through samples
+  for (s in seq_len(ncol(copynumber))) {
+    message('  Segmenting: ', sampleNames(object)[s],
+      ' (', s, ' of ', ncol(object), ') ...', appendLF=FALSE)
+
+    ## loop through chromosomes
+    for (chr in unique(fData(object)$chromosome[condition])) {
+      index <- fData(object)$chromosome == chr
+      chrStarts <- fData(object)$start[index]
+      ## smooth if needed
+      if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+        chrCopynumber <- copynumber[index, s]
+      } else {
+        binToBin <- 0:(sum(index)-1) %/% smoothBy
+        chrCopynumber <- aggregate(copynumber[index, s],
+          by=list(binToBin), mean, na.rm=TRUE)$x
+        chrStarts <- chrStarts[seq(from=1, by=smoothBy,
+          length.out=length(chrCopynumber))]
+      }
+
+      ## segment
+      cna <- CNA(genomdat=chrCopynumber,
+        chrom=chr, maploc=chrStarts, data.type='logratio',
+        presorted=TRUE)
+      segments <- segment(cna, verbose=0,
+        alpha=alpha, undo.splits=undo.splits, undo.SD=undo.SD, ...)
+      chrSegmented <- rep(NA_real_, length=length(chrCopynumber))
+      for (i in 1:nrow(segments$output))
+        chrSegmented[segments$segRows$startRow[i]:
+          segments$segRows$endRow[i]] <- segments$output$seg.mean[i]
+
+      ## process results whether smoothed or not
+      if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+        segmented[index, s] <- chrSegmented
+      } else {
+        segmented[index, s] <- rep(chrSegmented, times=table(binToBin))
+      }
+    }
+  message()
+  }
+  segmented[is.na(copynumber)] <- NA_real_
 
   if (!normalize) {
-    segmented(object) <- joined
+    segmented(object) <- segmented
     return(object)
   }
 
   ## adapted from CGHcall::postsegnormalize()
-  seg <- joined
+  seg <- segmented
   values <- colMedians(seg, na.rm=TRUE)
   seg <- t(t(seg) - values)
-  countlevall <- apply(seg, MARGIN=2L, FUN=function(x) as.data.frame(table(x)))
+  countlevall <- apply(seg, MARGIN=2L, FUN=function(x)
+    as.data.frame(table(x)))
 
   intcount <- function(int, sv){
     sv1 <- as.numeric(as.vector(sv[, 1L]))

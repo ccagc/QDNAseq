@@ -15,8 +15,9 @@ setGeneric('highlightFilters', function(object, col='red', residual=NA,
 setGeneric('applyFilters', function(object, residual=4, blacklist=0,
   mappability=50, bases=99, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
-setGeneric('segmentBins', function(object, weights=FALSE, normalize=TRUE,
-  inter=c(-0.1,0.1), force=FALSE, ...) standardGeneric('segmentBins'))
+setGeneric('segmentBins', function(object, smoothBy=FALSE,
+  alpha=1e-10, undo.splits='sdundo', undo.SD=1.0,
+  normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...) standardGeneric('segmentBins'))
 setGeneric('callBins', function(object, ...)
   standardGeneric('callBins'))
 setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))

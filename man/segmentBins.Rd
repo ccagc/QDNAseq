@@ -15,7 +15,8 @@
 \title{Segments and calls total copy numbers}
 
 \usage{
-segmentBins(object, weights=FALSE, normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...)
+segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", undo.SD=1,
+  normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...)
 }
 
 \description{
@@ -24,8 +25,10 @@ segmentBins(object, weights=FALSE, normalize=TRUE, inter=c(-0.1, 0.1), force=FAL
 
 \arguments{
   \item{object}{...}
-  \item{weights}{Either \code{\link[base:logical]{TRUE}} or a vector of weights. If \code{\link[base:logical]{TRUE}},
-    loess residuals are used as weights.}
+  \item{smoothBy}{...}
+  \item{alpha}{...}
+  \item{undo.splits}{...}
+  \item{undo.SD}{...}
   \item{normalize}{...}
   \item{inter}{...}
   \item{force}{...}
