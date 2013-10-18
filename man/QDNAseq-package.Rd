@@ -6,12 +6,12 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{qdnaseq-package}
-\alias{qdnaseq-package}
-\alias{qdnaseq}
+\name{QDNAseq-package}
+\alias{QDNAseq-package}
+\alias{QDNAseq}
 \docType{package}
 
-\title{Package qdnaseq}
+\title{Package QDNAseq}
 
 
 \description{
@@ -25,7 +25,9 @@
 \section{How to cite this package}{
   Whenever using this package, please cite
 
-  \emph{No citation information available.}
+  \preformatted{Ilari Scheinin (2013). QDNAseq: Quantitative DNA sequencing for chromosomal
+aberrations. R package version 0.5.0.}
+\emph{}
 
 }
 

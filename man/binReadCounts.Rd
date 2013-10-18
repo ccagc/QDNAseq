@@ -13,7 +13,7 @@
 \title{Calculate binned read counts from a set of BAM files}
 
 \usage{
-binReadCounts(bins, bamfiles=NULL, path=".", ext="bam", bamnames=NULL, phenofile=NULL,
+binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofile=NULL,
   filterAllosomes=TRUE, ...)
 }
 

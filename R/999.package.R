@@ -1,8 +1,8 @@
 #########################################################################/**
-# @RdocPackage qdnaseq
+# @RdocPackage QDNAseq
 #
 # \description{
-#   @eval "packageDescription('qdnaseq')$Description"
+#   @eval "packageDescription('QDNAseq')$Description"
 # }
 #
 # \section{Requirements}{
@@ -12,7 +12,7 @@
 # \section{How to cite this package}{
 #   Whenever using this package, please cite
 #
-#   @howtocite "qdnaseq"
+#   @howtocite "QDNAseq"
 # }
 #
 # @author

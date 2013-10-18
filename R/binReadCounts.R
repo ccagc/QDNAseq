@@ -156,7 +156,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
       message('Loaded binned read counts from cache for ', basename(bamfile),
         appendLF=FALSE)
       if (is.null(attr(readCounts, 'QDNAseqVersion'))) {
-        attr(readCounts, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+        attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
         message(', re-caching with version number ...', appendLF=FALSE)
         saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
           suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
@@ -188,7 +188,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     message('Loaded reads from cache for ', basename(bamfile), ',',
       appendLF=FALSE)
     if (is.null(attr(hits, 'QDNAseqVersion'))) {
-      attr(hits, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+      attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
       message(' re-caching with version number ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
@@ -229,7 +229,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     gc(FALSE)
 
     if (cache) {
-      attr(hits, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+      attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
       message(' saving in cache ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
@@ -271,7 +271,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # Store results in cache
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (cache) {
-    attr(readCounts, 'QDNAseqVersion') <- packageVersion('qdnaseq')
+    attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
     message(' saving in cache ...', appendLF=FALSE)
     saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)

@@ -1,4 +1,4 @@
-library("qdnaseq")
+library("QDNAseq")
 
 # Load data
 data(LGG150)
@@ -14,10 +14,13 @@ print(dataC)
 dataN <- normalizeBins(dataC)
 print(dataN)
 plot(dataN)
-highlightFilters(dataN, mappability=50, blacklist=0, residual=2, bases=0)
+highlightFilters(dataN, mappability=50, blacklist=0, residual=4, bases=99)
+
+# Plot noise
+noisePlot(dataN)
 
 # Filter out "bad" bins
-dataNF <- applyFilters(dataN, mappability=50, blacklist=0, residual=2, bases=0)
+dataNF <- applyFilters(dataN, mappability=50, blacklist=0, residual=4, bases=99)
 print(dataNF)
 
 # Segment copy numbers

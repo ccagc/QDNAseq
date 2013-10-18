@@ -15,7 +15,7 @@
 \title{Adjusts the filter on which bins are used}
 
 \usage{
-applyFilters(object, residual=4, blacklist=0, mappability=50, bases=100,
+applyFilters(object, residual=4, blacklist=0, mappability=50, bases=99,
   filterAllosomes=TRUE, force=FALSE)
 }
 

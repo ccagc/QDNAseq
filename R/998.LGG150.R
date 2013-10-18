@@ -12,11 +12,9 @@
 
 
 
-# library(qdnaseq)
-# bins <- getBinAnnotations(15) / bins <-
-#   readRDS('/data/ref/hg19/MPScall/QDNAseq.hg19.15kbp.rds')
-# LGG150 <- binReadCounts(bins, bamfiles='LGG150.bam',
-#   path='/storage/shark1/data/SeqLanes/120123_D0N32ACXX_L5/bam')
+# library(QDNAseq)
+# bins <- getBinAnnotations(15) 
+# LGG150 <- binReadCounts(bins, bamfiles='LGG150.bam')
 # Biobase::varMetadata(Biobase::featureData(LGG150))['filter',
 #   'labelDescription'] <- 'Whether to include the bin in subsequent analyses'
 # LGG150 <- LGG150[chromosomes(LGG150) == 9,]
