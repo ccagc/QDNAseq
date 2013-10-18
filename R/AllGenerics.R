@@ -23,6 +23,8 @@ setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))
 
 setGeneric('readCountPlot', function(x, y, ...)
   standardGeneric('readCountPlot'))
+setGeneric('noisePlot', function(x, y, ...)
+  standardGeneric('noisePlot'))
 
 
 
