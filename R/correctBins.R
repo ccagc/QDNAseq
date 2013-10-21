@@ -18,6 +18,7 @@
 #   \item{adjustIncompletes}{...}
 #   \item{keepCounts}{...}
 #   \item{storeResiduals}{...}
+#   \item{storeLoess}{...}
 #   \item{...}{Further aguments to loess.}
 #   \item{force}{...}
 # }
@@ -35,7 +36,8 @@
 
 setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE, force=FALSE,
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE,
+  storeLoess=FALSE, force=FALSE,
   ...) {
   if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Changing the correction will ',
@@ -80,8 +82,12 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   used.family <- rep(NA_real_, times=ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts),
     dimnames=dimnames(counts))
-  residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts),
-    dimnames=dimnames(counts))
+  if (storeResiduals)
+    residuals <- matrix(nrow=nrow(counts), ncol=ncol(counts),
+      dimnames=dimnames(counts))
+  if (storeLoess)
+    loessFit <- matrix(nrow=nrow(counts), ncol=ncol(counts),
+      dimnames=dimnames(counts))
   gc <- round(fData(object)$gc)
   mappability <- round(fData(object)$mappability)
   median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
@@ -105,11 +111,14 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     corvals <- counts[, i]
     try({
       l <- loess(vals ~ gc * mappability, data=median.counts,
-        span=span[i], family=family[i]) # , ...)
+        span=span[i], family=family[i], ...)
       fit <- as.vector(predict(l, all.combinations))
       names(fit) <- rownames(all.combinations)
-      residuals[, i] <- (corvals - fit[paste(gc, '-', mappability, sep='')]) /
-        fit[paste(gc, '-', mappability, sep='')]
+      if (storeResiduals)
+        residuals[, i] <- (corvals - fit[paste0(gc, '-', mappability)]) /
+          fit[paste0(gc, '-', mappability)]
+      if (storeLoess)
+        loessFit[, i] <- fit[paste0(gc, '-', mappability)]
       correction <- median(fit, na.rm=TRUE) - fit
       corvals <- corvals + correction[paste(gc, '-', mappability, sep='')]
       corvals <- corvals - min(corvals, na.rm=TRUE)
@@ -126,6 +135,8 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     assayDataElement(object, 'counts') <- NULL
   if (storeResiduals)
     assayDataElement(object, 'residuals') <- residuals
+  if (storeLoess)
+    assayDataElement(object, 'loess') <- loessFit
   message('Done.')
   object
 })

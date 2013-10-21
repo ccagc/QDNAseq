@@ -289,13 +289,18 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
 #
 #*/#########################################################################
 setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
-  definition=function(x, y, main=NULL, adjustIncompletes=TRUE, ...) {
+  definition=function(x, y, main=NULL, adjustIncompletes=TRUE, loessFit=FALSE,
+  ...) {
   if (is.null(main))
     main <- paste(sampleNames(x), 'median read counts')
-  counts <- assayDataElement(x, 'counts')
-  if (adjustIncompletes) {
-    counts <- counts / fData(x)$bases * 100L
-    counts[fData(x)$bases == 0] <- 0L
+  if (loessFit) {
+    counts <- assayDataElement(x, 'loess')
+  } else {
+    counts <- assayDataElement(x, 'counts')
+    if (adjustIncompletes) {
+      counts <- counts / fData(x)$bases * 100L
+      counts[fData(x)$bases == 0] <- 0L
+    }
   }
   if ('filter' %in% colnames(fData(x))) {
     condition <- fData(x)$filter
@@ -341,9 +346,9 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
     #   ' combinations of GC content and mappability', sep='')
     mtext(str, side=3, line=0, adj=0, cex=par('cex'))
 
-    if ('reads' %in% names(pData(x)))
-      mtext(paste(format(x$reads[i], trim=TRUE, big.mark=','), ' reads',
-        sep=''), side=3, line=0, adj=1, cex=par('cex'))
+    reads <- sum(assayDataElement(x, 'counts')[condition, i], na.rm=TRUE)
+    mtext(paste(format(reads, trim=TRUE, big.mark=','), ' reads',
+      sep=''), side=3, line=0, adj=1, cex=par('cex'))
   }
 })
 

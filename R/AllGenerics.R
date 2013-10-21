@@ -1,6 +1,6 @@
 setGeneric('correctBins', function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE, force=FALSE,
-  ...)
+  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=TRUE,
+  storeLoess=FALSE, force=FALSE, ...)
   standardGeneric('correctBins'))
 setGeneric('poolRuns', function(object, samples, force=FALSE)
   standardGeneric('poolRuns'))
