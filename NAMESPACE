@@ -48,6 +48,7 @@ export('makeCgh')
 export('createBins')
 export('calculateMappability')
 export('calculateBlacklist')
+export('iterateResiduals')
 
 export('chromosomes')
 export('bpstart')

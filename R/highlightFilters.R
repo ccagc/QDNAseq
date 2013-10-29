@@ -34,43 +34,56 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, col='red', residual=NA, blacklist=NA,
   mappability=NA, bases=NA, type='union', ...) {
 
-  if (is.null(attr(featureData(object), 'residualMadDiff')))
-    stop('Old bin annotation data detected, ',
-      'please run applyFilters() first to update.')
-
   condition <- rep(TRUE, times=nrow(object))
   if (match.arg(type, c('union', 'intersection')) == 'intersection') {
     if (!is.na(residual)) {
-      condition <- condition & !is.na(fData(object)$residual) &
-        abs(fData(object)$residual) >
-        residual * attr(featureData(object), 'residualMadDiff')
+      if (is.numeric(residual)) {
+        condition <- condition & (is.na(fData(object)$residual) |
+          abs(fData(object)$residual) > residual)
+      } else if (residual) {
+        condition <- condition & is.na(fData(object)$residual)
+      }
     }
-    if (!is.na(blacklist))
-      condition <- condition & fData(object)$blacklist > blacklist
-    if (!is.na(mappability))
+    if (!is.na(blacklist)) {
+      if (is.numeric(blacklist)) {
+        condition <- condition & fData(object)$blacklist > blacklist
+      } else if (blacklist) {
+        condition <- condition & fData(object)$blacklist != 0
+      }
+    }
+    if (!is.na(mappability) && mappability != FALSE)
       condition <- condition & fData(object)$mappability < mappability
-    if (!is.na(bases))
+    if (!is.na(bases) && bases != FALSE)
       condition <- condition & fData(object)$bases < bases
   } else {
     if (!is.na(residual)) {
-      condition <- condition & !is.na(fData(object)$residual) &
-        abs(fData(object)$residual) <=
-        residual * attr(featureData(object), 'residualMadDiff')
+      if (is.numeric(residual)) {
+        condition <- condition & !is.na(fData(object)$residual) &
+          abs(fData(object)$residual) <= residual
+      } else if (residual) {
+        condition <- condition & !is.na(fData(object)$residual)
+      }
     }
-    if (!is.na(blacklist))
-      condition <- condition & fData(object)$blacklist <= blacklist
-    if (!is.na(mappability))
+    if (!is.na(blacklist)) {
+      if (is.numeric(blacklist)) {
+        condition <- condition & fData(object)$blacklist <= blacklist
+      } else if (blacklist) {
+        condition <- condition & fData(object)$blacklist == 0
+      }
+    }
+    if (!is.na(mappability) && mappability != FALSE)
       condition <- condition & fData(object)$mappability >= mappability
-    if (!is.na(bases))
+    if (!is.na(bases) && bases != FALSE)
       condition <- condition & fData(object)$bases >= bases
     condition <- !condition
   }
 
   i <- 1
-  chrs <- unique(fData(object)$chromosome[binFilter(object)])
-  condition <- condition & !is.na(copynumber(object)[, i]) &
+  chrs <- unique(fData(object)$chromosome[binsToUse(object)])
+  # condition <- condition & !is.na(copynumber(object)[, i]) &
+    # fData(object)$chromosome %in% chrs
+  condition <- condition & fData(object)$bases > 0 &
     fData(object)$chromosome %in% chrs
-
 
   all.chrom <- chromosomes(object)
   all.chrom.lengths <- aggregate(bpend(object),

@@ -34,8 +34,8 @@
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, residual=4, blacklist=0, mappability=50,
-  bases=99, filterAllosomes=TRUE, force=FALSE) {
+  definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
+  bases=NA, filterAllosomes=TRUE, force=FALSE) {
   if (!force && 'segmented' %in% assayDataElementNames(object))
     stop('Data has already been segmented. Changing the filters will ',
       'remove segmentation (and possible calling) results. Please specify ',
@@ -63,22 +63,27 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   msg <- c(msg, 'bins with reference sequence'=sum(condition))
   
   if (!is.na(residual)) {
-    if (is.null(attr(featureData(object), 'residualMadDiff')))
-      attr(featureData(object), 'residualMadDiff') <-
-        madDiff(fData(object)$residual, na.rm=TRUE)
-    condition <- condition & !is.na(fData(object)$residual) &
-      abs(fData(object)$residual) <=
-      residual * attr(featureData(object), 'residualMadDiff')
+    if (is.numeric(residual)) {
+      condition <- condition & !is.na(fData(object)$residual) &
+        abs(fData(object)$residual) <= residual
+    } else if (residual) {
+      condition <- condition & !is.na(fData(object)$residual)
+    }
   }
-  if (!is.na(blacklist))
-    condition <- condition & fData(object)$blacklist <= blacklist
-  if (!is.na(mappability))
+  if (!is.na(blacklist)) {
+    if (is.numeric(blacklist)) {
+      condition <- condition & fData(object)$blacklist <= blacklist
+    } else if (blacklist) {
+      condition <- condition & fData(object)$blacklist == 0
+    }
+  }
+  if (!is.na(mappability) && mappability != FALSE)
     condition <- condition & fData(object)$mappability >= mappability
-  if (!is.na(bases))
+  if (!is.na(bases) && bases != FALSE)
     condition <- condition & fData(object)$bases >= bases
   msg <- c(msg, 'final bins'=sum(condition))
 
-  fData(object)$filter <- condition
+  binsToUse(object) <- condition
   message(paste(format(msg, big.mark=','), names(msg),
     sep='\t', collapse='\n'))
   object

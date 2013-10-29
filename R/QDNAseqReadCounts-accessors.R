@@ -7,10 +7,27 @@ setMethod('initialize', 'QDNAseqReadCounts', function(.Object, bins, counts,
     phenoData=AnnotatedDataFrame(phenodata), ...)
 })
 
-setMethod('binFilter', signature=c(object='QDNAseqReadCounts'),
+setMethod('binsToUse', signature=c(object='QDNAseqReadCounts'),
   definition=function(object) {
-  if ('filter' %in% colnames(fData(object)))
-    return(fData(object)$filter)
+  if ('use' %in% colnames(fData(object))) {
+    return(fData(object)$use)
+  } else if ('filter' %in% colnames(fData(object))) {
+    fData(object)$use <- fData(object)$filter
+    fData(object)$filter <- NULL
+    return(fData(object)$use)
+  }
+  rep(TRUE, times=nrow(object))
+})
+
+setMethod('binsToUse', signature=c(object='AnnotatedDataFrame'),
+  definition=function(object) {
+  if ('use' %in% colnames(object)) {
+    return(object$use)
+  } else if ('filter' %in% colnames(object)) {
+    object$use <- object$filter
+    object$filter <- NULL
+    return(object$use)
+  }
   rep(TRUE, times=nrow(object))
 })
 
@@ -72,9 +89,16 @@ setMethod('probamp', signature=c(object='QDNAseqReadCounts'),
   assayDataElement(object, 'probamp')
 })
 
-setReplaceMethod('binFilter', signature=c(object='QDNAseqReadCounts',
+setReplaceMethod('binsToUse', signature=c(object='QDNAseqReadCounts',
   value='logical'), definition=function(object, value) {
-  fData(object)$filter <- value
+  fData(object)$use <- value
+  object
+})
+
+setReplaceMethod('binsToUse', signature=c(object='AnnotatedDataFrame',
+  value='logical'), definition=function(object, value) {
+  object$use <- value
+  object
 })
 
 setReplaceMethod('copynumber', signature=c(object='QDNAseqReadCounts',

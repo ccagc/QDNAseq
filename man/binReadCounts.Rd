@@ -14,7 +14,7 @@
 
 \usage{
 binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofile=NULL,
-  filterAllosomes=TRUE, ...)
+  ...)
 }
 
 \description{
@@ -28,7 +28,6 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
   \item{ext}{...}
   \item{bamnames}{...}
   \item{phenofile}{...}
-  \item{filterAllosomes}{...}
   \item{...}{Additional arguments passed to \code{\link{.binReadCountsPerSample}}}
 }
 

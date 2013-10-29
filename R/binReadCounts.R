@@ -16,7 +16,6 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{filterAllosomes}{...}
 #   \item{...}{Additional arguments passed to @see ".binReadCountsPerSample"}
 # }
 #
@@ -33,7 +32,7 @@
 # @keyword IO
 #*/#########################################################################
 binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
-  bamnames=NULL, phenofile=NULL, filterAllosomes=TRUE, ...) {
+  bamnames=NULL, phenofile=NULL, ...) {
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
       pattern=sprintf('%s$', ext), full.names=TRUE)
@@ -62,20 +61,6 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   }
 
   phenodata$reads <- colSums(counts)
-  condition <- rep(TRUE, times=nrow(bins))
-  msg <- c('total bins'=sum(condition))
-  if (filterAllosomes) {
-    condition <- bins$chromosome %in% as.character(1:22)
-    msg <- c(msg, 'autosomal bins'=sum(condition))
-  }
-  condition <- condition & !is.na(bins$gc)
-  msg <- c(msg, 'bins with reference sequence'=sum(condition))
-  bins$filter <- condition
-  if (class(bins) == 'AnnotatedDataFrame')
-    varMetadata(bins)['filter','labelDescription'] <-
-      'Whether to include the bin in subsequent analyses'
-  message(paste(format(msg, big.mark=','), names(msg),
-    sep='\t', collapse='\n'))
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 
@@ -132,7 +117,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
 
-  binsize <- (bins$end[1L]-bins$start[1L]+1)/1000
+  binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
   bamfile <- normalizePath(bamfile)
   fullname <- sub('\\.[^.]*$', '', basename(bamfile))
@@ -146,9 +131,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
     isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
     isNotPassingQualityControls=isNotPassingQualityControls,
-    isDuplicate=isDuplicate, minMapq=minMapq, binsize=binsize)
+    isDuplicate=isDuplicate, minMapq=minMapq, binSize=binSize)
   readCountCacheDir <- c('QDNAseq', 'readCounts')
-  readCountCacheSuffix <- paste('.', fullname, '.', binsize, 'kbp', sep='')
+  readCountCacheSuffix <- paste('.', fullname, '.', binSize, 'kbp', sep='')
   if (!force) {
     readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir)

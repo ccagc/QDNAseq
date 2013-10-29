@@ -45,8 +45,8 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
    if (includeReadCounts && 'reads' %in% names(pData(x)))
       main <- paste(main, ' (', format(x$reads, trim=TRUE, big.mark=','),
         ' reads)', sep='')
-    if ('filter' %in% colnames(fData(x))) {
-      condition <- fData(x)$filter
+    if (class(x) == 'QDNAseqReadCounts') {
+      condition <- binsToUse(x)
     } else {
       condition <- rep(TRUE, times=nrow(x))
     }
@@ -198,11 +198,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
 setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   function(x, y, main='Frequency Plot', losscol='red', gaincol='blue',
   misscol=NA, ... ) {
-  if ('filter' %in% colnames(fData(x))) {
-    condition <- fData(x)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(x))
-  }
+  condition <- binsToUse(x)
   all.chrom <- chromosomes(x)
   all.chrom.lengths <- aggregate(bpend(x),
     by=list(chromosome=all.chrom), FUN=max)
@@ -302,11 +298,7 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
       counts[fData(x)$bases == 0] <- 0L
     }
   }
-  if ('filter' %in% colnames(fData(x))) {
-    condition <- fData(x)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(x))
-  }
+  condition <- binsToUse(x)
   gc <- round(fData(x)$gc)
   mappability <- round(fData(x)$mappability)
   median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
@@ -379,11 +371,7 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
 #*/#########################################################################
 setMethod('noisePlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   definition=function(x, y, main='Noise Plot', ...) {
-  if ('filter' %in% colnames(fData(x))) {
-    condition <- fData(x)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(x))
-  }
+  condition <- binsToUse(x)
   reads <- apply(assayDataElement(x, 'counts')[condition, , drop=FALSE], 2, sum)
   sds <- apply(assayDataElement(x, 'copynumber')[condition, , drop=FALSE], 2, madDiff, na.rm=TRUE)
   num <- sum(condition)

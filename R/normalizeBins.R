@@ -65,11 +65,7 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   fData <- fData(object)
 
   # Filter?
-  if ('filter' %in% colnames(fData(object))) {
-    condition <- fData(object)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(object))
-  }
+  condition <- binsToUse(object)
 
   # Sanity check
   stopifnot(is.matrix(copynumber))

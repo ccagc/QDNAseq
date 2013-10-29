@@ -12,11 +12,12 @@
 
 \alias{calculateMappability}
 \alias{calculateBlacklist}
+\alias{iterateResiduals}
 
 \title{Builds bin annotation data for a particular bin size}
 
 \usage{
-createBins(bsgenome, binsize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
+createBins(bsgenome, binSize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
 }
 
 \description{
@@ -25,8 +26,8 @@ createBins(bsgenome, binsize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
 
 \arguments{
   \item{bsgenome}{A BSgenome ...}
-  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
-   in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+  \item{binSize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
+   in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
    to 15 kbp bins.}
   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
     in their names ...}

@@ -10,11 +10,13 @@
 # }
 #
 # \arguments{
-#   \item{binsize}{A @numeric scalar specifying the width of the bins
-#    in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+#   \item{binSize}{A @numeric scalar specifying the width of the bins
+#    in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #    to 15 kbp bins.}
 #   \item{genome}{A @character string specify the genome and genome version
 #    to be used.}
+#   \item{type}{A @character string specify the experiment type, e.g. "SR50"
+#    or "PE1000".}
 #   \item{cache}{If @TRUE, the retrieved bin annotation data is cached
 #    on the file system, otherwise not.}
 #   \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
@@ -33,61 +35,50 @@
 #
 # @keyword IO
 #*/#########################################################################
-getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
+getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
   force=FALSE) {
-  genome.build <- as.integer(gsub('[^0-9]', '', genome))
-  if (genome.build %in% c(19, 37)) {
-    genome.name <- 'hg19'
-  } else if (genome.build %in% c(18, 36)) {
-    genome.name <- 'hg18'
-  } else {
-    stop('Unknown genome: ', genome)
-  }
-  cacheKey <- list(genome=genome.name, binsize=binsize)
+  cacheKey <- list(genome=genome, binSize=binSize, type=type)
   cacheDir <- c('QDNAseq', 'binAnnotations')
-  cacheSuffix <- paste('.', genome.name, '.', binsize, 'kbp', sep='')
+  cacheSuffix <- paste('.', genome, '.', binSize, 'kbp.', type, sep='')
   if (!force) {
     # TO DO: somehow check if file available online is newer than cached one?
     bins <- loadCache(key=cacheKey, suffix=cacheSuffix, dirs=cacheDir)
     if (!is.null(bins)) {
-      message('Bin annotations for genome ', genome.name, ' and bin size of ',
-        binsize, 'kbp loaded from cache.')
+      message('Bin annotations for genome ', genome, ', bin size of ',
+        binSize, 'kbp, and experiment type ', type, ' loaded from cache.')
 
-      if (is.null(attr(bins, 'QDNAseqVersion'))) {
+      if (is.null(attr(bins, 'QDNAseqVersion')) ||
+        attr(bins, 'QDNAseqVersion') < '0.5.4') {
         message('Old version detected, ignoring.')
-      } else {
-        if (is.null(attr(bins, 'residualMadDiff'))) {
-          message('Old version detected, updating ....')
-          attr(bins, 'residualMadDiff') <- madDiff(bins$residual, na.rm=TRUE)
-          saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
-            compress=TRUE)
-        }
-        return(bins)
+        bins <- NULL
       }
     }
   }
 
-  message('Downloading bin annotations for genome ', genome.name,
-    ' and bin size of ', binsize, 'kbp ...', appendLF=FALSE)
-  filename <- sprintf('QDNAseq.%s.%gkbp.rds', genome.name, binsize)
-  urlPath <- 'http://cdn.bitbucket.org/ccagc/qdnaseq/downloads'
-  remotefile <- file.path(urlPath, filename, fsep='/')
-  localfile <- tempfile()
-  tryCatch({
-    library('R.utils')
-    result <- downloadFile(remotefile, localfile)
-  }, error=function(e) {
-    message(' not found. Please generate them first.')
-    stop(e)
-  })
-  bins <- readRDS(localfile)
-  file.remove(localfile)
-  if (cache) {
-    message(' saving in cache ...')
-    saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
-      compress=TRUE)
+  if (is.null(bins)) {
+    message('Downloading bin annotations for genome ', genome,
+      ', bin size ', binSize, 'kbp, and experiment type ', type, ' ...',
+      appendLF=FALSE)
+    filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
+    urlPath <- 'http://cdn.bitbucket.org/ccagc/qdnaseq/downloads'
+    remotefile <- file.path(urlPath, filename, fsep='/')
+    localfile <- tempfile()
+    tryCatch({
+      library('R.utils')
+      result <- downloadFile(remotefile, localfile)
+    }, error=function(e) {
+      message(' not found. Please generate them first.')
+      stop(e)
+    })
+    bins <- readRDS(localfile)
+    file.remove(localfile)
+    if (cache) {
+      message(' saving in cache ...')
+      saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
+        compress=TRUE)
+    }
+    message()
   }
-  message()
   bins
 }
 
@@ -99,6 +90,7 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
 #
 # @alias calculateMappability
 # @alias calculateBlacklist
+# @alias iterateResiduals
 #
 # @title "Builds bin annotation data for a particular bin size"
 #
@@ -110,8 +102,8 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
 #
 # \arguments{
 #   \item{bsgenome}{A BSgenome ...}
-#   \item{binsize}{A @numeric scalar specifying the width of the bins
-#    in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+#   \item{binSize}{A @numeric scalar specifying the width of the bins
+#    in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #    to 15 kbp bins.}
 #   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
 #     in their names ...}
@@ -128,7 +120,7 @@ getBinAnnotations <- function(binsize, genome='hg19', cache=TRUE,
 #   @see "getBinAnnotations".
 # }
 #*/#########################################################################
-createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
+createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
   ignoreMitochondria=TRUE) {
   chrs <- GenomicRanges::seqnames(bsgenome)
   if (ignoreUnderscored)
@@ -138,11 +130,11 @@ createBins <- function(bsgenome, binsize, ignoreUnderscored=TRUE,
   lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]
   start <- end <- integer()
   bases <- gc <- numeric()
-  message('Creating bins of ', binsize, ' kbp for genome ',
+  message('Creating bins of ', binSize, ' kbp for genome ',
     substitute(bsgenome))
 
   # Bin size in units of base pairs
-  binWidth <- binsize*1000L
+  binWidth <- binSize*1000L
 
   for (chr in chrs) {
     message('  Processing ', chr, ' ...', appendLF=FALSE)
@@ -253,6 +245,42 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   }
   message()
   blacklist
+}
+
+iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
+  first <- sum(binsToUse(object))
+  previous <- first
+  message('Iteration #1 with ', format(previous, big.mark=','),
+    ' bins.')
+  object <- correctBins(object, storeResiduals=TRUE, ...)
+  residuals <- assayDataElement(object, 'residuals')
+  residuals[!binsToUse(object), ] <- NA
+  residual <- apply(residuals, 1, median, na.rm=TRUE)
+  cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
+  binsToUse(object) <- binsToUse(object) & !is.na(residual) &
+    abs(residual) <= cutoffValue
+  num <- sum(binsToUse(object))
+  iter <- 2
+  while (previous != num && iter <= maxIter) {
+    previous <- num
+    message('Iteration #', iter, ' with ', format(previous, big.mark=','),
+      ' bins.')
+    object <- correctBins(object, storeResiduals=TRUE, ...)
+    residuals <- assayDataElement(object, 'residuals')
+    residuals[!binsToUse(object), ] <- NA
+    residual <- apply(residuals, 1, median, na.rm=TRUE)
+    binsToUse(object) <- binsToUse(object) & !is.na(residual) &
+      abs(residual) <= cutoffValue
+    num <- sum(binsToUse(object))
+    iter <- iter + 1
+  }
+  if (previous == num) {
+    message('Convergence at ', format(previous, big.mark=','), ' bins.')
+    message(format(first-previous, big.mark=','), ' additional bins removed.')
+  } else if (iter == maxIter) {
+    message('Reached maxIter=', maxIter, ' iterations without convergence.')
+  }
+  residual
 }
 
 # EOF

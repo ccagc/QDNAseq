@@ -12,8 +12,8 @@ setGeneric('normalizeBins', function(object, method='median',
 setGeneric('highlightFilters', function(object, col='red', residual=NA,
   blacklist=NA, mappability=NA, bases=NA, type='union', ...)
   standardGeneric('highlightFilters'))
-setGeneric('applyFilters', function(object, residual=4, blacklist=0,
-  mappability=50, bases=99, filterAllosomes=TRUE, force=FALSE)
+setGeneric('applyFilters', function(object, residual=TRUE, blacklist=TRUE,
+  mappability=NA, bases=NA, filterAllosomes=TRUE, force=FALSE)
   standardGeneric('applyFilters'))
 setGeneric('segmentBins', function(object, smoothBy=FALSE,
   alpha=1e-10, undo.splits='sdundo', undo.SD=1.0,
@@ -32,7 +32,7 @@ setGeneric('noisePlot', function(x, y, ...)
 
 
 
-setGeneric('binFilter', function(object) standardGeneric('binFilter'))
+setGeneric('binsToUse', function(object) standardGeneric('binsToUse'))
 
 setGeneric('chromosomes', function(object) standardGeneric('chromosomes'))
 setGeneric('bpstart', function(object) standardGeneric('bpstart'))
@@ -47,8 +47,8 @@ setGeneric('probnorm', function(object) standardGeneric('probnorm'))
 setGeneric('probgain', function(object) standardGeneric('probgain'))
 setGeneric('probamp', function(object) standardGeneric('probamp'))
 
-setGeneric('binFilter<-', function(object, value)
-  standardGeneric('binFilter<-'))
+setGeneric('binsToUse<-', function(object, value)
+  standardGeneric('binsToUse<-'))
 
 setGeneric('copynumber<-', function(object, value)
   standardGeneric('copynumber<-'))

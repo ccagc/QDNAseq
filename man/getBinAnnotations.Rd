@@ -13,7 +13,7 @@
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
-getBinAnnotations(binsize, genome="hg19", cache=TRUE, force=FALSE)
+getBinAnnotations(binSize, genome="hg19", type="SR50", cache=TRUE, force=FALSE)
 }
 
 \description{
@@ -21,11 +21,13 @@ getBinAnnotations(binsize, genome="hg19", cache=TRUE, force=FALSE)
 }
 
 \arguments{
-  \item{binsize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
-   in units of kbp (1000 base pairs), e.g. \code{binsize=15} corresponds
+  \item{binSize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
+   in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
    to 15 kbp bins.}
   \item{genome}{A \code{\link[base]{character}} string specify the genome and genome version
    to be used.}
+  \item{type}{A \code{\link[base]{character}} string specify the experiment type, e.g. "SR50"
+   or "PE1000".}
   \item{cache}{If \code{\link[base:logical]{TRUE}}, the retrieved bin annotation data is cached
    on the file system, otherwise not.}
   \item{force}{If \code{\link[base:logical]{TRUE}}, the bin anonnation data is retrieved/calculated

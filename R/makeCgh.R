@@ -23,7 +23,7 @@
 #*/#########################################################################
 setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
   definition=function(object) {
-  object <- object[binFilter(object),]
+  object <- object[binsToUse(object),]
   fData(object)$chromosome <- chromosomes(object)
   colnames(fData(object))[colnames(fData(object)) == 'chromosome'] <-
    'Chromosome'

@@ -19,7 +19,7 @@ library(QDNAseq)
 Next we need the bin annotations. These are available pre-calculated for genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp. They can be loaded for example with:
 
 <<reg, eval=FALSE>>=
-bins <- getBinAnnotations(binsize=15)
+bins <- getBinAnnotations(binSize=15)
 @
 
 If you are working with another genome build (or another species), see the section on generating the bin annotations.
@@ -168,10 +168,10 @@ library(Biobase)
 library(BSgenome.Hsapiens.UCSC.hg19)
 
 # set the bin size
-binsize <- 15
+binSize <- 15
 
 # create bins from the reference genome
-bins <- createBins(bsgenome=BSgenome.Hsapiens.UCSC.hg19, binsize=binsize)
+bins <- createBins(bsgenome=BSgenome.Hsapiens.UCSC.hg19, binSize=binSize)
 
 # calculate mappabilites per bin from ENCODE mapability tracks
 bins$mappability <- calculateMappability(bins,
@@ -209,8 +209,8 @@ bins <- AnnotatedDataFrame(bins,
 @
 
 % library(QDNAseq)
-% for (binsize in c(1, 5, 10, 15, 30, 50, 100, 500, 1000)) {
-%   bins <- getBinAnnotations(binsize)
+% for (binSize in c(1, 5, 10, 15, 30, 50, 100, 500, 1000)) {
+%   bins <- getBinAnnotations(binSize)
 %   tg <- binReadCounts(bins,
 %     path='/storage/shark1/data/SeqAnalysis/1000Genomes/read.length.50/bam/')
 %     path='/storage/shark1/data/SeqProjects/1000G.50.hg19/bam/')
@@ -223,7 +223,7 @@ bins <- AnnotatedDataFrame(bins,
 %     matrixStats::madDiff(bins$residual, na.rm=TRUE)
 %   attr(bins, 'QDNAseqVersion') <- packageVersion('QDNAseq')
 %   attr(bins, 'QDNAseqDownloaded') <- TRUE
-%   saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.rds', sep=''),
+%   saveRDS(bins, paste('QDNAseq.hg19.', binSize, 'kbp.rds', sep=''),
 %     compress='xz')
 % }
 

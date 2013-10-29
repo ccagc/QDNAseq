@@ -73,11 +73,7 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   if (length(family) != ncol(counts))
     stop('Parameter family has to be either a single value or a vector the ',
       'same length as there are samples in object.')
-  if ('filter' %in% colnames(fData(object))) {
-    condition <- fData(object)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(object))
-  }
+  condition <- binsToUse(object)
   used.span <- rep(NA_real_, times=ncol(counts))
   used.family <- rep(NA_real_, times=ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts),

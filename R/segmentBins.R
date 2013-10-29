@@ -54,11 +54,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
     if ('probamp' %in% assayDataElementNames(object))
       assayDataElement(object, 'probamp') <- NULL
   }
-  if ('filter' %in% colnames(fData(object))) {
-    condition <- fData(object)$filter
-  } else {
-    condition <- rep(TRUE, times=nrow(object))
-  }
+  condition <- binsToUse(object)
 
   if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
     message('Performing segmentation:')
