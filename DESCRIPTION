@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 0.5.1
+Version: 0.5.5
 Depends: R (>= 2.15.0), R.cache
 Imports: Biobase (>= 2.18.0), CGHbase (>= 1.18.0), CGHcall (>= 2.18.0),
          DNAcopy (>= 1.32.0), matrixStats, methods, R.cache, R.utils,
