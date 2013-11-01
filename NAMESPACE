@@ -1,9 +1,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IMPORTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-import(Biobase)
-import(CGHbase)
-import(CGHcall)
+import('methods')
+import('Biobase')
+import('CGHbase')
+import('CGHcall')
 
 importFrom('DNAcopy', 'CNA')
 importFrom('DNAcopy', 'segment')

@@ -64,7 +64,6 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
     remotefile <- file.path(urlPath, filename, fsep='/')
     localfile <- tempfile()
     tryCatch({
-      library('R.utils')
       result <- downloadFile(remotefile, localfile)
     }, error=function(e) {
       message(' not found. Please generate them first.')
