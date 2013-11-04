@@ -80,8 +80,6 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
 
   i <- 1
   chrs <- unique(fData(object)$chromosome[binsToUse(object)])
-  # condition <- condition & !is.na(copynumber(object)[, i]) &
-    # fData(object)$chromosome %in% chrs
   condition <- condition & fData(object)$bases > 0 &
     fData(object)$chromosome %in% chrs
 
@@ -96,7 +94,15 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   pos <- as.numeric(bpstart(object)[condition])
   for (j in uni.chrom)
     pos[chrom > j] <- pos[chrom > j] + chrom.lengths[as.character(j)]
-  copynumber <- copynumber(object)[condition, , drop=FALSE]
+  if ('copynumber' %in% assayDataElementNames(object)) {
+    copynumber <- assayDataElement(object, 'copynumber')[condition, ,
+      drop=FALSE]
+  } else if ('corrected' %in% assayDataElementNames(object)) {
+    copynumber <- assayDataElement(object, 'corrected')[condition, ,
+      drop=FALSE]
+  } else {
+    copynumber <- assayDataElement(object, 'counts')[condition, , drop=FALSE]
+  }
   if (ncol(object) > 1L)
     message('Multiple samples present in input, only using first sample: ',
       sampleNames(object)[1L])
@@ -104,10 +110,10 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   ylim <- par('usr')[3:4]
   points(pos, copynumber[, i], cex=0.1, col=pointcol)
   amps <- copynumber[, i]
-  amps[amps < ylim[2]] <- NA_real_
+  amps[amps <= ylim[2]] <- NA_real_
   amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
   dels <- copynumber[, i]
-  dels[dels > ylim[1]] <- NA_real_
+  dels[dels >= ylim[1]] <- NA_real_
   dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
   par(xpd=TRUE)
   points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)
