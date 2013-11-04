@@ -32,24 +32,40 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
   function (x, y, main=NULL, includeReadCounts=TRUE,
     delcol='darkred', losscol='red', gaincol='blue', ampcol='darkblue',
     pointcol='black', segcol='chocolate', misscol=NA,
-    ylab=expression(normalized~log[2]~read~count), ylim=NULL, ... ) {
-    if (is.null(ylim)) {
-      if ('calls' %in% assayDataElementNames(x)) {
-        ylim <- c(-5, 5)
-      } else {
+    ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
+    if (class(x) == 'QDNAseqReadCounts') {
+      condition <- binsToUse(x)
+    } else {
+      condition <- rep(TRUE, times=nrow(x))
+    }
+    if ('calls' %in% assayDataElementNames(x) && is.null(ylim))
+      ylim <- c(-5, 5)
+    if ('copynumber' %in% assayDataElementNames(x)) {
+      copynumber <- assayDataElement(x, 'copynumber')[condition, , drop=FALSE]
+      if (is.null(ylim))
         ylim <- c(-3, 5)
-      }
+      if (is.null(ylab))
+        ylab <- expression(normalized~log[2]~read~count)
+      if (is.null(yaxp))
+        yaxp <- c(ylim[1], ylim[2], ylim[2]-ylim[1])
+    } else if ('corrected' %in% assayDataElementNames(x)) {
+      copynumber <- assayDataElement(x, 'corrected')[condition, , drop=FALSE]
+      if (is.null(ylim))
+        ylim <- range(copynumber)
+      if (is.null(ylab))
+        ylab <- expression(corrected~read~count)
+    } else {
+      copynumber <- assayDataElement(x, 'counts')[condition, , drop=FALSE]
+      if (is.null(ylim))
+        ylim <- range(copynumber)
+      if (is.null(ylab))
+        ylab <- expression(raw~read~count)
     }
     if (is.null(main))
       main <- sampleNames(x)
    if (includeReadCounts && 'reads' %in% names(pData(x)))
       main <- paste(main, ' (', format(x$reads, trim=TRUE, big.mark=','),
         ' reads)', sep='')
-    if (class(x) == 'QDNAseqReadCounts') {
-      condition <- binsToUse(x)
-    } else {
-      condition <- rep(TRUE, times=nrow(x))
-    }
     all.chrom <- chromosomes(x)
     all.chrom.lengths <- aggregate(bpend(x),
       by=list(chromosome=all.chrom), FUN=max)
@@ -69,7 +85,6 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       chrom.ends <- c(chrom.ends, cumul)
     }
     names(chrom.ends) <- names(chrom.lengths)
-    copynumber <- copynumber(x)[condition, , drop=FALSE]
     for (i in seq_len(ncol(x))) {
       message('Plotting sample ', main[i])
       cn <- copynumber[, i]
@@ -117,7 +132,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       } else {
         plot(pos, cn, cex=.1, col=pointcol, main=main[i],
           xlab=NA, ylab=NA, ylim=ylim, xaxt='n', xaxs='i', yaxs='i',
-          yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), tck=-0.015, las=1)
+          yaxp=yaxp, tck=-0.015, las=1)
       }
       mtext(text='chromosomes', side=1, line=2)
       mtext(text=ylab, side=2, line=2)
@@ -135,10 +150,10 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
         }
       }
       amps <- cn
-      amps[amps < ylim[2]] <- NA_real_
+      amps[amps <= ylim[2]] <- NA_real_
       amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
       dels <- cn
-      dels[dels > ylim[1]] <- NA_real_
+      dels[dels >= ylim[1]] <- NA_real_
       dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
       par(xpd=TRUE)
       points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)
