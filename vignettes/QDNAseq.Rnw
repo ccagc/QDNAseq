@@ -47,9 +47,27 @@ For the purpose of this tutorial, we load the example data set of chromosome 9 o
 data(LGG150)
 @
 
-Plot median read counts as a function of GC content and mappability. As the example data set only contains chromosome 9 and not the whole genome, this looks jagged. Normally, a smoother distribution is to be expected.
+Plot a raw copy number profile (read counts across the genome), and highlight bins removed with default filtering.
+
+<<label=rawprofile,include=FALSE>>=
+plot(LGG150, ylim=c(-50, 150))
+highlightFilters(LGG150, residual=TRUE, blacklist=TRUE)
+@
+
+\begin{figure}
+\begin{center}
+<<label=rawprofile,fig=TRUE,echo=FALSE>>=
+<<rawprofile>>
+@
+\end{center}
+\caption{A plot}
+\label{fig:rawprofile}
+\end{figure}
+
+Apply filters and plot median read counts as a function of GC content and mappability. As the example data set only contains chromosome 9 and not the whole genome, this looks jagged. Normally, a smoother distribution is to be expected.
 
 <<label=readcounts,include=FALSE>>=
+LGG150 <- applyFilters(LGG150, residual=TRUE, blacklist=TRUE)
 readCountPlot(LGG150)
 @
 
@@ -63,49 +81,31 @@ readCountPlot(LGG150)
 \label{fig:readcounts}
 \end{figure}
 
-
-Perform correction for GC content and mappability.
+Perform correction for GC content and mappability, normalize, and plot the copy number profile.
 
 <<reg>>=
 LGG150 <- correctBins(LGG150)
-@
-
-Perform median normalization.
-
-<<reg>>=
 LGG150 <- normalizeBins(LGG150)
 @
 
-To apply filtering, plot the profile and highlight bins to be filtered out for evaluation. By default, bins with mappabilities lower than 50 and the 1000 Genomes residuals larger than 1 standard deviations are filtered out.
-
-% png? https://stat.ethz.ch/pipermail/r-help/2009-November/218795.html
-
-<<label=filters,include=FALSE>>=
+<<label=profile,include=FALSE>>=
 plot(LGG150)
-highlightFilters(LGG150, mappability=50, blacklist=0, residual=4, bases=0)
 @
 
 \begin{figure}
 \begin{center}
-<<label=filters,fig=TRUE,echo=FALSE>>=
-<<filters>>
+<<label=profile,fig=TRUE,echo=FALSE>>=
+<<profile>>
 @
 \end{center}
 \caption{A plot}
-\label{fig:filters}
+\label{fig:profile}
 \end{figure}
 
-Apply filters.
+Data is now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
 
 <<reg>>=
-LGG150 <- applyFilters(LGG150, residual=4, blacklist=0,
-  mappability=50, bases=0)
-@
-
-Data now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
-
-<<reg>>=
-# LGG150 <- segmentBins(LGG150)
+LGG150 <- segmentBins(LGG150)
 @
 
 Plot to evaluate segmentation.
@@ -124,7 +124,7 @@ plot(LGG150)
 \label{fig:segmentation}
 \end{figure}
 
-Tune segmentation parameters and iterate until satisfied. Next, perform mode normalization and call aberrations, and plot the final results.
+Tune segmentation parameters and iterate until satisfied. Next, call aberrations, and plot the final results.
 
 <<reg>>=
 # LGG150 <- callBins(LGG150)

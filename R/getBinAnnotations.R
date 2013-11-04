@@ -41,7 +41,6 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
   cacheDir <- c('QDNAseq', 'binAnnotations')
   cacheSuffix <- paste('.', genome, '.', binSize, 'kbp.', type, sep='')
   if (!force) {
-    # TO DO: somehow check if file available online is newer than cached one?
     bins <- loadCache(key=cacheKey, suffix=cacheSuffix, dirs=cacheDir)
     if (!is.null(bins)) {
       message('Bin annotations for genome ', genome, ', bin size of ',

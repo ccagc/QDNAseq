@@ -136,7 +136,8 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       }
       mtext(text='chromosomes', side=1, line=2)
       mtext(text=ylab, side=2, line=2)
-      abline(h=0)
+      if ('copynumber' %in% assayDataElementNames(x))
+        abline(h=0)
       abline(v=chrom.ends[-length(chrom.ends)], lty='dashed')
       ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
       axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1, cex.axis=1,
