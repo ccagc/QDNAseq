@@ -57,9 +57,9 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   condition <- binsToUse(object)
 
   if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
-    message('Performing segmentation:')
+    vmsg('Performing segmentation:')
   } else {
-    message('Performing segmentation with smoothing over ',
+    vmsg('Performing segmentation with smoothing over ',
       smoothBy, ' bins:')
   }
 
@@ -70,7 +70,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
 
   ## loop through samples
   for (s in seq_len(ncol(copynumber))) {
-    message('  Segmenting: ', sampleNames(object)[s],
+    vmsg('  Segmenting: ', sampleNames(object)[s],
       ' (', s, ' of ', ncol(object), ') ...', appendLF=FALSE)
 
     ## loop through chromosomes
@@ -106,7 +106,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
         segmented[index, s] <- rep(chrSegmented, times=table(binToBin))
       }
     }
-  message()
+  vmsg()
   }
   segmented[is.na(copynumber)] <- NA_real_
 

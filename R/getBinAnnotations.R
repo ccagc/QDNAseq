@@ -43,19 +43,19 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
   if (!force) {
     bins <- loadCache(key=cacheKey, suffix=cacheSuffix, dirs=cacheDir)
     if (!is.null(bins)) {
-      message('Bin annotations for genome ', genome, ', bin size of ',
+      vmsg('Bin annotations for genome ', genome, ', bin size of ',
         binSize, 'kbp, and experiment type ', type, ' loaded from cache.')
 
       if (is.null(attr(bins, 'QDNAseqVersion')) ||
         attr(bins, 'QDNAseqVersion') < '0.5.4') {
-        message('Old version detected, ignoring.')
+        vmsg('Old version detected, ignoring.')
         bins <- NULL
       }
     }
   }
 
   if (is.null(bins)) {
-    message('Downloading bin annotations for genome ', genome,
+    vmsg('Downloading bin annotations for genome ', genome,
       ', bin size ', binSize, 'kbp, and experiment type ', type, ' ...',
       appendLF=FALSE)
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
@@ -65,17 +65,17 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
     tryCatch({
       result <- downloadFile(remotefile, localfile)
     }, error=function(e) {
-      message(' not found. Please generate them first.')
+      vmsg(' not found. Please generate them first.')
       stop(e)
     })
     bins <- readRDS(localfile)
     file.remove(localfile)
     if (cache) {
-      message(' saving in cache ...')
+      vmsg(' saving in cache ...')
       saveCache(bins, key=cacheKey, suffix=cacheSuffix, dirs=cacheDir,
         compress=TRUE)
     }
-    message()
+    vmsg()
   }
   bins
 }
@@ -128,14 +128,14 @@ createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
   lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]
   start <- end <- integer()
   bases <- gc <- numeric()
-  message('Creating bins of ', binSize, ' kbp for genome ',
+  vmsg('Creating bins of ', binSize, ' kbp for genome ',
     substitute(bsgenome))
 
   # Bin size in units of base pairs
   binWidth <- binSize*1000L
 
   for (chr in chrs) {
-    message('  Processing ', chr, ' ...', appendLF=FALSE)
+    vmsg('  Processing ', chr, ' ...', appendLF=FALSE)
     chr.size <- lengths[chr]
     chr.starts <- seq(from=1, to=chr.size, by=binWidth)
     chr.ends <- chr.starts + binWidth - 1L
@@ -150,7 +150,7 @@ createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
     end <- c(end, chr.ends)
     bases <- c(bases, chr.bases)
     gc <- c(gc, chr.gc)
-    message()
+    vmsg()
   }
   gc[is.nan(gc)] <- NA_real_
   bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
@@ -162,7 +162,7 @@ createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
 
 calculateMappability <- function(bins, bigWigFile,
   bigWigAverageOverBed='bigWigAverageOverBed') {
-  message('Calculating mappabilities per bin from file\n  ', bigWigFile,
+  vmsg('Calculating mappabilities per bin from file\n  ', bigWigFile,
     '\n  ',
     appendLF=FALSE)
   binbed <- tempfile(fileext='.bed')
@@ -184,7 +184,7 @@ calculateMappability <- function(bins, bigWigFile,
 }
 
 calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
-  message('Calculating overlaps per bin with BED files \n  ', paste(bedFiles,
+  vmsg('Calculating overlaps per bin with BED files \n  ', paste(bedFiles,
     collapse='\n  '), '\n  ...', appendLF=FALSE)
   beds <- list()
   for (bed in bedFiles)
@@ -241,14 +241,14 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   } else {
     blacklist <- apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
   }
-  message()
+  vmsg()
   blacklist
 }
 
 iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
   first <- sum(binsToUse(object))
   previous <- first
-  message('Iteration #1 with ', format(previous, big.mark=','),
+  vmsg('Iteration #1 with ', format(previous, big.mark=','),
     ' bins.')
   object <- correctBins(object, storeResiduals=TRUE, ...)
   residuals <- assayDataElement(object, 'residuals')
@@ -261,7 +261,7 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
   iter <- 2
   while (previous != num && iter <= maxIter) {
     previous <- num
-    message('Iteration #', iter, ' with ', format(previous, big.mark=','),
+    vmsg('Iteration #', iter, ' with ', format(previous, big.mark=','),
       ' bins.')
     object <- correctBins(object, storeResiduals=TRUE, ...)
     residuals <- assayDataElement(object, 'residuals')
@@ -273,10 +273,10 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
     iter <- iter + 1
   }
   if (previous == num) {
-    message('Convergence at ', format(previous, big.mark=','), ' bins.')
-    message(format(first-previous, big.mark=','), ' additional bins removed.')
+    vmsg('Convergence at ', format(previous, big.mark=','), ' bins.')
+    vmsg(format(first-previous, big.mark=','), ' additional bins removed.')
   } else if (iter == maxIter) {
-    message('Reached maxIter=', maxIter, ' iterations without convergence.')
+    vmsg('Reached maxIter=', maxIter, ' iterations without convergence.')
   }
   residual
 }

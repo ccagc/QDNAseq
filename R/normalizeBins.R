@@ -17,7 +17,7 @@
 #   \item{logTransform}{If @TRUE, ..., otherwise, ...}
 #   \item{smoothOutliers}{If @TRUE, ..., otherwise, ...}
 #   \item{force}{...}
-#   \item{...}{Further arguments to DNAcopy::smooth.CNA}
+#   \item{...}{Not used.}
 # }
 #
 # \value{
@@ -75,13 +75,13 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
     copynumber <- log2(copynumber + 1)
 
   if (method == 'none') {
-    message('Skipping normalization ...')
+    vmsg('Skipping normalization ...')
   } else {
     if (method == 'median') {
-      message('Applying median normalization ...')
+      vmsg('Applying median normalization ...')
       values <- colMedians(copynumber[condition, , drop=FALSE], na.rm=TRUE)
     } else if (method == 'mode') {
-      message('Applying mode normalization ... ')
+      vmsg('Applying mode normalization ... ')
       values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
         FUN=function(x) {
         d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
@@ -92,7 +92,7 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
 
   # Smooth outliers?
   if (smoothOutliers) {
-    message('Smoothing outliers ...')
+    vmsg('Smoothing outliers ...')
     CNA.object <- CNA(copynumber, chrom=fData[,'chromosome'], maploc=fData[,'start'], data.type='logratio', presorted=TRUE)
     CNA.object <- smooth.CNA(CNA.object)
     CNA.object <- CNA.object[, -(1:2), drop=FALSE]

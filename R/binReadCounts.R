@@ -138,15 +138,15 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir)
     if (!is.null(readCounts)) {
-      message('Loaded binned read counts from cache for ', basename(bamfile),
+      vmsg('Loaded binned read counts from cache for ', basename(bamfile),
         appendLF=FALSE)
       if (is.null(attr(readCounts, 'QDNAseqVersion'))) {
         attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
-        message(', re-caching with version number ...', appendLF=FALSE)
+        vmsg(', re-caching with version number ...', appendLF=FALSE)
         saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
           suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
       }
-      message()
+      vmsg()
       return(readCounts)
     }
   }
@@ -170,16 +170,16 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
       suffix=readCacheSuffix, dirs=readCacheDir)
 
   if (!is.null(hits)) {
-    message('Loaded reads from cache for ', basename(bamfile), ',',
+    vmsg('Loaded reads from cache for ', basename(bamfile), ',',
       appendLF=FALSE)
     if (is.null(attr(hits, 'QDNAseqVersion'))) {
       attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
-      message(' re-caching with version number ...', appendLF=FALSE)
+      vmsg(' re-caching with version number ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
     }
   } else {
-    message('Extracting reads from ', basename(bamfile), ' ...',
+    vmsg('Extracting reads from ', basename(bamfile), ' ...',
       appendLF=FALSE)
     flag <- scanBamFlag(isPaired=isPaired,
       isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
@@ -215,7 +215,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
     if (cache) {
       attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
-      message(' saving in cache ...', appendLF=FALSE)
+      vmsg(' saving in cache ...', appendLF=FALSE)
       saveCache(hits, key=readCacheKey, sources=bamfile,
         suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
     }
@@ -225,7 +225,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Bin by chromosome
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  message(' binning ...', appendLF=FALSE)
+  vmsg(' binning ...', appendLF=FALSE)
   ## TO DO: the binning is very memory intensive, and therefore should be done
   ## to only a maximum of maxChunk reads at a time.
   readCounts <- integer(length=nrow(bins))
@@ -257,12 +257,12 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (cache) {
     attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
-    message(' saving in cache ...', appendLF=FALSE)
+    vmsg(' saving in cache ...', appendLF=FALSE)
     saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
       suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
   }
 
-  message()
+  vmsg()
   readCounts
 }
 

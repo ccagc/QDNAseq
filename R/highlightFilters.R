@@ -104,7 +104,7 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
     copynumber <- assayDataElement(object, 'counts')[condition, , drop=FALSE]
   }
   if (ncol(object) > 1L)
-    message('Multiple samples present in input, only using first sample: ',
+    vmsg('Multiple samples present in input, only using first sample: ',
       sampleNames(object)[1L])
   pointcol <- col
   ylim <- par('usr')[3:4]
@@ -121,7 +121,7 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   par(xpd=FALSE)
 
   num <- sum(condition)
-  message('Highlighted ', format(num, big.mark=','), ' bins.')
+  vmsg('Highlighted ', format(num, big.mark=','), ' bins.')
   return(invisible(num))
 })
 

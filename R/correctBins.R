@@ -62,7 +62,7 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     counts <- counts / fData(object)$bases * 100L
     counts[fData(object)$bases == 0] <- 0L
   }
-  message('Performing correction for GC content and mappability:')
+  vmsg('Performing correction for GC content and mappability:')
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
   if (length(family) == 1L)
@@ -98,10 +98,10 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     all.combinations$mappability, sep='')
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
-      message('  Skipping correction for sample ', colnames(counts)[i], '...')
+      vmsg('  Skipping correction for sample ', colnames(counts)[i], '...')
       next
     }
-    message('  Using span=', span[i], '\tand family=', family[i],
+    vmsg('  Using span=', span[i], '\tand family=', family[i],
       ',\tcorrecting sample ', colnames(counts)[i], '...')
     vals <- median.counts[, i+2L]
     corvals <- counts[, i]
@@ -133,7 +133,7 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     assayDataElement(object, 'residuals') <- residuals
   if (storeLoess)
     assayDataElement(object, 'loess') <- loessFit
-  message('Done.')
+  vmsg('Done.')
   object
 })
 

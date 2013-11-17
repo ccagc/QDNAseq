@@ -86,7 +86,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
     }
     names(chrom.ends) <- names(chrom.lengths)
     for (i in seq_len(ncol(x))) {
-      message('Plotting sample ', main[i])
+      vmsg('Plotting sample ', main[i])
       cn <- copynumber[, i]
       if ('segmented' %in% assayDataElementNames(x))
         segment <- CGHbase:::.makeSegments(segmented(x)
@@ -328,7 +328,7 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
 
   for (i in seq_len(ncol(counts))) {
-    message('Plotting sample ', main[i])
+    vmsg('Plotting sample ', main[i])
     for (j in 1:nrow(median.counts))
       m[as.character(median.counts[j, 'mappability']),
         as.character(median.counts[j, 'gc'])] <- median.counts[j, i+2L]
