@@ -52,7 +52,10 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50', cache=TRUE,
         bins <- NULL
       }
     }
+  } else {
+    bins <- NULL
   }
+
 
   if (is.null(bins)) {
     vmsg('Downloading bin annotations for genome ', genome,
