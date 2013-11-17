@@ -61,7 +61,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   }
   condition <- condition & !is.na(fData(object)$gc)
   msg <- c(msg, 'bins with reference sequence'=sum(condition))
-  
+
   if (!is.na(residual)) {
     if (is.numeric(residual)) {
       condition <- condition & !is.na(fData(object)$residual) &
@@ -84,7 +84,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   msg <- c(msg, 'final bins'=sum(condition))
 
   binsToUse(object) <- condition
-  message(paste(format(msg, big.mark=','), names(msg),
+  vmsg(paste(format(msg, big.mark=','), names(msg),
     sep='\t', collapse='\n'))
   object
 })
