@@ -258,8 +258,9 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
   residuals[!binsToUse(object), ] <- NA
   residual <- apply(residuals, 1, median, na.rm=TRUE)
   cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
-  binsToUse(object) <- binsToUse(object) & !is.na(residual) &
-    abs(residual) <= cutoffValue
+  if (is.numeric(cutoff))
+    binsToUse(object) <- binsToUse(object) & !is.na(residual) &
+      abs(residual) <= cutoffValue
   num <- sum(binsToUse(object))
   iter <- 2
   while (previous != num && iter <= maxIter) {
