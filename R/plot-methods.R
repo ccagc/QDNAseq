@@ -391,15 +391,14 @@ setMethod('noisePlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   reads <- apply(assayDataElement(x, 'counts')[condition, , drop=FALSE], 2, sum)
   sds <- apply(assayDataElement(x, 'copynumber')[condition, , drop=FALSE], 2, madDiff, na.rm=TRUE)
   num <- sum(condition)
-  plot(I(1/(reads/num)), sds^2, main=main, type='n', xlab=NA, ylab=NA, xaxt='n', yaxt='n')
+  plot(I(1/(reads/num)), sds^2, main=main, type='n', xlab=NA, ylab=NA, xaxt='n', yaxt='n', ...)
   axis(side=1, tck=-.015, labels=NA)
   axis(side=2, tck=-.015, labels=NA)
   axis(side=1, lwd=0, line=-0.4)
   axis(side=2, lwd=0, line=-0.4)
   mtext(side=1, expression((average~reads~per~bin)^-1), line = 2)
   mtext(side=2, expression(hat(sigma)[Delta]^2), line = 2)
-  # points(1/(reads/num), sds^2, ...)
-  text(1/(reads/num), sds^2, labels=sampleNames(x), cex=0.5)
+  text(1/(reads/num), sds^2, labels=sampleNames(x), cex=0.5, ...)
 })
 
 # EOF
