@@ -1,6 +1,11 @@
 Package: QDNAseq
 ================
 
+Version: 0.6.0 [2013-11-22]
+o Improved correction for GC content and mappability.
+o Revamped caching of intermediate files.
+
+
 Version: 0.5.8 [2013-11-16]
 o Now it is possible to disable verbose message, i.e.
   options('QDNAseq::verbose'=FALSE).
