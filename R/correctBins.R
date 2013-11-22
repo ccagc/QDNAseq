@@ -107,7 +107,8 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     vals <- median.counts[, i+2L]
     corvals <- counts[, i]
     try({
-      l <- loess(vals ~ median.counts$gc * median.counts$mappability,
+      l <- loess(vals ~ gc * mappability,
+        data=median.counts[, c('gc', 'mappability')],
         span=span[i], family=family[i], ...)
       fit <- as.vector(predict(l, all.combinations))
       names(fit) <- rownames(all.combinations)
