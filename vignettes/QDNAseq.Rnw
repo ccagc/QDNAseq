@@ -19,7 +19,7 @@ library(QDNAseq)
 Next we need the bin annotations. These are available pre-calculated for genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp. They can be loaded for example with:
 
 <<reg, eval=FALSE>>=
-bins <- getBinAnnotations(binSize=15)
+bins <- downloadBinAnnotations(binSize=15)
 @
 
 If you are working with another genome build (or another species), see the section on generating the bin annotations.
@@ -183,18 +183,18 @@ bins$blacklist <- calculateBlacklist(bins,
   bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
 
-# load data for the 1000 Genomes (or similar) data set
+# load data for the 1000 Genomes (or similar) data set, and generate residuals
 tg <- binReadCounts(bins,
   path='/path/to/1000Genomes/bam/files')
-# perform correction for GC content and mappbility
-tg <- correctBins(tg, storeResiduals=TRUE)
-# calculate median residual across samples
-residual <- apply(Biobase::assayDataElement(tg, 'residuals'), 1,
-  median, na.rm=TRUE)
-residual[!bins$chromosome %in% as.character(1:22)] <- NA
-bins$residual <- residual
+tg <- applyFilters(tg, residual=FALSE, blacklist=FALSE,
+  mappability=FALSE, bases=FALSE)
+bins$residual <- iterateResiduals(tg)
 
-# generate an AnnotatedDataFrame object
+# by default, use all autosomal bins that have a reference sequence
+# (i.e. not only N's)
+bins$use <- bins$chromosome %in% as.character(1:22) & bins$bases > 0
+
+# convert to AnnotatedDataFrame and add metadata
 bins <- AnnotatedDataFrame(bins,
   varMetadata=data.frame(labelDescription=c(
   'Chromosome name',
@@ -204,13 +204,20 @@ bins <- AnnotatedDataFrame(bins,
   'Percentage of C and G nucleotides (of non-N nucleotides)',
   'Average mappability of 50mers with a maximum of 2 mismatches',
   'Percent overlap with ENCODE blacklisted regions',
-  'Median loess residual from 1000 Genomes (50mers)'),
-  rownames=colnames(bins)))
+  'Median loess residual from 1000 Genomes (50mers)',
+  'Whether the bin should be used in subsequent analysis steps'),
+  row.names=colnames(bins)))
+
+# add more metadata
+attr(bins, 'QDNAseqVersion') <- packageVersion('QDNAseq')
+attr(bins, 'QDNAseqDownloaded') <- TRUE
+saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.SR50.rds', sep=''),
+  compress='xz')
 @
 
 % library(QDNAseq)
 % for (binSize in c(1, 5, 10, 15, 30, 50, 100, 500, 1000)) {
-%   bins <- getBinAnnotations(binSize)
+%   bins <- downloadBinAnnotations(binSize)
 %   tg <- binReadCounts(bins,
 %     path='/storage/shark1/data/SeqAnalysis/1000Genomes/read.length.50/bam/')
 %     path='/storage/shark1/data/SeqProjects/1000G.50.hg19/bam/')

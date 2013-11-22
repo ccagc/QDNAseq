@@ -15,6 +15,7 @@ importFrom('matrixStats', 'colMedians')
 # Leave out for now, because also available in Biobase:
 # importFrom('matrixStats', 'rowMedians')
 
+importFrom('R.cache', 'getCachePath')
 importFrom('R.cache', 'loadCache')
 importFrom('R.cache', 'saveCache')
 
@@ -29,7 +30,7 @@ importFrom('Rsamtools', 'scanBamFlag')
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #exportPattern('^[[:alpha:]]+')
 
-export('getBinAnnotations')
+export('downloadBinAnnotations')
 export('binReadCounts')
 export('readCountPlot')
 export('noisePlot')

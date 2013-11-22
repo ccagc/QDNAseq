@@ -13,7 +13,7 @@
 \title{Calculate binned read counts from a BAM file}
 
 \usage{
-.binReadCountsPerSample(bins, bamfile, cache=TRUE, force=FALSE, maxChunk=100000000L,
+.binReadCountsPerSample(bins, bamfile, cache=TRUE, force=!cache, maxChunk=100000000L,
   isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA,
   isMinusStrand=NA, isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA,
   isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37)

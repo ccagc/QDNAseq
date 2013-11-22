@@ -33,6 +33,7 @@
 #*/#########################################################################
 binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   bamnames=NULL, phenofile=NULL, ...) {
+  
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
       pattern=sprintf('%s$', ext), full.names=TRUE)
@@ -111,12 +112,20 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 # @keyword IO
 # @keyword internal
 #*/#########################################################################
-.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, force=FALSE,
+.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, force=!cache,
   maxChunk=100000000L, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
   hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA,
   isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
 
+  ## purge outdated files from the cache
+  QDNAseqCacheKeyVersion <- "0.6.0"
+  cachePath <- normalizePath(getCachePath(dirs=c("QDNAseq",
+    QDNAseqCacheKeyVersion)))
+  oldCaches <- setdiff(list.files(dirname(cachePath), full.names=TRUE),
+    cachePath)
+  sapply(oldCaches, FUN=unlink, recursive=TRUE)
+  
   binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
   bamfile <- normalizePath(bamfile)
@@ -125,14 +134,15 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Check for cached results
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  readCountCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
-    isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
-    hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
-    isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
-    isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
+  readCountCacheKey <- list(bamfile=bamfile, filesize=file.info(bamfile)$size,
+    isPaired=isPaired, isProperPair=isProperPair,
+    isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
+    isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
+    isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
+    isNotPrimaryRead=isNotPrimaryRead,
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq, binSize=binSize)
-  readCountCacheDir <- c('QDNAseq', 'readCounts')
+  readCountCacheDir <- c('QDNAseq', QDNAseqCacheKeyVersion, 'readCounts')
   readCountCacheSuffix <- paste('.', fullname, '.', binSize, 'kbp', sep='')
   if (!force) {
     readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
@@ -155,14 +165,15 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Retrieve counts per chromosome
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  readCacheKey <- list(bamfile=bamfile, isPaired=isPaired,
-    isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
-    hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
-    isMateMinusStrand=isMateMinusStrand, isFirstMateRead=isFirstMateRead,
-    isSecondMateRead=isSecondMateRead, isNotPrimaryRead=isNotPrimaryRead,
+  readCacheKey <- list(bamfile=bamfile, filesize=file.info(bamfile)$size,
+    isPaired=isPaired, isProperPair=isProperPair,
+    isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
+    isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
+    isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
+    isNotPrimaryRead=isNotPrimaryRead,
     isNotPassingQualityControls=isNotPassingQualityControls,
     isDuplicate=isDuplicate, minMapq=minMapq)
-  readCacheDir <- c('QDNAseq', 'reads')
+  readCacheDir <- c('QDNAseq', QDNAseqCacheKeyVersion, 'reads')
   readCacheSuffix <- paste('.', fullname, sep='')
   hits <- NULL
   if (!force)
