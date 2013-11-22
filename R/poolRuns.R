@@ -77,7 +77,7 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
     replicates <- samples == newsample
     newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
     if ('corrected' %in% assayDataElementNames(object))
-      newcorrected[, newsample] <- rowSums(corrected[, replicates,
+      newcorrected[, newsample] <- rowMeans(corrected[, replicates,
         drop=FALSE])
     oldphenodata <- phenodata[replicates, ]
     newphenodata[newsample, 'reads'] <- sum(oldphenodata$reads)

@@ -16,6 +16,7 @@
 #   \item{span}{...}
 #   \item{family}{...}
 #   \item{adjustIncompletes}{...}
+#   \item{type}{...}
 #   \item{keepCounts}{...}
 #   \item{storeResiduals}{...}
 #   \item{storeLoess}{...}
@@ -36,8 +37,8 @@
 
 setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, keepCounts=TRUE, storeResiduals=FALSE,
-  storeLoess=FALSE, force=FALSE,
+  adjustIncompletes=TRUE, type='relative', keepCounts=TRUE,
+  storeResiduals=FALSE, storeLoess=FALSE, force=FALSE,
   ...) {
   if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Changing the correction will ',
@@ -90,12 +91,12 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     mappability=mappability[condition]), FUN=median)
   median.counts <- median.counts[!is.na(median.counts$gc), ]
   median.counts <- median.counts[!is.na(median.counts$mappability), ]
-  rownames(median.counts) <- paste(median.counts$gc, '-',
-    median.counts$mappability, sep='')
+  rownames(median.counts) <- paste0(median.counts$gc, '-',
+    median.counts$mappability)
   all.combinations <- expand.grid(gc=unique(gc[!is.na(gc)]),
     mappability=unique(mappability[!is.na(mappability)]))
-  rownames(all.combinations) <- paste(all.combinations$gc, '-',
-    all.combinations$mappability, sep='')
+  rownames(all.combinations) <- paste0(all.combinations$gc, '-',
+    all.combinations$mappability)
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
       vmsg('  Skipping correction for sample ', colnames(counts)[i], '...')
@@ -106,24 +107,30 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     vals <- median.counts[, i+2L]
     corvals <- counts[, i]
     try({
-      l <- loess(vals ~ gc * mappability, data=median.counts,
+      l <- loess(vals ~ median.counts$gc * median.counts$mappability,
         span=span[i], family=family[i], ...)
       fit <- as.vector(predict(l, all.combinations))
       names(fit) <- rownames(all.combinations)
+      # Without extrapolation would be:
+      # fit <- l$fitted
+      # names(fit) <- rownames(median.counts)
       if (storeResiduals)
         residuals[, i] <- (corvals - fit[paste0(gc, '-', mappability)]) /
           fit[paste0(gc, '-', mappability)]
       if (storeLoess)
         loessFit[, i] <- fit[paste0(gc, '-', mappability)]
-      correction <- median(fit, na.rm=TRUE) - fit
-      corvals <- corvals + correction[paste(gc, '-', mappability, sep='')]
-      corvals <- corvals - min(corvals, na.rm=TRUE)
+      if (match.arg(type, c('relative', 'absolute')) == 'relative') {
+        corvals <- corvals / fit[paste0(gc, '-', mappability)]
+      } else {
+        correction <- median(fit, na.rm=TRUE) - fit
+        corvals <- corvals + correction[paste0(gc, '-', mappability)]
+        corvals <- corvals - min(corvals, na.rm=TRUE)
+      }
       used.span[i] <- span[i]
       used.family[i] <- family[i]
     }, silent=TRUE)
     corrected[, i] <- corvals
   }
-  corrected <- round(corrected, digits=2L)
   object$loess.span <- used.span
   object$loess.family <- used.family
   assayDataElement(object, 'corrected') <- corrected

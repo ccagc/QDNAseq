@@ -58,21 +58,28 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
 
   # Sanity check
   if (is.null(copynumber)) {
-    stop(sprintf("Cannot normalize bins. %s object has no 'corrected' assay data.", class(object)[1L]))
+    stop('Cannot normalize bins. Please run correctBins() first.')
   }
 
   # Extract annotation data
   fData <- fData(object)
 
-  # Filter?
-  condition <- binsToUse(object)
-
   # Sanity check
   stopifnot(is.matrix(copynumber))
 
   # Log transform?
-  if (logTransform)
-    copynumber <- log2(copynumber + 1)
+  if (logTransform) {
+    notpos <- copynumber <= 0
+    copynumber[notpos] <- NA
+    copynumber <- log2(copynumber)
+    # impute non-positive values with the minimum
+    colMins <- apply(copynumber, 2, min, na.rm=TRUE)
+    for (i in seq_len(ncol(copynumber)))
+      copynumber[notpos[, i], i] <- colMins[i]
+  }
+
+  # Filter?
+  condition <- binsToUse(object)
 
   if (method == 'none') {
     vmsg('Skipping normalization ...')
@@ -93,7 +100,8 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   # Smooth outliers?
   if (smoothOutliers) {
     vmsg('Smoothing outliers ...')
-    CNA.object <- CNA(copynumber, chrom=fData[,'chromosome'], maploc=fData[,'start'], data.type='logratio', presorted=TRUE)
+    CNA.object <- CNA(copynumber, chrom=fData[,'chromosome'],
+      maploc=fData[,'start'], data.type='logratio', presorted=TRUE)
     CNA.object <- smooth.CNA(CNA.object)
     CNA.object <- CNA.object[, -(1:2), drop=FALSE]
     copynumber <- as.matrix(CNA.object)

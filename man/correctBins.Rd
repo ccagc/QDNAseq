@@ -16,7 +16,8 @@
 
 \usage{
 correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
-  keepCounts=TRUE, storeResiduals=TRUE, storeLoess=FALSE, force=FALSE, ...)
+  type="relative", keepCounts=TRUE, storeResiduals=TRUE, storeLoess=FALSE, force=FALSE,
+  ...)
 }
 
 \description{
@@ -28,6 +29,7 @@ correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
   \item{span}{...}
   \item{family}{...}
   \item{adjustIncompletes}{...}
+  \item{type}{...}
   \item{keepCounts}{...}
   \item{storeResiduals}{...}
   \item{storeLoess}{...}
