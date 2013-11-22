@@ -3,7 +3,7 @@
 #
 # @alias segmentBins,QDNAseqReadCounts-method
 #
-# @title "Segments and calls total copy numbers"
+# @title "Segments normalized copy number data"
 #
 # @synopsis
 #
@@ -12,19 +12,30 @@
 # }
 #
 # \arguments{
-#   \item{object}{...}
-#   \item{smoothBy}{...}
-#   \item{alpha}{...}
-#   \item{undo.splits}{...}
-#   \item{undo.SD}{...}
-#   \item{normalize}{...}
-#   \item{inter}{...}
-#   \item{force}{...}
+#   \item{object}{An object of class QDNAseqReadCounts.}
+#   \item{smoothBy}{An optional integer value to perform smoothing before
+#     segmentation by taking the mean of every smoothBy bins, and then segment
+#     those means. Default is to perform no smoothing.}
+#   \item{alpha}{Significance levels for the test to accept change-points.}
+#   \item{undo.splits}{A character string specifying how change-points are to be
+#     undone, if at all.  Default is "none".  Other choices are
+#     "prune", which uses a sum of squares criterion, and "sdundo",
+#     which undoes splits that are not at least this many SDs
+#     apart.}
+#   \item{undo.SD}{The number of SDs between means to keep a split if
+#     undo.splits="sdundo".}
+#   \item{normalize}{Whether to perform normalization after segmentation with
+#     @see "CGHcall::postsegnormalize" of the \pkg{CGHcall} package.}
+#   \item{inter}{If performing normalization, the interval in which the
+#     function should search for the normal level.}
+#   \item{force}{Whether to force execution when it causes removal of
+#     downstream calling results.}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
 # \value{
-#   Returns ...
+#   Returns an object of class QDNAseqReadCounts with segmentation results
+#     added.
 # }
 #
 # @author "IS"
@@ -32,6 +43,8 @@
 # \seealso{
 #   Internally, @see "DNAcopy::segment" of the \pkg{DNAcopy} package,
 #   which implements the CBS method, is used to segment the data.
+#   Optionally, normalization is performed with @see "CGHcall::postsegnormalize"
+#   of the \pkg{CGHcall} package.
 # }
 #
 #*/#########################################################################

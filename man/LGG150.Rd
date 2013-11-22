@@ -14,7 +14,8 @@
  \title{LGG150 chromosome 9}
 
  \description{
-   LGG150 chromosome 9
+   An example data set of read counts from chromosome 9 of sample LGG150,
+   contained within a QDDNAseqReadCounts object.
  }
 
  \author{Ilari Scheinin}

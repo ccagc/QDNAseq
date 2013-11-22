@@ -12,28 +12,30 @@
 
 \alias{callBins,QDNAseqReadCounts-method}
 
-\title{Call aberrations from copy number data}
+\title{Call aberrations from segmented copy number data}
 
 \usage{
 callBins(object, ...)
 }
 
 \description{
- Call aberrations from copy number data.
+ Call aberrations from segmented copy number data.
 }
 
 \arguments{
-  \item{object}{...}
-  \item{...}{...}
+  \item{object}{An object of class QDNAseqReadCounts}
+  \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} containing elements ...
+  Returns an object of class QDNAseqReadCounts with segmentation results
+    added.
 }
 
 \author{Ilari Scheinin}
 
 \seealso{
-  Internally, ...
+  Internally, \code{\link[CGHcall]{CGHcall}} and \code{\link[CGHcall]{ExpandCGHcall}} of
+    the \pkg{DNAcopy} package are used.
 }
 

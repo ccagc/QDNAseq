@@ -29,7 +29,7 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
   \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
   \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
   \item{force}{...}
-  \item{...}{Further arguments to DNAcopy::smooth.CNA}
+  \item{...}{Not used.}
 }
 
 \value{

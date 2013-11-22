@@ -3,7 +3,7 @@
 #
 # @alias callBins,QDNAseqReadCounts-method
 #
-# @title "Call aberrations from copy number data"
+# @title "Call aberrations from segmented copy number data"
 #
 # @synopsis
 #
@@ -12,18 +12,20 @@
 # }
 #
 # \arguments{
-#   \item{object}{...}
-#   \item{...}{...}
+#   \item{object}{An object of class QDNAseqReadCounts}
+#   \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
 # }
 #
 # \value{
-#   Returns a named @list containing elements ...
+#   Returns an object of class QDNAseqReadCounts with segmentation results
+#     added.
 # }
 #
 # @author "IS"
 #
 # \seealso{
-#   Internally, ...
+#   Internally, @see "CGHcall::CGHcall" and @see "CGHcall::ExpandCGHcall" of
+#     the \pkg{DNAcopy} package are used.
 # }
 #
 #*/#########################################################################

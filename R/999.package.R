@@ -5,13 +5,13 @@
 #   @eval "packageDescription('QDNAseq')$Description"
 # }
 #
-# \section{Requirements}{
-#   TO DO.
+# \section{Details}{
+#   A package to detect chromosomal aberrations from whole-genome sequencing
+#   data. QDNAseqReadCounts class is used as the main data structure.
 # }
 #
 # \section{How to cite this package}{
 #   Whenever using this package, please cite
-#
 #   @howtocite "QDNAseq"
 # }
 #

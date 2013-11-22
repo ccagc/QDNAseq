@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{An introduction to QDNAseq}
+%\VignetteIndexEntry{Introduction to QDNAseq}
 
 \documentclass{article}
 
