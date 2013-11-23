@@ -237,8 +237,6 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   # Bin by chromosome
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   vmsg(' binning ...', appendLF=FALSE)
-  ## TO DO: the binning is very memory intensive, and therefore should be done
-  ## to only a maximum of maxChunk reads at a time.
   readCounts <- integer(length=nrow(bins))
   for (chromosome in names(hits)) {
     keep <- which(bins$chromosome == chromosome);
@@ -247,16 +245,22 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (length(keep) == 0L)
       next
 
-    chromosome.breaks <- c(bins$start[keep], max(bins$end[keep]))
-    ## without as.numeric(), command below gives an integer overflow warning:
-    counts <- hist(hits[[chromosome]], breaks=as.numeric(chromosome.breaks),
-      right=FALSE, plot=FALSE)$count
-
-    ## count <- binCounts(hits[[chromosome]], chromosome.breaks) # matrixStats
-    readCounts[keep] <- readCounts[keep] + counts
+    chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]))
+    numReads <- length(hits[[chromosome]])
+    from <- 1
+    while (from <= numReads) {
+      to <- min(numReads, from + maxChunk - 1) 
+      ## without as.numeric(), gives an integer overflow warning:
+      counts <- hist(hits[[chromosome]][from:to],
+        breaks=as.numeric(chromosomeBreaks), right=FALSE, plot=FALSE)$count
+      # counts <- matrixStats::binCounts(hits[[chromosome]][from:to],
+      #   chromosomeBreaks)
+      readCounts[keep] <- readCounts[keep] + counts
+      from <- from + maxChunk
+    }
 
     ## Not needed anymore
-    chromosome.breaks <- keep <- count <- NULL
+    chromosomeBreaks <- keep <- count <- NULL
   }
   ## Not needed anymore
   rm(list=c("hits"))
