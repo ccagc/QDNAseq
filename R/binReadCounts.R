@@ -16,7 +16,21 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{...}{Additional arguments passed to @see ".binReadCountsPerSample"}
+#   \item{cache=getOption("QDNAseq::cache", FALSE)}{...}
+#   \item{force=!cache}{...}
+#   \item{isPaired=NA}{...}
+#   \item{isProperPair=NA}{...}
+#   \item{isUnmappedQuery=FALSE}{...}
+#   \item{hasUnmappedMate=NA}{...}
+#   \item{isMinusStrand=NA}{...}
+#   \item{isMateMinusStrand=NA}{...}
+#   \item{isFirstMateRead=NA}{...}
+#   \item{isSecondMateRead=NA}{...}
+#   \item{isNotPrimaryRead=NA}{...}
+#   \item{isNotPassingQualityControls=NA}{...}
+#   \item{isDuplicate=FALSE}{...}
+#   \item{minMapq}{If quality scores exists, the minimum quality score required
+#     in order to keep a read, otherwise all reads are kept.}
 # }
 #
 # \value{
@@ -32,7 +46,14 @@
 # @keyword IO
 #*/#########################################################################
 binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
-  bamnames=NULL, phenofile=NULL, ...) {
+  bamnames=NULL, phenofile=NULL,
+  cache=getOption("QDNAseq::cache", FALSE), force=!cache,
+  isPaired=NA, isProperPair=NA,
+  isUnmappedQuery=FALSE, hasUnmappedMate=NA,
+  isMinusStrand=NA, isMateMinusStrand=NA,
+  isFirstMateRead=NA, isSecondMateRead=NA,
+  isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE,
+  minMapq=37) {
   
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
@@ -57,7 +78,16 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     dimnames=list(rownames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins,
-      bamfile=bamfiles[i], ...)
+      bamfile=bamfiles[i], 
+      cache=cache, force=force,
+      isPaired=isPaired, isProperPair=isProperPair,
+      isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
+      isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
+      isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
+      isNotPrimaryRead=isNotPrimaryRead,
+      isNotPassingQualityControls=isNotPassingQualityControls,
+      isDuplicate=isDuplicate,
+      minMapq=37)
     gc(FALSE)
   }
 
@@ -83,18 +113,18 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 #   \item{bamfile}{...}
 #   \item{cache}{...}
 #   \item{force}{...}
-#   \item{isPaired=NA}{...}
-#   \item{isProperPair=NA}{...}
-#   \item{isUnmappedQuery=FALSE}{...}
-#   \item{hasUnmappedMate=NA}{...}
-#   \item{isMinusStrand=NA}{...}
-#   \item{isMateMinusStrand=NA}{...}
-#   \item{isFirstMateRead=NA}{...}
-#   \item{isSecondMateRead=NA}{...}
-#   \item{isNotPrimaryRead=NA}{...}
-#   \item{isNotPassingQualityControls=NA}{...}
-#   \item{isDuplicate=FALSE}{...}
-#   \item{minMapq}{If quality scores exists, the minimum quality score required in order to keep a read, otherwise all reads are kept.}
+#   \item{isPaired}{...}
+#   \item{isProperPair}{...}
+#   \item{isUnmappedQuery}{...}
+#   \item{hasUnmappedMate}{...}
+#   \item{isMinusStrand}{...}
+#   \item{isMateMinusStrand}{...}
+#   \item{isFirstMateRead}{...}
+#   \item{isSecondMateRead}{...}
+#   \item{isNotPrimaryRead}{...}
+#   \item{isNotPassingQualityControls}{...}
+#   \item{isDuplicate}{...}
+#   \item{minMapq}{...}
 # }
 #
 # \value{
@@ -111,11 +141,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 # @keyword IO
 # @keyword internal
 #*/#########################################################################
-.binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, force=!cache,
-  isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
-  hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA,
-  isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
-  isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
+.binReadCountsPerSample <- function(bins, bamfile, cache, force,
+  isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
+  isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
+  isNotPrimaryRead, isNotPassingQualityControls, isDuplicate, minMapq) {
 
   ## purge outdated files from the cache
   QDNAseqCacheKeyVersion <- "0.6.0"
