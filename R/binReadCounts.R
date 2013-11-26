@@ -245,16 +245,12 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (length(keep) == 0L)
       next
 
-    chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]))
+    chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
     numReads <- length(hits[[chromosome]])
     from <- 1
     while (from <= numReads) {
       to <- min(numReads, from + maxChunk - 1) 
-      ## without as.numeric(), gives an integer overflow warning:
-      counts <- hist(hits[[chromosome]][from:to],
-        breaks=as.numeric(chromosomeBreaks), right=FALSE, plot=FALSE)$count
-      # counts <- matrixStats::binCounts(hits[[chromosome]][from:to],
-      #   chromosomeBreaks)
+      counts <- binCounts(hits[[chromosome]][from:to], chromosomeBreaks)
       readCounts[keep] <- readCounts[keep] + counts
       from <- from + maxChunk
     }
