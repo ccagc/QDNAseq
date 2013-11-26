@@ -83,7 +83,6 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 #   \item{bamfile}{...}
 #   \item{cache}{...}
 #   \item{force}{...}
-#   \item{maxChunk}{...}
 #   \item{isPaired=NA}{...}
 #   \item{isProperPair=NA}{...}
 #   \item{isUnmappedQuery=FALSE}{...}
@@ -113,7 +112,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 # @keyword internal
 #*/#########################################################################
 .binReadCountsPerSample <- function(bins, bamfile, cache=TRUE, force=!cache,
-  maxChunk=100000000L, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
+  isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
   hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA,
   isFirstMateRead=NA, isSecondMateRead=NA, isNotPrimaryRead=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37) {
@@ -241,19 +240,13 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   for (chromosome in names(hits)) {
     keep <- which(bins$chromosome == chromosome);
 
-    # No reads on this chromosome?
+    ## No bins for this chromosome?
     if (length(keep) == 0L)
       next
 
     chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
-    numReads <- length(hits[[chromosome]])
-    from <- 1
-    while (from <= numReads) {
-      to <- min(numReads, from + maxChunk - 1) 
-      counts <- binCounts(hits[[chromosome]][from:to], chromosomeBreaks)
-      readCounts[keep] <- readCounts[keep] + counts
-      from <- from + maxChunk
-    }
+    counts <- binCounts(hits[[chromosome]], chromosomeBreaks)
+    readCounts[keep] <- readCounts[keep] + counts
 
     ## Not needed anymore
     chromosomeBreaks <- keep <- count <- NULL
