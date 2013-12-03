@@ -74,8 +74,11 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
   }
 
+  if (class(bins) == 'data.frame')
+    bins <- AnnotatedDataFrame(bins)
+
   counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
-    dimnames=list(rownames(bins), bamnames))
+    dimnames=list(featureNames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins,
       bamfile=bamfiles[i], 

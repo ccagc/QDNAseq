@@ -37,7 +37,7 @@
 
 setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, span=0.65, family='symmetric',
-  adjustIncompletes=TRUE, type='relative', keepCounts=TRUE,
+  adjustIncompletes=TRUE, type='ratio', keepCounts=TRUE,
   storeResiduals=FALSE, storeLoess=FALSE, force=FALSE,
   ...) {
   if (!force && 'copynumber' %in% assayDataElementNames(object))
@@ -64,6 +64,8 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     counts[fData(object)$bases == 0] <- 0L
   }
   vmsg('Performing correction for GC content and mappability:')
+  if (length(type) == 1L)
+    type <- rep(type, times=ncol(counts))
   if (length(span) == 1L)
     span <- rep(span, times=ncol(counts))
   if (length(family) == 1L)
@@ -75,8 +77,9 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
     stop('Parameter family has to be either a single value or a vector the ',
       'same length as there are samples in object.')
   condition <- binsToUse(object)
+  used.type <- rep(NA_character_, times=ncol(counts))
   used.span <- rep(NA_real_, times=ncol(counts))
-  used.family <- rep(NA_real_, times=ncol(counts))
+  used.family <- rep(NA_character_, times=ncol(counts))
   corrected <- matrix(nrow=nrow(counts), ncol=ncol(counts),
     dimnames=dimnames(counts))
   if (storeResiduals)
@@ -120,18 +123,20 @@ setMethod('correctBins', signature=c(object='QDNAseqReadCounts'),
           fit[paste0(gc, '-', mappability)]
       if (storeLoess)
         loessFit[, i] <- fit[paste0(gc, '-', mappability)]
-      if (match.arg(type, c('relative', 'absolute')) == 'relative') {
-        corvals <- corvals / fit[paste0(gc, '-', mappability)]
-      } else {
+      if (match.arg(type[i], c('ratio', 'addition')) == 'addition') {
         correction <- median(fit, na.rm=TRUE) - fit
         corvals <- corvals + correction[paste0(gc, '-', mappability)]
         corvals <- corvals - min(corvals, na.rm=TRUE)
+      } else {
+        corvals <- corvals / fit[paste0(gc, '-', mappability)]
       }
+      used.type[i] <- type[i]
       used.span[i] <- span[i]
       used.family[i] <- family[i]
     }, silent=TRUE)
     corrected[, i] <- corvals
   }
+  object$loess.type <- used.type
   object$loess.span <- used.span
   object$loess.family <- used.family
   assayDataElement(object, 'corrected') <- corrected

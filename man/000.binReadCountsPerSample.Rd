@@ -13,10 +13,9 @@
 \title{Calculate binned read counts from a BAM file}
 
 \usage{
-.binReadCountsPerSample(bins, bamfile, cache=TRUE, force=!cache, maxChunk=100000000L,
-  isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA,
-  isMinusStrand=NA, isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA,
-  isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37)
+.binReadCountsPerSample(bins, bamfile, cache, force, isPaired, isProperPair,
+  isUnmappedQuery, hasUnmappedMate, isMinusStrand, isMateMinusStrand, isFirstMateRead,
+  isSecondMateRead, isNotPrimaryRead, isNotPassingQualityControls, isDuplicate, minMapq)
 }
 
 \description{
@@ -28,19 +27,18 @@
   \item{bamfile}{...}
   \item{cache}{...}
   \item{force}{...}
-  \item{maxChunk}{...}
-  \item{isPaired=NA}{...}
-  \item{isProperPair=NA}{...}
-  \item{isUnmappedQuery=FALSE}{...}
-  \item{hasUnmappedMate=NA}{...}
-  \item{isMinusStrand=NA}{...}
-  \item{isMateMinusStrand=NA}{...}
-  \item{isFirstMateRead=NA}{...}
-  \item{isSecondMateRead=NA}{...}
-  \item{isNotPrimaryRead=NA}{...}
-  \item{isNotPassingQualityControls=NA}{...}
-  \item{isDuplicate=FALSE}{...}
-  \item{minMapq}{If quality scores exists, the minimum quality score required in order to keep a read, otherwise all reads are kept.}
+  \item{isPaired}{...}
+  \item{isProperPair}{...}
+  \item{isUnmappedQuery}{...}
+  \item{hasUnmappedMate}{...}
+  \item{isMinusStrand}{...}
+  \item{isMateMinusStrand}{...}
+  \item{isFirstMateRead}{...}
+  \item{isSecondMateRead}{...}
+  \item{isNotPrimaryRead}{...}
+  \item{isNotPassingQualityControls}{...}
+  \item{isDuplicate}{...}
+  \item{minMapq}{...}
 }
 
 \value{

@@ -44,28 +44,43 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       copynumber <- assayDataElement(x, 'copynumber')[condition, , drop=FALSE]
       if (is.null(ylim))
         ylim <- c(-3, 5)
-      if (is.null(ylab))
-        ylab <- expression(normalized~log[2]~read~count)
       if (is.null(yaxp))
         yaxp <- c(ylim[1], ylim[2], ylim[2]-ylim[1])
+      if (is.null(ylab)) {
+        if ('loess.type' %in% colnames(pData(x))) {
+          ylab <- ifelse(x$loess.type == "addition",
+            expression(normalized~log[2]~corrected~read~count),
+            expression(normalized~log[2]~ratio))
+        } else {
+          ylab <- rep(expression(normalized~log[2]~ratio), times=ncol(x))
+        }
+      }
     } else if ('corrected' %in% assayDataElementNames(x)) {
       copynumber <- assayDataElement(x, 'corrected')[condition, , drop=FALSE]
       if (is.null(ylim))
         ylim <- range(copynumber)
-      if (is.null(ylab))
-        ylab <- expression(corrected~read~count)
+      if (is.null(ylab)) {
+        if ('loess.type' %in% colnames(pData(x))) {
+          ylab <- ifelse(x$loess.type == "addition",
+            expression(corrected~read~count), expression(ratio))
+        } else {
+          ylab <- rep(expression(ratio), times=ncol(x))
+        }
+      }
     } else {
       copynumber <- assayDataElement(x, 'counts')[condition, , drop=FALSE]
       if (is.null(ylim))
         ylim <- range(copynumber)
       if (is.null(ylab))
-        ylab <- expression(raw~read~count)
+        ylab <- rep(expression(raw~read~count), times=ncol(x))
     }
     if (is.null(main))
       main <- sampleNames(x)
-   if (includeReadCounts && 'reads' %in% names(pData(x)))
+    if (includeReadCounts && 'reads' %in% names(pData(x)))
       main <- paste(main, ' (', format(x$reads, trim=TRUE, big.mark=','),
         ' reads)', sep='')
+    if (length(ylab) == 1)
+      ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
     all.chrom.lengths <- aggregate(bpend(x),
       by=list(chromosome=all.chrom), FUN=max)
@@ -89,7 +104,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
       vmsg('Plotting sample ', main[i])
       cn <- copynumber[, i]
       if ('segmented' %in% assayDataElementNames(x))
-        segment <- CGHbase:::.makeSegments(segmented(x)
+        segment <- CGHbase:::.makeSegments(assayDataElement(x, 'segmented')
           [condition, i], chrom)
       if ('calls' %in% assayDataElementNames(x)) {
         losses <- probloss(x)[condition, i]
@@ -135,7 +150,7 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
           yaxp=yaxp, tck=-0.015, las=1)
       }
       mtext(text='chromosomes', side=1, line=2)
-      mtext(text=ylab, side=2, line=2)
+      mtext(text=ylab[i], side=2, line=2)
       if ('copynumber' %in% assayDataElementNames(x))
         abline(h=0)
       abline(v=chrom.ends[-length(chrom.ends)], lty='dashed')
@@ -150,15 +165,25 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
             segment[jjj,1], col=segcol, lwd=3)
         }
       }
+      par(xpd=TRUE)
       amps <- cn
       amps[amps <= ylim[2]] <- NA_real_
       amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
       dels <- cn
       dels[dels >= ylim[1]] <- NA_real_
       dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
-      par(xpd=TRUE)
       points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)
       points(pos, dels, pch=25, col=pointcol, bg=pointcol, cex=0.5)
+      if ('segmented' %in% assayDataElementNames(x)) {
+        amps <- assayDataElement(x, 'segmented')[condition, i]
+        amps[amps <= ylim[2]] <- NA_real_
+        amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
+        dels <- assayDataElement(x, 'segmented')[condition, i]
+        dels[dels >= ylim[1]] <- NA_real_
+        dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
+        points(pos, amps, pch=24, col=segcol, bg=segcol, cex=0.5)
+        points(pos, dels, pch=25, col=segcol, bg=segcol, cex=0.5)
+      }
       par(xpd=FALSE)
       ### MAD
       mtext(substitute(hat(sigma)[Delta]==sd, list(sd=sprintf('%.3g',
