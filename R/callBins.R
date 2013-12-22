@@ -31,6 +31,9 @@
 #*/#########################################################################
 setMethod('callBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, ...) {
+  ## Mark van de Wiel confirms that CGHcall::CGHcall() assumes (=requires)
+  ## CNs on the *log* scale. /IS (private email 'Log and non-positives'
+  ## on 2013-12-18 between IS and HB).
   seg <- makeCgh(object)
   listcall <- CGHcall(seg, ...)
   cgh <- ExpandCGHcall(listcall, seg)
