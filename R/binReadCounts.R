@@ -16,19 +16,19 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{cache=getOption("QDNAseq::cache", FALSE)}{...}
-#   \item{force=!cache}{...}
-#   \item{isPaired=NA}{...}
-#   \item{isProperPair=NA}{...}
-#   \item{isUnmappedQuery=FALSE}{...}
-#   \item{hasUnmappedMate=NA}{...}
-#   \item{isMinusStrand=NA}{...}
-#   \item{isMateMinusStrand=NA}{...}
-#   \item{isFirstMateRead=NA}{...}
-#   \item{isSecondMateRead=NA}{...}
-#   \item{isNotPrimaryRead=NA}{...}
-#   \item{isNotPassingQualityControls=NA}{...}
-#   \item{isDuplicate=FALSE}{...}
+#   \item{cache}{...}
+#   \item{force}{...}
+#   \item{isPaired}{...}
+#   \item{isProperPair}{...}
+#   \item{isUnmappedQuery}{...}
+#   \item{hasUnmappedMate}{...}
+#   \item{isMinusStrand}{...}
+#   \item{isMateMinusStrand}{...}
+#   \item{isFirstMateRead}{...}
+#   \item{isSecondMateRead}{...}
+#   \item{isNotPrimaryRead}{...}
+#   \item{isNotPassingQualityControls}{...}
+#   \item{isDuplicate}{...}
 #   \item{minMapq}{If quality scores exists, the minimum quality score required
 #     in order to keep a read, otherwise all reads are kept.}
 # }
@@ -54,7 +54,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   isFirstMateRead=NA, isSecondMateRead=NA,
   isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE,
   minMapq=37) {
-  
+
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
       pattern=sprintf('%s$', ext), full.names=TRUE)
@@ -81,7 +81,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     dimnames=list(featureNames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins,
-      bamfile=bamfiles[i], 
+      bamfile=bamfiles[i],
       cache=cache, force=force,
       isPaired=isPaired, isProperPair=isProperPair,
       isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
@@ -156,7 +156,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   oldCaches <- setdiff(list.files(dirname(cachePath), full.names=TRUE),
     cachePath)
   sapply(oldCaches, FUN=unlink, recursive=TRUE)
-  
+
   binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
   bamfile <- normalizePath(bamfile)

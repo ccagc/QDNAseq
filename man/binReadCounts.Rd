@@ -31,19 +31,19 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
   \item{ext}{...}
   \item{bamnames}{...}
   \item{phenofile}{...}
-  \item{cache=getOption("QDNAseq::cache", FALSE)}{...}
-  \item{force=!cache}{...}
-  \item{isPaired=NA}{...}
-  \item{isProperPair=NA}{...}
-  \item{isUnmappedQuery=FALSE}{...}
-  \item{hasUnmappedMate=NA}{...}
-  \item{isMinusStrand=NA}{...}
-  \item{isMateMinusStrand=NA}{...}
-  \item{isFirstMateRead=NA}{...}
-  \item{isSecondMateRead=NA}{...}
-  \item{isNotPrimaryRead=NA}{...}
-  \item{isNotPassingQualityControls=NA}{...}
-  \item{isDuplicate=FALSE}{...}
+  \item{cache}{...}
+  \item{force}{...}
+  \item{isPaired}{...}
+  \item{isProperPair}{...}
+  \item{isUnmappedQuery}{...}
+  \item{hasUnmappedMate}{...}
+  \item{isMinusStrand}{...}
+  \item{isMateMinusStrand}{...}
+  \item{isFirstMateRead}{...}
+  \item{isSecondMateRead}{...}
+  \item{isNotPrimaryRead}{...}
+  \item{isNotPassingQualityControls}{...}
+  \item{isDuplicate}{...}
   \item{minMapq}{If quality scores exists, the minimum quality score required
     in order to keep a read, otherwise all reads are kept.}
 }
