@@ -7,7 +7,7 @@ setGeneric('poolRuns', function(object, samples, force=FALSE)
 setGeneric('compareToReference', function(object, references, force=FALSE)
   standardGeneric('compareToReference'))
 setGeneric('normalizeBins', function(object, method='median',
-  smoothOutliers=TRUE, logTransform=TRUE, force=FALSE, ...)
+  smoothOutliers=TRUE, logTransform=TRUE, logOffset=2^-10, force=FALSE, ...)
   standardGeneric('normalizeBins'))
 setGeneric('highlightFilters', function(object, col='red', residual=NA,
   blacklist=NA, mappability=NA, bases=NA, type='union', ...)

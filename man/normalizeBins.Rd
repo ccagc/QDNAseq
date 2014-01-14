@@ -16,7 +16,7 @@
 
 \usage{
 normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
-  force=FALSE, ...)
+  logOffset=2^-10, force=FALSE, ...)
 }
 
 \description{
@@ -26,8 +26,9 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
 \arguments{
   \item{object}{...}
   \item{method}{A \code{\link[base]{character}} string specifying ...}
-  \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
   \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
+  \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
+  \item{logOffset}{...}
   \item{force}{...}
   \item{...}{Not used.}
 }

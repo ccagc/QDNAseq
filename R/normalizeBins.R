@@ -14,8 +14,9 @@
 # \arguments{
 #   \item{object}{...}
 #   \item{method}{A @character string specifying ...}
-#   \item{logTransform}{If @TRUE, ..., otherwise, ...}
 #   \item{smoothOutliers}{If @TRUE, ..., otherwise, ...}
+#   \item{logTransform}{If @TRUE, ..., otherwise, ...}
+#   \item{logOffset}{...}
 #   \item{force}{...}
 #   \item{...}{Not used.}
 # }
@@ -34,7 +35,7 @@
 ## Adapted from CGHcall::normalize()
 setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, method='median', smoothOutliers=TRUE,
-  logTransform=TRUE, force=FALSE, ...) {
+  logTransform=TRUE, logOffset=2^-10, force=FALSE, ...) {
 
   if (!force && 'segmented' %in% assayDataElementNames(object))
     stop('Data has already been segmented. Changing the normalization will ',
@@ -69,13 +70,10 @@ setMethod('normalizeBins', signature=c(object='QDNAseqReadCounts'),
 
   # Log transform?
   if (logTransform) {
-    notpos <- copynumber <= 0
-    copynumber[notpos] <- NA
+    # remove negative values and add offset
+    copynumber <- pmax(copynumber, 0)
+    copynumber <- copynumber + logOffset
     copynumber <- log2(copynumber)
-    # impute non-positive values with the minimum
-    colMins <- apply(copynumber, 2, min, na.rm=TRUE)
-    for (i in seq_len(ncol(copynumber)))
-      copynumber[notpos[, i], i] <- colMins[i]
   }
 
   # Filter?
