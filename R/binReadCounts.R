@@ -79,7 +79,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   isFirstMateRead=NA, isSecondMateRead=NA,
   isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE,
   minMapq=37) {
-  
+
   if (is.null(bamfiles))
     bamfiles <- list.files(ifelse(is.null(path), '.', path),
       pattern=sprintf('%s$', ext), full.names=TRUE)
@@ -106,7 +106,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     dimnames=list(featureNames(bins), bamnames))
   for (i in seq_along(bamfiles)) {
     counts[, i] <- .binReadCountsPerSample(bins=bins,
-      bamfile=bamfiles[i], 
+      bamfile=bamfiles[i],
       cache=cache, force=force,
       isPaired=isPaired, isProperPair=isProperPair,
       isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
@@ -181,7 +181,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
   oldCaches <- setdiff(list.files(dirname(cachePath), full.names=TRUE),
     cachePath)
   sapply(oldCaches, FUN=unlink, recursive=TRUE)
-  
+
   binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
   bamfile <- normalizePath(bamfile)
