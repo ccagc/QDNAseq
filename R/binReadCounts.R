@@ -16,19 +16,44 @@
 #   \item{ext}{...}
 #   \item{bamnames}{...}
 #   \item{phenofile}{...}
-#   \item{cache=getOption("QDNAseq::cache", FALSE)}{...}
-#   \item{force=!cache}{...}
-#   \item{isPaired=NA}{...}
-#   \item{isProperPair=NA}{...}
-#   \item{isUnmappedQuery=FALSE}{...}
-#   \item{hasUnmappedMate=NA}{...}
-#   \item{isMinusStrand=NA}{...}
-#   \item{isMateMinusStrand=NA}{...}
-#   \item{isFirstMateRead=NA}{...}
-#   \item{isSecondMateRead=NA}{...}
-#   \item{isNotPrimaryRead=NA}{...}
-#   \item{isNotPassingQualityControls=NA}{...}
-#   \item{isDuplicate=FALSE}{...}
+#   \item{cache}{getOption("QDNAseq::cache", FALSE)}
+#   \item{force}{!cache}
+#   \item{isPaired}{A logical(1) indicating whether unpaired (FALSE), paired
+#     (TRUE), or any (NA, default) read should be returned.}
+#   \item{isProperPair}{A logical(1) indicating whether improperly paired
+#     (FALSE), properly paired (TRUE), or any (NA, default) read should be
+#     returned. A properly paired read is defined by the alignment algorithm and
+#     might,  e.g., represent reads aligning to identical reference sequences
+#     and with a specified distance.}
+#   \item{isUnmappedQuery}{A logical(1) indicating whether unmapped
+#     (TRUE), mapped (FALSE, default), or any (NA) read should be returned.}
+#   \item{hasUnmappedMate}{A logical(1) indicating whether reads with mapped
+#     (FALSE), unmapped (TRUE), or any (NA, default) mate should be returned.}
+#   \item{isMinusStrand}{A logical(1) indicating whether reads aligned to
+#     the plus (FALSE), minus (TRUE), or any (NA, default) strand should be
+#     returned.}
+#   \item{isMateMinusStrand}{A logical(1) indicating whether mate reads
+#     aligned to the plus (FALSE), minus (TRUE), or any (NA, default) strand
+#     should be returned.}
+#   \item{isFirstMateRead}{A logical(1) indicating whether the first mate
+#     read should be returned (TRUE) or not (FALSE), or whether mate read
+#     number should be ignored (NA, default).}
+#   \item{isSecondMateRead}{A logical(1) indicating whether the second mate
+#     read should be returned (TRUE) or not (FALSE), or whether mate read number
+#     should be ignored (NA, default).}
+#   \item{isNotPrimaryRead}{A logical(1) indicating whether alignments that
+#     are primary (FALSE), are not primary (TRUE) or whose primary status does
+#     not matter (NA, default) should be returned. A non-primary alignment
+#     ("secondary alignment" in the SAM specification) might result when a read
+#     aligns to multiple locations. One alignment is designated as primary and
+#     has this flag set to FALSE; the remainder, for which this flag is TRUE,
+#     are designated by the aligner as secondary.}
+#   \item{isNotPassingQualityControls}{A logical(1) indicating whether
+#     reads passing quality controls (FALSE, default), reads not passing
+#     quality controls (TRUE), or any (NA) read should be returned.}
+#   \item{isDuplicate}{A logical(1) indicating that un-duplicated
+#     (FALSE, default), duplicated (TRUE), or any (NA) reads should be returned.
+#     'Duplicated' reads may represent PCR or optical duplicates.}
 #   \item{minMapq}{If quality scores exists, the minimum quality score required
 #     in order to keep a read, otherwise all reads are kept.}
 # }
