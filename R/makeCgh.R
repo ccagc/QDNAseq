@@ -26,13 +26,15 @@ setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
   object <- object[binsToUse(object),]
   fData(object)$chromosome <- chromosomes(object)
   colnames(fData(object))[colnames(fData(object)) == 'chromosome'] <-
-   'Chromosome'
+    'Chromosome'
   colnames(fData(object))[colnames(fData(object)) == 'start'] <-
-   'Start'
+    'Start'
   colnames(fData(object))[colnames(fData(object)) == 'end'] <-
-   'End'
-  assayDataElement(object, 'counts') <- NULL
-  assayDataElement(object, 'corrected') <- NULL
+    'End'
+  if ('counts' %in% assayDataElementNames(object))
+    assayDataElement(object, 'counts') <- NULL
+  if ('corrected' %in% assayDataElementNames(object))
+    assayDataElement(object, 'corrected') <- NULL
   if ('residuals' %in% assayDataElementNames(object))
     assayDataElement(object, 'residuals') <- NULL
   if ('calls' %in% assayDataElementNames(object)) {

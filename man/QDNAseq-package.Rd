@@ -26,8 +26,8 @@
 \section{How to cite this package}{
   Whenever using this package, please cite
   \preformatted{
-Ilari Scheinin (2013). QDNAseq: Quantitative DNA sequencing for chromosomal
-aberrations. R package version 0.6.1.
+Ilari Scheinin (2014). QDNAseq: Quantitative DNA sequencing for chromosomal
+aberrations. R package version 0.6.2.
 }
 \emph{}
 

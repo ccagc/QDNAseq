@@ -15,7 +15,7 @@
 \title{Divide binned read counts with those of reference samples}
 
 \usage{
-compareToReference(object, references, force=FALSE)
+compareToReference(object, references, offset=2^-10, force=FALSE)
 }
 
 \description{
