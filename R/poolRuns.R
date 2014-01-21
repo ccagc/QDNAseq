@@ -56,10 +56,10 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
     corrected <- assayDataElement(object, 'corrected')
 
   newphenodata <- phenodata[0, ]
-  newcounts <- matrix(nrow=nrow(counts), ncol=length(newsamples),
+  newcounts <- matrix(NA_integer_, nrow=nrow(counts), ncol=length(newsamples),
     dimnames=list(rownames(counts), newsamples))
   if ('corrected' %in% assayDataElementNames(object))
-    newcorrected <- matrix(nrow=nrow(counts), ncol=length(newsamples),
+    newcorrected <- matrix(NA_real_, nrow=nrow(counts), ncol=length(newsamples),
       dimnames=list(rownames(counts), newsamples))
 
   concatenateIfNotEqual <- function(x) {
