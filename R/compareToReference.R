@@ -14,6 +14,7 @@
 # \arguments{
 #   \item{object}{...}
 #   \item{references}{...}
+#   \item{offset}{...}
 #   \item{force}{...}
 # }
 #
@@ -30,7 +31,7 @@
 #*/#########################################################################
 setMethod('compareToReference', signature=c(object='QDNAseqReadCounts',
   references='numeric'), definition=function(object, references,
-  force=FALSE) {
+  offset=2^-10, force=FALSE) {
 
   if (!force && 'copynumber' %in% assayDataElementNames(object))
     stop('Data has already been normalized. Comparing to reference will ',
@@ -57,12 +58,16 @@ setMethod('compareToReference', signature=c(object='QDNAseqReadCounts',
   for (i in seq_along(references)) {
     if (!is.na(references[i]) && references[i] != FALSE) {
       assayDataElement(object, 'counts')[, i] <-
-        (assayDataElement(object, 'counts')[, i]+1) /
-        (assayDataElement(object, 'counts')[, references[i]]+1) - 1
-      if ('corrected' %in% assayDataElementNames(object))
+        (assayDataElement(object, 'counts')[, i] + offset) /
+        (assayDataElement(object, 'counts')[, references[i]] + offset) - offset
+      if ('corrected' %in% assayDataElementNames(object)) {
+        assayDataElement(object, 'corrected') <- pmax(
+          assayDataElement(object, 'corrected'), 0)
         assayDataElement(object, 'corrected')[, i] <-
-          (assayDataElement(object, 'corrected')[, i]+1) /
-          (assayDataElement(object, 'corrected')[, references[i]]+1) - 1
+          (assayDataElement(object, 'corrected')[, i] + offset) /
+          (assayDataElement(object, 'corrected')[, references[i]] + offset) -
+          offset
+      }
       sampleNames(object)[i] <- paste(sampleNames(object)[i], ' vs. ',
         sampleNames(object)[references[i]], sep='')
     }

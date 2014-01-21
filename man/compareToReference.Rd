@@ -25,6 +25,7 @@ compareToReference(object, references, force=FALSE)
 \arguments{
   \item{object}{...}
   \item{references}{...}
+  \item{offset}{...}
   \item{force}{...}
 }
 

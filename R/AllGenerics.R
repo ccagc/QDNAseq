@@ -4,7 +4,8 @@ setGeneric('correctBins', function(object, span=0.65, family='symmetric',
   standardGeneric('correctBins'))
 setGeneric('poolRuns', function(object, samples, force=FALSE)
   standardGeneric('poolRuns'))
-setGeneric('compareToReference', function(object, references, force=FALSE)
+setGeneric('compareToReference', function(object, references, offset=2^-10,
+  force=FALSE)
   standardGeneric('compareToReference'))
 setGeneric('normalizeBins', function(object, method='median',
   smoothOutliers=TRUE, logTransform=TRUE, logOffset=2^-10, force=FALSE, ...)
