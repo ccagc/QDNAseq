@@ -24,22 +24,24 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
 }
 
 \arguments{
-  \item{object}{...}
-  \item{method}{A \code{\link[base]{character}} string specifying ...}
-  \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
-  \item{logTransform}{If \code{\link[base:logical]{TRUE}}, ..., otherwise, ...}
-  \item{logOffset}{...}
-  \item{force}{...}
-  \item{...}{Not used.}
+  \item{object}{A QDNAseqReadCounts object.}
+  \item{method}{A \code{\link[base]{character}} string specifying the normalization method.
+    Choices are "none", "mean", "median" (default), or "mode". A partial
+    string sufficient to uniquely identify the choice is permitted.}
+  \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}} (default), smooth.CNA from package DNAcopy is
+    used detect and smooth outliers.}
+  \item{logTransform}{If \code{\link[base:logical]{TRUE}} (default), data will be log2-transformed.}
+  \item{logOffset}{An offset to be added prior to log2-transformation to
+    avoid non-positive numbers. Ignored if logTransform=\code{\link[base:logical]{FALSE}}.}
+  \item{force}{Running this function will remove possible segmentation and
+    calling results. When they are present, running requires specifying
+    force=\code{\link[base:logical]{TRUE}}.}
+  \item{...}{Further arguments to DNAcopy::smooth.CNA.}
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} containing elements ...
+  Returns a QDNAseqReadCounts object with normalized data.
 }
 
 \author{Ilari Scheinin}
-
-\seealso{
-  Internally, ...
-}
 
