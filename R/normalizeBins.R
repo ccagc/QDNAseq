@@ -12,23 +12,23 @@
 # }
 #
 # \arguments{
-#   \item{object}{A QDNAseqReadCounts object.}
+#   \item{object}{A @see "QDNAseqReadCounts" object.}
 #   \item{method}{A @character string specifying the normalization method.
 #     Choices are "none", "mean", "median" (default), or "mode". A partial
 #     string sufficient to uniquely identify the choice is permitted.}
-#   \item{smoothOutliers}{If @TRUE (default), smooth.CNA from package DNAcopy is
-#     used detect and smooth outliers.}
+#   \item{smoothOutliers}{If @TRUE (default), @see "DNAcopy::smooth.CNA" is
+#     used to detect and smooth outliers.}
 #   \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
 #   \item{logOffset}{An offset to be added prior to log2-transformation to
-#     avoid non-positive numbers. Ignored if logTransform=@FALSE.}
+#     avoid non-positive numbers. Ignored if \code{logTransform} is @FALSE.}
 #   \item{force}{Running this function will remove possible segmentation and
 #     calling results. When they are present, running requires specifying
-#     force=@TRUE.}
-#   \item{...}{Further arguments to DNAcopy::smooth.CNA.}
+#     \code{force} is @TRUE.}
+#   \item{...}{Further arguments to @see "DNAcopy::smooth.CNA".}
 # }
 #
 # \value{
-#   Returns a QDNAseqReadCounts object with normalized data.
+#   Returns a @see "QDNAseqReadCounts" object with normalized data.
 # }
 #
 # @author "IS"
@@ -36,13 +36,21 @@
 #*/#########################################################################
 ## Adapted from CGHcall::normalize()
 setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
-  definition=function(object, method="median", smoothOutliers=TRUE,
+  definition=function(object, method=c("median", "mean", "mode", "none"), smoothOutliers=TRUE,
   logTransform=TRUE, logOffset=2^-10, force=FALSE, ...) {
-
-  if (!force && "segmented" %in% assayDataElementNames(object))
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Validate arguments
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Argument 'object':
+  if (!force && ("segmented" %in% assayDataElementNames(object)))
     stop("Data has already been segmented. Changing the normalization will ",
       "remove segmentation (and possible calling) results. Please specify ",
       "force=TRUE, if you want this.")
+
+  # Argument 'method':
+  method <- match.arg(method);
+
+
   if ("segmented" %in% assayDataElementNames(object))
     assayDataElement(object, "segmented") <- NULL
   if ("calls" %in% assayDataElementNames(object)) {
@@ -81,21 +89,15 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
   # Filter?
   condition <- binsToUse(object)
 
-  if (match.arg(method, c("mean", "median", "mode", "none")) ==
-    "none") {
+  if (method == "none") {
     vmsg("Skipping normalization ...")
   } else {
-    if (match.arg(method, c("mean", "median", "mode", "none")) ==
-      "mean") {
-      vmsg("Applying mean normalization ...")
+    vmsg("Applying ", method, " normalization ...")
+    if (method == "mean") {
       values <- colMeans(copynumber[condition, , drop=FALSE], na.rm=TRUE)
-    } else if (match.arg(method, c("mean", "median", "mode", "none")) ==
-      "median") {
-      vmsg("Applying median normalization ...")
+    } else if (method == "median") {
       values <- colMedians(copynumber[condition, , drop=FALSE], na.rm=TRUE)
-    } else if (match.arg(method, c("mean", "median", "mode", "none")) ==
-      "mode") {
-      vmsg("Applying mode normalization ... ")
+    } else if (method == "mode") {
       values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
         FUN=function(x) {
         d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]

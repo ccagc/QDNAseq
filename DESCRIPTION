@@ -3,7 +3,7 @@ Version: 0.6.2
 Depends: R (>= 2.15.0)
 Imports: methods, Biobase (>= 2.18.0),
   CGHbase (>= 1.18.0), CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0),
-  matrixStats (>= 0.8.12), R.cache (>= 0.9.0), R.utils (>= 1.27.1),
+  matrixStats (>= 0.8.14), R.cache (>= 0.9.0), R.utils (>= 1.28.4),
   Rsamtools (>= 1.10.0)
 Suggests: BSgenome, GenomicRanges, snowfall
 Date: 2014-01-21

@@ -1,6 +1,22 @@
 Package: QDNAseq
 ================
 
+Version: 0.6.2 [2014-01-21]
+o Added argument 'offset=2^-10' to compareToReference().  Previously,
+  the default behavior corresponded to offset=1.
+o DOCUMENTATION: Added more on help for makeCgh().
+
+
+Version: 0.6.1 [2014-01-13]
+o Now normalizeBins(..., logTransform=FALSE) scales the signals toward
+  the target (mean, median or mode) rather than shifts them, which is the 
+  case when logTransform=TRUE.
+o Added support for method="mean" of normalizeBins().
+o Now normalizeBins() passes '...' to DNAcopy::smooth.CNA().
+o DOCUMENTATION: Added help details on arguments of binReadCounts()
+  and normalizeBins().
+
+
 Version: 0.6.0 [2013-11-22]
 o Improved correction for GC content and mappability.
 o Revamped caching of intermediate files.

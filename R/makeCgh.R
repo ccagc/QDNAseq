@@ -3,7 +3,7 @@
 #
 # @alias makeCgh,QDNAseqReadCounts-method
 #
-# @title "Constructs a 'cghRaw', 'cghSeg', or 'cghCal' object"
+# @title "Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object"
 #
 # @synopsis
 #
@@ -12,11 +12,13 @@
 # }
 #
 # \arguments{
-#   \item{object}{...}
+#   \item{object}{A @see "QDNAseqReadCounts" object.}
 # }
 #
 # \value{
-#   Returns a @see "CGHbase::cghRaw" object.
+#   Returns a @see "CGHbase::cghRaw" if the object has not been segmented,
+#   a @see "CGHbase::cghSeg" if it has been segmented but not called,
+#   or @see "CGHbase::cghCall" if it has been called as well.
 # }
 #
 # @author "IS"
