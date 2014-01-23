@@ -153,8 +153,8 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
           xlab=NA, ylab=NA, ylim=ylim, xaxt='n', xaxs='i', yaxs='i',
           yaxp=yaxp, tck=-0.015, las=1)
       }
-      mtext(text='chromosomes', side=1, line=2)
-      mtext(text=ylab[i], side=2, line=2)
+      mtext(text='chromosomes', side=1, line=2, cex=par('cex'))
+      mtext(text=ylab[i], side=2, line=2, cex=par('cex'))
       if ('copynumber' %in% assayDataElementNames(x))
         abline(h=0)
       abline(v=chrom.ends[-length(chrom.ends)], lty='dashed')
@@ -283,8 +283,8 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
     cex.lab=1)
   axis(side=2, at=c(-1, -0.5, 0, 0.5, 1), labels=c('100 %', ' 50 %', '0 %',
     '50 %', '100 %'), las=1)
-  mtext('gains', side=2, line=3, at=0.5)
-  mtext('losses', side=2, line=3, at=-0.5)
+  mtext('gains', side=2, line=3, at=0.5, cex=par('cex'))
+  mtext('losses', side=2, line=3, at=-0.5, cex=par('cex'))
   ### number of data points
   str <- paste(round(sum(condition) / 1000), 'k x ', sep='')
   probe <- median(bpend(x)-bpstart(x)+1)
@@ -293,7 +293,7 @@ setMethod('frequencyPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
   } else {
     str <- paste(str, round(probe / 1000), ' kbp', sep='')
   }
-  mtext(str, side=3, line=0, adj=0)
+  mtext(str, side=3, line=0, adj=0, cex=par('cex'))
 })
 
 
@@ -366,9 +366,17 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
       ## Both naturally also require the actual loess fitting.
     image(xx, yy, m, col=paste('#', c(sprintf('%02X', 0L:255L),
       rep('FF', 256L)), c(rep('FF', 256L), sprintf('%02X', 255L:0L)),
-      sprintf('%02X', 255L), sep=''), xlab='mappability', ylab='GC content',
-      main=main[i], zlim=c(-max(abs(range(m, finite=TRUE))),
+      sprintf('%02X', 255L), sep=''),
+      main=main[i],
+      xlab=NA, ylab=NA, xaxt="n", yaxt="n",
+      zlim=c(-max(abs(range(m, finite=TRUE))),
       max(abs(range(m, finite=TRUE)))), ...)
+    axis(side=1, tck=-.015, labels=NA)
+    axis(side=2, tck=-.015, labels=NA)
+    axis(side=1, lwd=0, line=-0.4)
+    axis(side=2, lwd=0, line=-0.4)
+    mtext(side=1, "mappability", line=2, cex=par("cex"))
+    mtext(side=2, "GC content", line=2, cex=par("cex"))
     contour(xx, yy, m, nlevels=20L, zlim=c(-max(abs(range(m, finite=TRUE))),
       max(abs(range(m, finite=TRUE)))), add=TRUE)
 
@@ -406,28 +414,43 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
 # }
 #
 # \arguments{
-#   \item{x}{...}
-#   \item{y}{...}
-#   \item{...}{...}
+#   \item{x}{A @see "QDNAseqReadCounts" object.}
+#   \item{y}{missing}
+#   \item{...}{Further arguments to @see "graphics::plot" and
+#     @see "graphics::text".}
 # }
 #
 # @author "IS"
 #
 #*/#########################################################################
-setMethod('noisePlot', signature=c(x='QDNAseqReadCounts', y='missing'),
-  definition=function(x, y, main='Noise Plot', ...) {
+setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
+  definition=function(x, y, main="Noise Plot", ...) {
   condition <- binsToUse(x)
-  reads <- apply(assayDataElement(x, 'counts')[condition, , drop=FALSE], 2, sum)
-  sds <- apply(assayDataElement(x, 'copynumber')[condition, , drop=FALSE], 2, madDiff, na.rm=TRUE)
-  num <- sum(condition)
-  plot(I(1/(reads/num)), sds^2, main=main, type='n', xlab=NA, ylab=NA, xaxt='n', yaxt='n', ...)
-  axis(side=1, tck=-.015, labels=NA)
+  reads <- apply(assayDataElement(x, "counts")[condition, , drop=FALSE], 2, sum)
+  norma <- function(x) {
+    scale(x, center=FALSE, scale=apply(x, 2, mean, na.rm=TRUE))
+  }
+  sds <- apply(norma(
+    assayDataElement(x, "corrected")[condition, , drop=FALSE]),
+    2, sdDiff, na.rm=TRUE)
+  if (ncol(x) > 1) {
+    r <- approxfun(x$reads, 1/(reads/sum(condition)))
+  } else {
+    r <- function(x) 1/(reads/sum(condition))
+  }
+  labels <- round(sort(x$reads) / 1e6)
+  at <- r(labels * 1e6)
+  plot(r(x$reads), sds^2, main=main, cex=0.5,
+    xlim=c(0, 1.08*max(r(x$reads))), ylim=c(0, 1.04*max(sds^2)),
+    xlab=NA, ylab=NA, xaxs="i", yaxs="i", xaxt="n", yaxt="n", ...)
+  axis(side=1, tck=-.015, at=at, labels=NA)
   axis(side=2, tck=-.015, labels=NA)
-  axis(side=1, lwd=0, line=-0.4)
+  axis(side=1, lwd=0, line=-0.4, at=at, labels=labels)
   axis(side=2, lwd=0, line=-0.4)
-  mtext(side=1, expression((average~reads~per~bin)^-1), line = 2)
-  mtext(side=2, expression(hat(sigma)[Delta]^2), line = 2)
-  text(1/(reads/num), sds^2, labels=sampleNames(x), cex=0.5, ...)
+  mtext(side=1, "million reads", line=2, cex=par("cex"))
+  mtext(side=2, expression(hat(sigma)[Delta]^2), line=2, las=1, cex=par("cex"))
+  text(r(x$reads), sds^2, labels=sampleNames(x), pos=4, cex=0.5, ...)
+  abline(0, 1)
 })
 
 # EOF
