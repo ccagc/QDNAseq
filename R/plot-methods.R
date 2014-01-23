@@ -82,10 +82,14 @@ setMethod('plot', signature(x='QDNAseqReadCounts', y='missing'),
     if (length(ylab) == 1)
       ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
-    all.chrom.lengths <- aggregate(bpend(x),
-      by=list(chromosome=all.chrom), FUN=max)
-    chrom.lengths <- all.chrom.lengths$x
-    names(chrom.lengths) <- all.chrom.lengths$chromosome
+    if (class(x) %in% c("cghRaw", "cghSeg", "cghCall")) {
+      chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+    } else {
+      all.chrom.lengths <- aggregate(bpend(x),
+        by=list(chromosome=all.chrom), FUN=max)
+      chrom.lengths <- all.chrom.lengths$x
+      names(chrom.lengths) <- all.chrom.lengths$chromosome
+    }
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
     chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
