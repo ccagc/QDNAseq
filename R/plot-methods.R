@@ -426,30 +426,38 @@ setMethod('readCountPlot', signature=c(x='QDNAseqReadCounts', y='missing'),
 setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   definition=function(x, y, main="Noise Plot", ...) {
   condition <- binsToUse(x)
-  reads <- apply(assayDataElement(x, "counts")[condition, , drop=FALSE], 2, sum)
-  norma <- function(x) {
+  totalReads <- x$reads
+  usedReads <- apply(
+    assayDataElement(x, "counts")[condition, , drop=FALSE], 2, sum)
+  reciprocalOfAverageUsedReadsPerBin <- 1/(usedReads/sum(condition))
+  divideByMean <- function(x) {
     scale(x, center=FALSE, scale=apply(x, 2, mean, na.rm=TRUE))
   }
-  sds <- apply(norma(
+  noise <- apply(divideByMean(
     assayDataElement(x, "corrected")[condition, , drop=FALSE]),
     2, sdDiff, na.rm=TRUE)
+  plot(reciprocalOfAverageUsedReadsPerBin, noise^2, main=main, cex=0.5,
+    xlim=c(0, 1.1*max(reciprocalOfAverageUsedReadsPerBin)),
+    ylim=c(0, 1.04*max(noise^2)),
+    xlab=NA, ylab=NA, xaxs="i", yaxs="i", xaxt="n", yaxt="n") #, ...)
   if (ncol(x) > 1) {
-    r <- approxfun(x$reads, 1/(reads/sum(condition)))
+    relationship <- lm(totalReads ~ usedReads)
   } else {
-    r <- function(x) 1/(reads/sum(condition))
+    relationship <- lm(totalReads ~ 0 + usedReads)
   }
-  labels <- round(sort(x$reads) / 1e6)
-  at <- r(labels * 1e6)
-  plot(r(x$reads), sds^2, main=main, cex=0.5,
-    xlim=c(0, 1.08*max(r(x$reads))), ylim=c(0, 1.04*max(sds^2)),
-    xlab=NA, ylab=NA, xaxs="i", yaxs="i", xaxt="n", yaxt="n", ...)
+  at <- axTicks(side=1)
+  usedReadsAtTicks <- sum(condition)/at
+  labels <- round(predict(relationship,
+    newdata=data.frame(usedReads=usedReadsAtTicks)) / 1e6, digits=1)
+  labels[1] <- NA
   axis(side=1, tck=-.015, at=at, labels=NA)
   axis(side=2, tck=-.015, labels=NA)
   axis(side=1, lwd=0, line=-0.4, at=at, labels=labels)
   axis(side=2, lwd=0, line=-0.4)
   mtext(side=1, "million reads", line=2, cex=par("cex"))
   mtext(side=2, expression(hat(sigma)[Delta]^2), line=2, las=1, cex=par("cex"))
-  text(r(x$reads), sds^2, labels=sampleNames(x), pos=4, cex=0.5, ...)
+  text(reciprocalOfAverageUsedReadsPerBin, noise^2,
+    labels=sampleNames(x), pos=4, cex=0.5) #, ...)
   abline(0, 1)
 })
 
