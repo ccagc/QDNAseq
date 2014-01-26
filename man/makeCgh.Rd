@@ -15,7 +15,7 @@
 \title{Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object}
 
 \usage{
-makeCgh(object)
+makeCgh(object, filter=TRUE, ...)
 }
 
 \description{
@@ -24,6 +24,8 @@ makeCgh(object)
 
 \arguments{
   \item{object}{A \code{\link{QDNAseqReadCounts}} object.}
+  \item{filter}{If \code{\link[base:logical]{TRUE}}, bins are filtered, otherwise not.}
+  \item{...}{Not used.}
 }
 
 \value{

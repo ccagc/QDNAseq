@@ -13,6 +13,8 @@
 #
 # \arguments{
 #   \item{object}{A @see "QDNAseqReadCounts" object.}
+#   \item{filter}{If @TRUE, bins are filtered, otherwise not.}
+#   \item{...}{Not used.}
 # }
 #
 # \value{
@@ -24,30 +26,46 @@
 # @author "IS"
 #*/#########################################################################
 setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object) {
-  object <- object[binsToUse(object),]
-  fData(object)$chromosome <- chromosomes(object)
-  colnames(fData(object))[colnames(fData(object)) == 'chromosome'] <-
-    'Chromosome'
-  colnames(fData(object))[colnames(fData(object)) == 'start'] <-
-    'Start'
-  colnames(fData(object))[colnames(fData(object)) == 'end'] <-
-    'End'
-  if ('counts' %in% assayDataElementNames(object))
-    assayDataElement(object, 'counts') <- NULL
-  if ('corrected' %in% assayDataElementNames(object))
-    assayDataElement(object, 'corrected') <- NULL
-  if ('residuals' %in% assayDataElementNames(object))
-    assayDataElement(object, 'residuals') <- NULL
-  if ('calls' %in% assayDataElementNames(object)) {
+  definition=function(object, filter=TRUE, ...) {
+
+  # Decide which cgh* class to create
+  names <- assayDataElementNames(object)
+  if ('calls' %in% names) {
     className <- 'cghCall'
-  } else if ('segmented' %in% assayDataElementNames(object)) {
+  } else if ('segmented' %in% names) {
     className <- 'cghSeg'
-  } else {
+  } else if ('copynumber' %in% names) {
     className <- 'cghRaw'
+  } else {
+    stop("Cannot create a CGHbase::cgh* object without at least one of the assay data elements being 'calls', 'segmented' or 'copynumber': ", paste(sQuote(names), collapse=", "))
   }
+
+  # Filter bins?
+  if (filter) {
+    keep <- binsToUse(object)
+    object <- object[keep,]
+    keep <- NULL # Not needed anymore
+  }
+
+  # Coerce chromosomes to integer indices
+  fData(object)$chromosome <- chromosomes(object)
+
+  # Update column names
+  names <- colnames(fData(object))
+  names[names == 'chromosome'] <- 'Chromosome'
+  names[names == 'start'] <- 'Start'
+  names[names == 'end'] <- 'End'
+  colnames(fData(object)) <- names
+
+  # Remove certain assay data elements
+  names <- c('counts', 'corrected', 'residuals')
+  names <- intersect(names, assayDataElementNames(object))
+  for (name in names) assayDataElement(object, name) <- NULL
+
+  # Instantiate choose cgh* object
   cgh <- new(className, assayData=assayData(object),
-    featureData=featureData(object), phenoData=phenoData(object))
+             featureData=featureData(object), phenoData=phenoData(object))
+
   cgh
 })
 

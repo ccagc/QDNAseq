@@ -27,7 +27,7 @@
   Whenever using this package, please cite
   \preformatted{
 Ilari Scheinin (2014). QDNAseq: Quantitative DNA sequencing for chromosomal
-aberrations. R package version 0.6.2.
+aberrations. R package version 0.6.3.
 }
 \emph{}
 
