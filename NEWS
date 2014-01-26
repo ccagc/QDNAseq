@@ -1,6 +1,16 @@
 Package: QDNAseq
 ================
 
+Version: 0.6.3 [2014-01-25]
+o Added support for coercing an QDNAseqReadCounts object to an
+  CGHcall::cghRaw object via as(x, "cghRaw") and similar for coercing
+  to cghSeg and cghCall.
+o Added argument 'filter' to makeCgh() to control whether to drop
+  "filtered" bins from the created object or not.
+o ROBUSTNESS: Now makeCgh() gives a more informative error message when
+  it fails to create a CGHcall::cgh* object.
+
+
 Version: 0.6.2 [2014-01-21]
 o Added argument 'offset=2^-10' to compareToReference().  Previously,
   the default behavior corresponded to offset=1.
@@ -9,7 +19,7 @@ o DOCUMENTATION: Added more on help for makeCgh().
 
 Version: 0.6.1 [2014-01-13]
 o Now normalizeBins(..., logTransform=FALSE) scales the signals toward
-  the target (mean, median or mode) rather than shifts them, which is the 
+  the target (mean, median or mode) rather than shifts them, which is the
   case when logTransform=TRUE.
 o Added support for method="mean" of normalizeBins().
 o Now normalizeBins() passes '...' to DNAcopy::smooth.CNA().

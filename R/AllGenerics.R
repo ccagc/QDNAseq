@@ -21,7 +21,7 @@ setGeneric('segmentBins', function(object, smoothBy=FALSE,
   normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...) standardGeneric('segmentBins'))
 setGeneric('callBins', function(object, ...)
   standardGeneric('callBins'))
-setGeneric('makeCgh', function(object) standardGeneric('makeCgh'))
+setGeneric('makeCgh', function(object, filter=TRUE, ...) standardGeneric('makeCgh'))
 
 setGeneric('readCountPlot', function(x, y, ...)
   standardGeneric('readCountPlot'))
