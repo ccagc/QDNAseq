@@ -69,4 +69,20 @@ setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
   cgh
 })
 
+
+# Methods for coercing a QDNAseqReadCounts object into
+# cghRaw, cghSeg and cghCall object using as(from, to).
+setAs("QDNAseqReadCounts", "cghRaw", function(from) {
+  makeCgh(from, filter=FALSE)
+})
+
+setAs("QDNAseqReadCounts", "cghSeg", function(from) {
+  makeCgh(from, filter=FALSE)
+})
+
+setAs("QDNAseqReadCounts", "cghCall", function(from) {
+  makeCgh(from, filter=FALSE)
+})
+
+
 # EOF
