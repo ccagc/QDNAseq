@@ -23,9 +23,10 @@ noisePlot(x, y, ...)
 }
 
 \arguments{
-  \item{x}{...}
-  \item{y}{...}
-  \item{...}{...}
+  \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
+  \item{y}{missing}
+  \item{...}{Further arguments to \code{\link[graphics]{plot}} and
+    \code{\link[graphics]{text}}.}
 }
 
 \author{Ilari Scheinin}

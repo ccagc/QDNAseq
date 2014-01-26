@@ -38,8 +38,8 @@
 #*/#########################################################################
 ## Adapted from CGHcall::normalize()
 setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
-  definition=function(object, method=c("median", "mean", "mode", "none"), smoothOutliers=TRUE,
-  logTransform=TRUE, logOffset=2^-10, force=FALSE, ...) {
+  definition=function(object, method=c("median", "mean", "mode", "none"),
+  smoothOutliers=TRUE, logTransform=TRUE, logOffset=2^-10, force=FALSE, ...) {
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Validate arguments
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +51,6 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
 
   # Argument 'method':
   method <- match.arg(method);
-
 
   if ("segmented" %in% assayDataElementNames(object))
     assayDataElement(object, "segmented") <- NULL

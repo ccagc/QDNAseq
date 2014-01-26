@@ -11,10 +11,9 @@ importFrom('DNAcopy', 'segment')
 importFrom('DNAcopy', 'smooth.CNA')
 
 importFrom('matrixStats', 'binCounts')
-importFrom('matrixStats', 'madDiff')
 importFrom('matrixStats', 'colMedians')
-# Leave out for now, because also available in Biobase:
-# importFrom('matrixStats', 'rowMedians')
+importFrom('matrixStats', 'madDiff')
+importFrom('matrixStats', 'sdDiff')
 
 importFrom('R.cache', 'getCachePath')
 importFrom('R.cache', 'loadCache')
