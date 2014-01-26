@@ -12,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{object}{...}
+#   \item{object}{An @see "QDNAseqReadCounts" object with \code{counts} data.}
 #   \item{span}{...}
 #   \item{family}{...}
 #   \item{adjustIncompletes}{...}
@@ -25,7 +25,8 @@
 # }
 #
 # \value{
-#   Returns a named @list with elements ...
+#   Returns a @see "QDNAseqReadCounts" object with the assay data element
+#   \code{corrected} added.
 # }
 #
 # @author "IS"

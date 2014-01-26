@@ -59,7 +59,8 @@
 # }
 #
 # \value{
-#   Returns a named @list with elements ...
+#   Returns a @see "QDNAseqReadCounts" object with assay data element
+#   \code{counts} containing the binned read counts as non-negative @integers.
 # }
 #
 # @author "IS"

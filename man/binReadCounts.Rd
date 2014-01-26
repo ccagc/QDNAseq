@@ -74,7 +74,8 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} with elements ...
+  Returns a \code{\link{QDNAseqReadCounts}} object with assay data element
+  \code{counts} containing the binned read counts as non-negative \code{\link[base]{integer}}s.
 }
 
 \author{Ilari Scheinin}

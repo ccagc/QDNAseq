@@ -25,7 +25,7 @@ correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
 }
 
 \arguments{
-  \item{object}{...}
+  \item{object}{An \code{\link{QDNAseqReadCounts}} object with \code{counts} data.}
   \item{span}{...}
   \item{family}{...}
   \item{adjustIncompletes}{...}
@@ -38,7 +38,8 @@ correctBins(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} with elements ...
+  Returns a \code{\link{QDNAseqReadCounts}} object with the assay data element
+  \code{corrected} added.
 }
 
 \author{Ilari Scheinin}

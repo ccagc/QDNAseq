@@ -24,7 +24,7 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
 }
 
 \arguments{
-  \item{object}{A \code{\link{QDNAseqReadCounts}} object.}
+  \item{object}{A \code{\link{QDNAseqReadCounts}} object with \code{corrected} data.}
   \item{method}{A \code{\link[base]{character}} string specifying the normalization method.
     Choices are "none", "mean", "median" (default), or "mode". A partial
     string sufficient to uniquely identify the choice is permitted.}
@@ -40,7 +40,9 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
 }
 
 \value{
-  Returns a \code{\link{QDNAseqReadCounts}} object with normalized data.
+  Returns a \code{\link{QDNAseqReadCounts}} object with the assay data element
+  \code{copynumbers} added.  If \code{logTransform} is \code{\link[base:logical]{TRUE}}, these
+  signals are log2 transformed after adding the \code{logOffset} offset.
 }
 
 \author{Ilari Scheinin}

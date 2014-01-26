@@ -9,6 +9,8 @@ o Added argument 'filter' to makeCgh() to control whether to drop
   "filtered" bins from the created object or not.
 o ROBUSTNESS: Now makeCgh() gives a more informative error message when
   it fails to create a CGHcall::cgh* object.
+o DOCUMENTATION: Added more information to the help for QDNAseqReadCounts,
+  binReadCounts(), correctBins() and normalizeBins().
 
 
 Version: 0.6.2 [2014-01-21]

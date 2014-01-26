@@ -12,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{object}{A @see "QDNAseqReadCounts" object.}
+#   \item{object}{A @see "QDNAseqReadCounts" object with \code{corrected} data.}
 #   \item{method}{A @character string specifying the normalization method.
 #     Choices are "none", "mean", "median" (default), or "mode". A partial
 #     string sufficient to uniquely identify the choice is permitted.}
@@ -28,7 +28,9 @@
 # }
 #
 # \value{
-#   Returns a @see "QDNAseqReadCounts" object with normalized data.
+#   Returns a @see "QDNAseqReadCounts" object with the assay data element
+#   \code{copynumbers} added.  If \code{logTransform} is @TRUE, these
+#   signals are log2 transformed after adding the \code{logOffset} offset.
 # }
 #
 # @author "IS"
@@ -86,7 +88,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
     copynumber <- log2(copynumber)
   }
 
-  # Filter?
+  # Filter
   condition <- binsToUse(object)
 
   if (method == "none") {
@@ -119,6 +121,8 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
     CNA.object <- smooth.CNA(CNA.object, ...)
     CNA.object <- CNA.object[, -(1:2), drop=FALSE]
     copynumber <- as.matrix(CNA.object)
+    # Not needed anymore
+    CNA.object <- NULL
   }
 
   # Expand to full set of bins
@@ -126,8 +130,14 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
     dimnames=list(featureNames(object), sampleNames(object)))
   copynumber2[rownames(copynumber), ] <- copynumber
 
+  # Not needed anymore
+  copynumber <- NULL
+
   # Assign
   assayDataElement(object, "copynumber") <- copynumber2
+
+  # Not needed anymore
+  copynumber2 <- NULL
 
   object
 })
