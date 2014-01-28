@@ -147,7 +147,7 @@ plot(LGG150)
 Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
 
 <<reg>>=
-cgh <- makeCgh(LGG150)
+# cgh <- makeCgh(LGG150)
 @
 
 % caching

@@ -28,7 +28,7 @@ print(dataN)
 plot(dataN)
 
 # Plot noise
-noisePlot(dataN)
+noisePlot(dataF)
 
 # Segment copy numbers
 fit <- segmentBins(dataN)

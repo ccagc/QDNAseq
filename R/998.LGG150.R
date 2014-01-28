@@ -15,8 +15,8 @@
 
 # library(QDNAseq)
 # bins <- downloadBinAnnotations(15)
-# LGG150 <- binReadCounts(bins, bamfiles='LGG150.bam')
-# LGG150 <- LGG150[chromosomes(LGG150) == 9,]
-# save(LGG150, file='LGG150.rda', compress='xz')
+# LGG150 <- binReadCounts(bins, bamfiles="LGG150.bam", cache=TRUE)
+# LGG150 <- LGG150[Biobase::fData(LGG150)$chromosome == "9",]
+# save(LGG150, file="LGG150.rda", compress="xz")
 
 # EOF

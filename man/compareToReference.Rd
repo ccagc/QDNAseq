@@ -10,7 +10,7 @@
 \alias{compareToReference}
 
 
-\alias{compareToReference,QDNAseqReadCounts,numeric-method}
+\alias{compareToReference,QDNAseqCopyNumbers,numeric-method}
 
 \title{Divide binned read counts with those of reference samples}
 

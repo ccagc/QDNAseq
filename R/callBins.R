@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction callBins
 #
-# @alias callBins,QDNAseqReadCounts-method
+# @alias callBins,QDNAseqCopyNumbers-method
 #
 # @title "Call aberrations from segmented copy number data"
 #
@@ -12,12 +12,12 @@
 # }
 #
 # \arguments{
-#   \item{object}{An object of class QDNAseqReadCounts}
+#   \item{object}{An object of class QDNAseqCopyNumbers}
 #   \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
 # }
 #
 # \value{
-#   Returns an object of class QDNAseqReadCounts with segmentation results
+#   Returns an object of class QDNAseqCopyNumbers with segmentation results
 #     added.
 # }
 #
@@ -29,7 +29,7 @@
 # }
 #
 #*/#########################################################################
-setMethod('callBins', signature=c(object='QDNAseqReadCounts'),
+setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
   definition=function(object, ...) {
   ## Mark van de Wiel confirms that CGHcall::CGHcall() assumes (=requires)
   ## CNs on the *log* scale. /IS (private email 'Log and non-positives'

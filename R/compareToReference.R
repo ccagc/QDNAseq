@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction compareToReference
 #
-# @alias compareToReference,QDNAseqReadCounts,numeric-method
+# @alias compareToReference,QDNAseqCopyNumbers,numeric-method
 #
 # @title "Divide binned read counts with those of reference samples"
 #
@@ -29,47 +29,38 @@
 # }
 #
 #*/#########################################################################
-setMethod('compareToReference', signature=c(object='QDNAseqReadCounts',
-  references='numeric'), definition=function(object, references,
-  offset=2^-10, force=FALSE) {
+setMethod("compareToReference", signature=c(object="QDNAseqCopyNumbers",
+  references="numeric"), definition=function(object, references,
+  offset=.Machine$double.xmin, force=FALSE) {
 
-  if (!force && 'copynumber' %in% assayDataElementNames(object))
-    stop('Data has already been normalized. Comparing to reference will ',
-      'remove normalization (and possible segmentation and calling) ',
-      'results. Please specify force=TRUE, if you want this.')
-  if ('copynumber' %in% assayDataElementNames(object))
-    assayDataElement(object, 'copynumber') <- NULL
-  if ('segmented' %in% assayDataElementNames(object))
-    assayDataElement(object, 'segmented') <- NULL
-  if ('calls' %in% assayDataElementNames(object)) {
-    assayDataElement(object, 'calls') <- NULL
-    assayDataElement(object, 'probloss') <- NULL
-    assayDataElement(object, 'probnorm') <- NULL
-    assayDataElement(object, 'probgain') <- NULL
-    if ('probdloss' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probdloss') <- NULL
-    if ('probamp' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probamp') <- NULL
+  if (!force && "segmented" %in% assayDataElementNames(object))
+    stop("Data has already been segmented. Comparing to reference will ",
+      "remove segmentation (and possible calling) ",
+      "results. Please specify force=TRUE, if you want this.")
+  if ("segmented" %in% assayDataElementNames(object))
+    assayDataElement(object, "segmented") <- NULL
+  if ("calls" %in% assayDataElementNames(object)) {
+    assayDataElement(object, "calls") <- NULL
+    assayDataElement(object, "probloss") <- NULL
+    assayDataElement(object, "probnorm") <- NULL
+    assayDataElement(object, "probgain") <- NULL
+    if ("probdloss" %in% assayDataElementNames(object))
+      assayDataElement(object, "probdloss") <- NULL
+    if ("probamp" %in% assayDataElementNames(object))
+      assayDataElement(object, "probamp") <- NULL
   }
 
   if (length(references) != ncol(object))
-    stop('Parameter references must be a vector of equal length as there ',
-      'are samples in object.')
+    stop("Parameter references must be a vector of equal length as there ",
+      "are samples in object.")
   for (i in seq_along(references)) {
     if (!is.na(references[i]) && references[i] != FALSE) {
-      assayDataElement(object, 'counts')[, i] <-
-        (assayDataElement(object, 'counts')[, i] + offset) /
-        (assayDataElement(object, 'counts')[, references[i]] + offset) - offset
-      if ('corrected' %in% assayDataElementNames(object)) {
-        assayDataElement(object, 'corrected') <- pmax(
-          assayDataElement(object, 'corrected'), 0)
-        assayDataElement(object, 'corrected')[, i] <-
-          (assayDataElement(object, 'corrected')[, i] + offset) /
-          (assayDataElement(object, 'corrected')[, references[i]] + offset) -
-          offset
-      }
-      sampleNames(object)[i] <- paste(sampleNames(object)[i], ' vs. ',
-        sampleNames(object)[references[i]], sep='')
+      assayDataElement(object, "copynumber")[, i] <-
+        (assayDataElement(object, "copynumber")[, i] + offset) /
+        (assayDataElement(object, "copynumber")[, references[i]] + offset) -
+        offset
+      sampleNames(object)[i] <- paste(sampleNames(object)[i], " vs. ",
+        sampleNames(object)[references[i]], sep="")
     }
   }
   toremove <- which(!references)

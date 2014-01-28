@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction segmentBins
 #
-# @alias segmentBins,QDNAseqReadCounts-method
+# @alias segmentBins,QDNAseqCopyNumbers-method
 #
 # @title "Segments normalized copy number data"
 #
@@ -12,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{object}{An object of class QDNAseqReadCounts.}
+#   \item{object}{An object of class QDNAseqCopyNumbers.}
 #   \item{smoothBy}{An optional integer value to perform smoothing before
 #     segmentation by taking the mean of every smoothBy bins, and then segment
 #     those means. Default is to perform no smoothing.}
@@ -34,7 +34,7 @@
 # }
 #
 # \value{
-#   Returns an object of class QDNAseqReadCounts with segmentation results
+#   Returns an object of class QDNAseqCopyNumbers with segmentation results
 #     added.
 # }
 #
@@ -48,10 +48,10 @@
 # }
 #
 #*/#########################################################################
-setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
+setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
   definition=function(object, smoothBy=FALSE, alpha=1e-10,
-  undo.splits='sdundo', undo.SD=1.0, normalize=TRUE,
-  inter=c(-0.1, 0.1), force=FALSE, ...) {
+  undo.splits='sdundo', undo.SD=1.0,
+  normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...) {
 
   if (!force && 'calls' %in% assayDataElementNames(object))
     stop('Data has already been called. Changing the segmentation will ',
@@ -69,7 +69,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   }
   condition <- binsToUse(object)
 
-  if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+  if (!is.numeric(smoothBy) || smoothBy <= 1) {
     vmsg('Performing segmentation:')
   } else {
     vmsg('Performing segmentation with smoothing over ',
@@ -78,6 +78,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
 
   copynumber <- copynumber(object)
   copynumber[!condition, ] <- NA_real_
+  copynumber <- log2(copynumber + .Machine$double.xmin)
   segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
     dimnames=dimnames(copynumber))
 
@@ -119,11 +120,12 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
         segmented[index, s] <- rep(chrSegmented, times=table(binToBin))
       }
     }
-  vmsg()
+    vmsg()
   }
   segmented[is.na(copynumber)] <- NA_real_
 
   if (!normalize) {
+    segmented <- 2^segmented - .Machine$double.xmin
     segmented(object) <- segmented
     return(object)
   }
@@ -166,8 +168,14 @@ setMethod('segmentBins', signature=c(object='QDNAseqReadCounts'),
   for (i in seq_along(listres))
     vecres <- c(vecres, listres[[i]])
 
-  segmented(object) <- t(t(seg) - vecres)
-  copynumber(object) <- t(t(copynumber) - values - vecres)
+  segmented <- t(t(seg) - vecres)
+  segmented <- 2^segmented - .Machine$double.xmin
+  segmented[segmented < 0] <- 0
+  segmented(object) <- segmented
+  copynumber <- t(t(copynumber) - values - vecres)
+  copynumber <- 2^copynumber - .Machine$double.xmin
+  copynumber[copynumber < 0] <- 0
+  copynumber(object) <- copynumber
   object
 })
 

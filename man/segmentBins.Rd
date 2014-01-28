@@ -10,7 +10,7 @@
 \alias{segmentBins}
 
 
-\alias{segmentBins,QDNAseqReadCounts-method}
+\alias{segmentBins,QDNAseqCopyNumbers-method}
 
 \title{Segments normalized copy number data}
 
@@ -24,7 +24,7 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
 }
 
 \arguments{
-  \item{object}{An object of class QDNAseqReadCounts.}
+  \item{object}{An object of class QDNAseqCopyNumbers.}
   \item{smoothBy}{An optional integer value to perform smoothing before
     segmentation by taking the mean of every smoothBy bins, and then segment
     those means. Default is to perform no smoothing.}
@@ -46,7 +46,7 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
 }
 
 \value{
-  Returns an object of class QDNAseqReadCounts with segmentation results
+  Returns an object of class QDNAseqCopyNumbers with segmentation results
     added.
 }
 

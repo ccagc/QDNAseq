@@ -10,7 +10,7 @@
 \alias{callBins}
 
 
-\alias{callBins,QDNAseqReadCounts-method}
+\alias{callBins,QDNAseqCopyNumbers-method}
 
 \title{Call aberrations from segmented copy number data}
 
@@ -23,12 +23,12 @@ callBins(object, ...)
 }
 
 \arguments{
-  \item{object}{An object of class QDNAseqReadCounts}
+  \item{object}{An object of class QDNAseqCopyNumbers}
   \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
 \value{
-  Returns an object of class QDNAseqReadCounts with segmentation results
+  Returns an object of class QDNAseqCopyNumbers with segmentation results
     added.
 }
 

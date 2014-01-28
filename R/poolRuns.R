@@ -28,17 +28,17 @@
 # }
 #
 #*/#########################################################################
-setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
-  samples='character'), definition=function(object, samples, force=FALSE) {
+setMethod("poolRuns", signature=c(object="QDNAseqReadCounts",
+  samples="character"), definition=function(object, samples, force=FALSE) {
 
-  if (!force && 'copynumber' %in% assayDataElementNames(object))
-    stop('Data has already been normalized. Pooling runs will ',
-      'remove normalization (and possible segmentation and calling) ',
-      'results. Please specify force=TRUE, if you want this.')
+  if (!force && "segmented" %in% assayDataElementNames(object))
+    stop("Data has already been segmented. Pooling runs will ",
+      "remove segmentation (and possible calling) ",
+      "results. Please specify force=TRUE, if you want this.")
 
   if (length(samples) != ncol(object))
-    stop('Parameter samples must be a vector of equal length as there are ',
-      ' samples in object.')
+    stop("Parameter samples must be a vector of equal length as there are ",
+      " samples in object.")
 
   newsamples <- sort(unique(samples))
   if (length(newsamples) == ncol(object)) {
@@ -48,31 +48,33 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
   }
   oldsamples <- sampleNames(object)
 
-  phenodata <- pData(object)
-  phenodata[, 1] <- samples
   bins <- featureData(object)
-  counts <- assayDataElement(object, 'counts')
-  if ('corrected' %in% assayDataElementNames(object))
-    corrected <- assayDataElement(object, 'corrected')
-
+  phenodata <- phenoData(object)
+  phenodata[, 1] <- samples
   newphenodata <- phenodata[0, ]
-  newcounts <- matrix(NA_integer_, nrow=nrow(counts), ncol=length(newsamples),
-    dimnames=list(rownames(counts), newsamples))
-  if ('corrected' %in% assayDataElementNames(object))
-    newcorrected <- matrix(NA_real_, nrow=nrow(counts), ncol=length(newsamples),
-      dimnames=list(rownames(counts), newsamples))
-
+  if (class(object) == "QDNAseqReadCounts") {
+    counts <- assayDataElement(object, "counts")
+    newcounts <- matrix(NA_integer_, nrow=nrow(counts),
+      ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
+  } else if (class(object) == "QDNAseqCopyNumbers") {
+    copynumber <- assayDataElement(object, "copynumber")
+    newcopynumber <- matrix(NA_real_, nrow=nrow(counts),
+      ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
+  }
+  
   concatenateIfNotEqual <- function(x) {
     x <- sort(unique(x))
-    paste(x, collapse=';')
+    paste(x, collapse=";")
   }
 
   for (newsample in newsamples) {
     replicates <- samples == newsample
-    newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
-    if ('corrected' %in% assayDataElementNames(object))
-      newcorrected[, newsample] <- rowMeans(corrected[, replicates,
+    if (class(object) == "QDNAseqReadCounts") {
+      newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
+    } else if (class(object) == "QDNAseqCopyNumbers") {
+      newcopynumber[, newsample] <- rowMeans(copynumber[, replicates,
         drop=FALSE])
+    }
     oldphenodata <- phenodata[replicates, ]
     totalReads <- sum(oldphenodata$reads)
     numericCols <- sapply(oldphenodata, is.numeric)
@@ -80,15 +82,18 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
       drop=FALSE], 2, mean)
     oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
       drop=FALSE], 2, concatenateIfNotEqual)
-    oldphenodata[1, 'reads'] <- totalReads
+    oldphenodata[1, "reads"] <- totalReads
     newphenodata <- rbind(newphenodata, oldphenodata[1,])
   }
   rownames(newphenodata) <- newphenodata[, 1]
 
-  object2 <- new('QDNAseqReadCounts', bins=bins, counts=newcounts,
-    phenodata=newphenodata)
-  if ('corrected' %in% assayDataElementNames(object))
-    assayDataElement(object2, 'corrected') <- newcorrected
+  if (class(object) == "QDNAseqReadCounts") {
+    object2 <- new("QDNAseqReadCounts", bins=bins, counts=newcounts,
+      phenodata=newphenodata)
+  } else if (class(object) == "QDNAseqCopyNumbers") {
+    object2 <- new("QDNAseqCopyNumbers", bins=bins, copynumber=newcopynumber,
+      phenodata=newphenodata)
+  }
   object2
 })
 

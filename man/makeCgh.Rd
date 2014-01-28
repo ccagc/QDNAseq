@@ -10,7 +10,7 @@
 \alias{makeCgh}
 
 
-\alias{makeCgh,QDNAseqReadCounts-method}
+\alias{makeCgh,QDNAseqCopyNumbers-method}
 
 \title{Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object}
 
@@ -23,7 +23,7 @@ makeCgh(object, filter=TRUE, ...)
 }
 
 \arguments{
-  \item{object}{A \code{\link{QDNAseqReadCounts}} object.}
+  \item{object}{A \code{\link{QDNAseqCopyNumbers}} object.}
   \item{filter}{If \code{\link[base:logical]{TRUE}}, bins are filtered, otherwise not.}
   \item{...}{Not used.}
 }

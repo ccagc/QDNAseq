@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction highlightFilters
 #
-# @alias highlightFilters,QDNAseqReadCounts-method
+# @alias highlightFilters,QDNAseqSignals-method
 #
 # @title "Highlights data points in a plotted profile to evaluate filtering"
 #
@@ -12,13 +12,15 @@
 # }
 #
 # \arguments{
-#   \item{object}{A QDNAseqReadCounts object ...}
+#   \item{object}{A QDNAseqCopyNumbers object ...}
 #   \item{col}{...}
 #   \item{residual}{...}
 #   \item{blacklist}{...}
 #   \item{mappability}{...}
 #   \item{bases}{...}
 #   \item{type}{...}
+#   \item{logTransform}{...}
+#   \item{logOffset}{...}
 #   \item{...}{Further arguments to points.}
 # }
 #
@@ -30,12 +32,15 @@
 #
 # @keyword IO
 #*/#########################################################################
-setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
-  definition=function(object, col='red', residual=NA, blacklist=NA,
-  mappability=NA, bases=NA, type='union', ...) {
+
+setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
+  definition=function(object, col="red", residual=NA, blacklist=NA,
+  mappability=NA, bases=NA, type="union",
+  logTransform=TRUE, logOffset=.Machine$double.xmin,
+  ...) {
 
   condition <- rep(TRUE, times=nrow(object))
-  if (match.arg(type, c('union', 'intersection')) == 'intersection') {
+  if (match.arg(type, c("union", "intersection")) == "intersection") {
     if (!is.na(residual)) {
       if (is.numeric(residual)) {
         condition <- condition & (is.na(fData(object)$residual) |
@@ -94,20 +99,20 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   pos <- as.numeric(bpstart(object)[condition])
   for (j in uni.chrom)
     pos[chrom > j] <- pos[chrom > j] + chrom.lengths[as.character(j)]
-  if ('copynumber' %in% assayDataElementNames(object)) {
-    copynumber <- assayDataElement(object, 'copynumber')[condition, ,
-      drop=FALSE]
-  } else if ('corrected' %in% assayDataElementNames(object)) {
-    copynumber <- assayDataElement(object, 'corrected')[condition, ,
+  if (class(object) == "QDNAseqReadCounts") {
+    copynumber <- assayDataElement(object, "counts")[condition, ,
       drop=FALSE]
   } else {
-    copynumber <- assayDataElement(object, 'counts')[condition, , drop=FALSE]
+    copynumber <- assayDataElement(object, "copynumber")[condition, ,
+      drop=FALSE]
   }
+  if (logTransform)
+    copynumber <- log2(copynumber + logOffset)
   if (ncol(object) > 1L)
-    vmsg('Multiple samples present in input, only using first sample: ',
+    vmsg("Multiple samples present in input, only using first sample: ",
       sampleNames(object)[1L])
   pointcol <- col
-  ylim <- par('usr')[3:4]
+  ylim <- par("usr")[3:4]
   points(pos, copynumber[, i], cex=0.1, col=pointcol)
   amps <- copynumber[, i]
   amps[amps <= ylim[2]] <- NA_real_
@@ -121,7 +126,7 @@ setMethod('highlightFilters', signature=c(object='QDNAseqReadCounts'),
   par(xpd=FALSE)
 
   num <- sum(condition)
-  vmsg('Highlighted ', format(num, big.mark=','), ' bins.')
+  vmsg("Highlighted ", format(num, big.mark=","), " bins.")
   return(invisible(num))
 })
 

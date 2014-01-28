@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction normalizeBins
 #
-# @alias normalizeBins,QDNAseqReadCounts-method
+# @alias normalizeBins,QDNAseqCopyNumbers-method
 #
 # @title "Normalizes binned read counts"
 #
@@ -12,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{object}{A @see "QDNAseqReadCounts" object with \code{corrected} data.}
+#   \item{object}{A @see "QDNAseqCopyNumbers" object with \code{corrected} data.}
 #   \item{method}{A @character string specifying the normalization method.
 #     Choices are "none", "mean", "median" (default), or "mode". A partial
 #     string sufficient to uniquely identify the choice is permitted.}
@@ -28,7 +28,7 @@
 # }
 #
 # \value{
-#   Returns a @see "QDNAseqReadCounts" object with the assay data element
+#   Returns a @see "QDNAseqCopyNumbers" object with the assay data element
 #   \code{copynumbers} added.  If \code{logTransform} is @TRUE, these
 #   signals are log2 transformed after adding the \code{logOffset} offset.
 # }
@@ -37,19 +37,19 @@
 #
 #*/#########################################################################
 ## Adapted from CGHcall::normalize()
-setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
+setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
   definition=function(object, method=c("median", "mean", "mode", "none"),
-  smoothOutliers=TRUE, logTransform=TRUE, logOffset=2^-10, force=FALSE, ...) {
+  smoothOutliers=TRUE, logTransform=TRUE, logOffset=.Machine$double.xmin, force=FALSE, ...) {
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Validate arguments
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # Argument 'object':
+  # Argument "object":
   if (!force && ("segmented" %in% assayDataElementNames(object)))
     stop("Data has already been segmented. Changing the normalization will ",
       "remove segmentation (and possible calling) results. Please specify ",
       "force=TRUE, if you want this.")
 
-  # Argument 'method':
+  # Argument "method":
   method <- match.arg(method);
 
   if ("segmented" %in% assayDataElementNames(object))
@@ -66,7 +66,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
   }
 
   # Extract corrected counts
-  copynumber <- assayDataElement(object, "corrected")
+  copynumber <- assayDataElement(object, "copynumber")
 
   # Sanity check
   if (is.null(copynumber)) {
@@ -82,9 +82,8 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
   # Log transform?
   if (logTransform) {
     # remove negative values and add offset
-    copynumber <- pmax(copynumber, 0)
-    copynumber <- copynumber + logOffset
-    copynumber <- log2(copynumber)
+    copynumber[copynumber < 0] <- 0
+    copynumber <- log2(copynumber + logOffset)
   }
 
   # Filter
@@ -124,6 +123,10 @@ setMethod("normalizeBins", signature=c(object="QDNAseqReadCounts"),
     CNA.object <- NULL
   }
 
+  # Log transform?
+  if (logTransform)
+    copynumber <- 2^copynumber - logOffset
+  
   # Expand to full set of bins
   copynumber2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
     dimnames=list(featureNames(object), sampleNames(object)))
