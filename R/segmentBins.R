@@ -78,7 +78,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
 
   copynumber <- copynumber(object)
   copynumber[!condition, ] <- NA_real_
-  copynumber <- log2(copynumber + .Machine$double.xmin)
+  copynumber <- log2adhoc(copynumber)
   segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
     dimnames=dimnames(copynumber))
 
@@ -125,7 +125,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
   segmented[is.na(copynumber)] <- NA_real_
 
   if (!normalize) {
-    segmented <- 2^segmented - .Machine$double.xmin
+    segmented <- unlog2adhoc(segmented)
     segmented(object) <- segmented
     return(object)
   }
@@ -169,11 +169,11 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
     vecres <- c(vecres, listres[[i]])
 
   segmented <- t(t(seg) - vecres)
-  segmented <- 2^segmented - .Machine$double.xmin
+  segmented <- unlog2adhoc(segmented)
   segmented[segmented < 0] <- 0
   segmented(object) <- segmented
   copynumber <- t(t(copynumber) - values - vecres)
-  copynumber <- 2^copynumber - .Machine$double.xmin
+  copynumber <- unlog2adhoc(copynumber)
   copynumber[copynumber < 0] <- 0
   copynumber(object) <- copynumber
   object

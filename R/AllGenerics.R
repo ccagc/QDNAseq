@@ -14,14 +14,14 @@ setGeneric("estimateCorrection", function(object, span=0.65, family="symmetric",
   standardGeneric("estimateCorrection"))
 setGeneric("highlightFilters", function(object, col="red", residual=NA,
   blacklist=NA, mappability=NA, bases=NA, type="union",
-  logTransform=TRUE, logOffset=.Machine$double.xmin, ...)
+  logTransform=TRUE, ...)
   standardGeneric("highlightFilters"))
 setGeneric("makeCgh", function(object, filter=TRUE, ...)
   standardGeneric("makeCgh"))
 setGeneric("noisePlot", function(x, y, ...)
   standardGeneric("noisePlot"))
 setGeneric("normalizeBins", function(object, method="median",
-  smoothOutliers=TRUE, logTransform=TRUE, logOffset=2^-10, force=FALSE, ...)
+  smoothOutliers=TRUE, logTransform=TRUE, force=FALSE, ...)
   standardGeneric("normalizeBins"))
 setGeneric("poolRuns", function(object, samples, force=FALSE)
   standardGeneric("poolRuns"))

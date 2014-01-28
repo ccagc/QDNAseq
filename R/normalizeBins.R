@@ -19,8 +19,6 @@
 #   \item{smoothOutliers}{If @TRUE (default), @see "DNAcopy::smooth.CNA" is
 #     used to detect and smooth outliers.}
 #   \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
-#   \item{logOffset}{An offset to be added prior to log2-transformation to
-#     avoid non-positive numbers. Ignored if \code{logTransform} is @FALSE.}
 #   \item{force}{Running this function will remove possible segmentation and
 #     calling results. When they are present, running requires specifying
 #     \code{force} is @TRUE.}
@@ -30,7 +28,7 @@
 # \value{
 #   Returns a @see "QDNAseqCopyNumbers" object with the assay data element
 #   \code{copynumbers} added.  If \code{logTransform} is @TRUE, these
-#   signals are log2 transformed after adding the \code{logOffset} offset.
+#   signals are log2 transformed after adding a small offset.
 # }
 #
 # @author "IS"
@@ -39,7 +37,7 @@
 ## Adapted from CGHcall::normalize()
 setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
   definition=function(object, method=c("median", "mean", "mode", "none"),
-  smoothOutliers=TRUE, logTransform=TRUE, logOffset=.Machine$double.xmin, force=FALSE, ...) {
+  smoothOutliers=TRUE, logTransform=TRUE, force=FALSE, ...) {
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Validate arguments
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -81,9 +79,9 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
   # Log transform?
   if (logTransform) {
-    # remove negative values and add offset
+    # remove negative values
     copynumber[copynumber < 0] <- 0
-    copynumber <- log2(copynumber + logOffset)
+    copynumber <- log2adhoc(copynumber)
   }
 
   # Filter
@@ -125,8 +123,8 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
   # Log transform?
   if (logTransform)
-    copynumber <- 2^copynumber - logOffset
-  
+    copynumber <- unlog2adhoc(copynumber)
+
   # Expand to full set of bins
   copynumber2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
     dimnames=list(featureNames(object), sampleNames(object)))

@@ -32,15 +32,15 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
   names <- assayDataElementNames(object)
   if ('calls' %in% names) {
     className <- 'cghCall'
-    segmented(object) <- log2(segmented(object) + .Machine$double.xmin)
-    copynumber(object) <- log2(copynumber(object) + .Machine$double.xmin)
+    segmented(object) <- log2adhoc(segmented(object))
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else if ('segmented' %in% names) {
     className <- 'cghSeg'
-    segmented(object) <- log2(segmented(object) + .Machine$double.xmin)
-    copynumber(object) <- log2(copynumber(object) + .Machine$double.xmin)
+    segmented(object) <- log2adhoc(segmented(object))
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else if ('copynumber' %in% names) {
     className <- 'cghRaw'
-    copynumber(object) <- log2(copynumber(object) + .Machine$double.xmin)
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else {
     stop("Cannot create a CGHbase::cgh* object without at least one of the assay data elements being 'calls', 'segmented' or 'copynumber': ", paste(sQuote(names), collapse=", "))
   }

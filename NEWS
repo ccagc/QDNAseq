@@ -1,6 +1,12 @@
 Package: QDNAseq
 ================
 
+Version: 0.7.0 [2014-01-28]
+o QDNAseqCopyNumbers now stores all signals on the original non-log scale.
+o Now using classes QDNAseqReadCounts and QDNAseqCopyNumbers which both
+  inherits from QDNAseqSignals.
+
+
 Version: 0.6.3 [2014-01-25]
 o Added support for coercing an QDNAseqReadCounts object to an
   CGHcall::cghRaw object via as(x, "cghRaw") and similar for coercing

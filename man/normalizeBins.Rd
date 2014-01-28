@@ -16,7 +16,7 @@
 
 \usage{
 normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
-  logOffset=2^-10, force=FALSE, ...)
+  force=FALSE, ...)
 }
 
 \description{
@@ -31,8 +31,6 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
   \item{smoothOutliers}{If \code{\link[base:logical]{TRUE}} (default), \code{\link[DNAcopy]{smooth.CNA}} is
     used to detect and smooth outliers.}
   \item{logTransform}{If \code{\link[base:logical]{TRUE}} (default), data will be log2-transformed.}
-  \item{logOffset}{An offset to be added prior to log2-transformation to
-    avoid non-positive numbers. Ignored if \code{logTransform} is \code{\link[base:logical]{FALSE}}.}
   \item{force}{Running this function will remove possible segmentation and
     calling results. When they are present, running requires specifying
     \code{force} is \code{\link[base:logical]{TRUE}}.}
@@ -42,7 +40,7 @@ normalizeBins(object, method="median", smoothOutliers=TRUE, logTransform=TRUE,
 \value{
   Returns a \code{\link{QDNAseqCopyNumbers}} object with the assay data element
   \code{copynumbers} added.  If \code{logTransform} is \code{\link[base:logical]{TRUE}}, these
-  signals are log2 transformed after adding the \code{logOffset} offset.
+  signals are log2 transformed after adding a small offset.
 }
 
 \author{Ilari Scheinin}

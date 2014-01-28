@@ -30,7 +30,7 @@
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   function (x, y, main=NULL, includeReadCounts=TRUE,
-  logTransform=TRUE, logOffset=.Machine$double.xmin,
+  logTransform=TRUE,
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
@@ -68,13 +68,13 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         "read count")
     if (is.null(ylim))
       if (logTransform) {
-        ylim <- c(0, max(log2(copynumber + logOffset)))
+        ylim <- c(0, max(log2adhoc(copynumber)))
       } else {
         ylim <- range(copynumber)
       }
   }
   if (logTransform)
-    copynumber <- log2(copynumber + logOffset)
+    copynumber <- log2adhoc(copynumber)
   if (is.null(main))
     main <- sampleNames(x)
   if (includeReadCounts && "reads" %in% names(pData(x)))
@@ -111,7 +111,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if ("segmented" %in% assayDataElementNames(x)) {
       segmented <- assayDataElement(x, "segmented")[condition, i]
       if (logTransform)
-        segmented <- log2(segmented + logOffset)
+        segmented <- log2adhoc(segmented)
       segment <- CGHbase:::.makeSegments(segmented, chrom)
     }
     if ("calls" %in% assayDataElementNames(x)) {

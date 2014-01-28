@@ -20,7 +20,6 @@
 #   \item{bases}{...}
 #   \item{type}{...}
 #   \item{logTransform}{...}
-#   \item{logOffset}{...}
 #   \item{...}{Further arguments to points.}
 # }
 #
@@ -36,7 +35,7 @@
 setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
   definition=function(object, col="red", residual=NA, blacklist=NA,
   mappability=NA, bases=NA, type="union",
-  logTransform=TRUE, logOffset=.Machine$double.xmin,
+  logTransform=TRUE,
   ...) {
 
   condition <- rep(TRUE, times=nrow(object))
@@ -107,7 +106,7 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
       drop=FALSE]
   }
   if (logTransform)
-    copynumber <- log2(copynumber + logOffset)
+    copynumber <- log2adhoc(copynumber)
   if (ncol(object) > 1L)
     vmsg("Multiple samples present in input, only using first sample: ",
       sampleNames(object)[1L])

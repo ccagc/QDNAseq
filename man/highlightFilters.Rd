@@ -16,7 +16,7 @@
 
 \usage{
 highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, bases=NA,
-  type="union", logTransform=TRUE, logOffset=.Machine$double.xmin, ...)
+  type="union", logTransform=TRUE, ...)
 }
 
 \description{
@@ -32,7 +32,6 @@ highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, b
   \item{bases}{...}
   \item{type}{...}
   \item{logTransform}{...}
-  \item{logOffset}{...}
   \item{...}{Further arguments to points.}
 }
 
