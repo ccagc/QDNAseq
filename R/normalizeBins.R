@@ -39,7 +39,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Argument "object":
   if (!force && ("segmented" %in% assayDataElementNames(object)))
-    stop("Data has already been segmented. Changing the normalization will ",
+    stop("Data has already been segmented. Re-normalizing will ",
       "remove segmentation (and possible calling) results. Please specify ",
       "force=TRUE, if you want this.")
 

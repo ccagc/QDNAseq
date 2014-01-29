@@ -24,10 +24,6 @@
 #     apart.}
 #   \item{undo.SD}{The number of SDs between means to keep a split if
 #     undo.splits="sdundo".}
-#   \item{normalize}{Whether to perform normalization after segmentation with
-#     @see "CGHcall::postsegnormalize" of the \pkg{CGHcall} package.}
-#   \item{inter}{If performing normalization, the interval in which the
-#     function should search for the normal level.}
 #   \item{force}{Whether to force execution when it causes removal of
 #     downstream calling results.}
 #   \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
@@ -43,37 +39,33 @@
 # \seealso{
 #   Internally, @see "DNAcopy::segment" of the \pkg{DNAcopy} package,
 #   which implements the CBS method, is used to segment the data.
-#   Optionally, normalization is performed with @see "CGHcall::postsegnormalize"
-#   of the \pkg{CGHcall} package.
 # }
 #
 #*/#########################################################################
-setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
+setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
   definition=function(object, smoothBy=FALSE, alpha=1e-10,
-  undo.splits='sdundo', undo.SD=1.0,
-  normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...) {
+  undo.splits="sdundo", undo.SD=1.0, force=FALSE, ...) {
 
-  if (!force && 'calls' %in% assayDataElementNames(object))
-    stop('Data has already been called. Changing the segmentation will ',
-      'remove calling ',
-      'results. Please specify force=TRUE, if you want this.')
-  if ('calls' %in% assayDataElementNames(object)) {
-    assayDataElement(object, 'calls') <- NULL
-    assayDataElement(object, 'probloss') <- NULL
-    assayDataElement(object, 'probnorm') <- NULL
-    assayDataElement(object, 'probgain') <- NULL
-    if ('probdloss' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probdloss') <- NULL
-    if ('probamp' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probamp') <- NULL
+  if (!force && "calls" %in% assayDataElementNames(object))
+    stop("Data has already been called. Re-segmentation will ",
+      "remove calling  results. Please specify force=TRUE, if you want this.")
+  if ("calls" %in% assayDataElementNames(object)) {
+    assayDataElement(object, "calls") <- NULL
+    assayDataElement(object, "probloss") <- NULL
+    assayDataElement(object, "probnorm") <- NULL
+    assayDataElement(object, "probgain") <- NULL
+    if ("probdloss" %in% assayDataElementNames(object))
+      assayDataElement(object, "probdloss") <- NULL
+    if ("probamp" %in% assayDataElementNames(object))
+      assayDataElement(object, "probamp") <- NULL
   }
   condition <- binsToUse(object)
 
   if (!is.numeric(smoothBy) || smoothBy <= 1) {
-    vmsg('Performing segmentation:')
+    vmsg("Performing segmentation:")
   } else {
-    vmsg('Performing segmentation with smoothing over ',
-      smoothBy, ' bins:')
+    vmsg("Performing segmentation with smoothing over ",
+      smoothBy, " bins:")
   }
 
   copynumber <- copynumber(object)
@@ -84,8 +76,8 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
 
   ## loop through samples
   for (s in seq_len(ncol(copynumber))) {
-    vmsg('  Segmenting: ', sampleNames(object)[s],
-      ' (', s, ' of ', ncol(object), ') ...', appendLF=FALSE)
+    vmsg("  Segmenting: ", sampleNames(object)[s],
+      " (", s, " of ", ncol(object), ") ...", appendLF=FALSE)
 
     ## loop through chromosomes
     for (chr in unique(fData(object)$chromosome[condition])) {
@@ -104,7 +96,7 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
 
       ## segment
       cna <- CNA(genomdat=chrCopynumber,
-        chrom=chr, maploc=chrStarts, data.type='logratio',
+        chrom=chr, maploc=chrStarts, data.type="logratio",
         presorted=TRUE)
       segments <- segment(cna, verbose=0,
         alpha=alpha, undo.splits=undo.splits, undo.SD=undo.SD, ...)
@@ -123,59 +115,8 @@ setMethod('segmentBins', signature=c(object='QDNAseqCopyNumbers'),
     vmsg()
   }
   segmented[is.na(copynumber)] <- NA_real_
-
-  if (!normalize) {
-    segmented <- unlog2adhoc(segmented)
-    segmented(object) <- segmented
-    return(object)
-  }
-
-  ## adapted from CGHcall::postsegnormalize()
-  seg <- segmented
-  values <- colMedians(seg, na.rm=TRUE)
-  seg <- t(t(seg) - values)
-  countlevall <- apply(seg, MARGIN=2L, FUN=function(x)
-    as.data.frame(table(x)))
-
-  intcount <- function(int, sv){
-    sv1 <- as.numeric(as.vector(sv[, 1L]))
-    wh <- which(sv1 <= int[2L] & sv1 >= int[1L])
-    return(sum(sv[wh, 2L]))
-  }
-
-  postsegnorm <- function(segvec, int=inter, intnr=3){
-    intlength <- (int[2L]-int[1L])/2
-    gri <- intlength/intnr
-    intst <- int[1L]+(0:intnr)*gri
-    intend <- intst+intlength
-    ints <- cbind(intst, intend)
-    intct <- apply(ints, MARGIN=1L, FUN=intcount, sv=segvec)
-    whmax <- which.max(intct)
-    return(ints[whmax, ])
-  }
-
-  postsegnorm_rec <- function(segvec, int, intnr=3){
-    newint <- postsegnorm(segvec, int, intnr)
-    newint <- postsegnorm(segvec, newint, intnr)
-    newint <- postsegnorm(segvec, newint, intnr)
-    newint <- postsegnorm(segvec, newint, intnr)
-    newint <- postsegnorm(segvec, newint, intnr)
-    return(newint[1L]+(newint[2L]-newint[1L])/2)
-  }
-
-  listres <- lapply(countlevall, FUN=postsegnorm_rec, int=inter)
-  vecres <- c()
-  for (i in seq_along(listres))
-    vecres <- c(vecres, listres[[i]])
-
-  segmented <- t(t(seg) - vecres)
   segmented <- unlog2adhoc(segmented)
-  segmented[segmented < 0] <- 0
   segmented(object) <- segmented
-  copynumber <- t(t(copynumber) - values - vecres)
-  copynumber <- unlog2adhoc(copynumber)
-  copynumber[copynumber < 0] <- 0
-  copynumber(object) <- copynumber
   object
 })
 

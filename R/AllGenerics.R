@@ -22,13 +22,14 @@ setGeneric("noisePlot", function(x, y, ...)
   standardGeneric("noisePlot"))
 setGeneric("normalizeBins", function(object, method="median", force=FALSE)
   standardGeneric("normalizeBins"))
+setGeneric("normalizeSegmentedBins", function(object, inter=c(-0.1, 0.1),
+  force=FALSE, ...) standardGeneric("normalizeSegmentedBins"))
 setGeneric("poolRuns", function(object, samples, force=FALSE)
   standardGeneric("poolRuns"))
 setGeneric("readCountPlot", function(x, y, ...)
   standardGeneric("readCountPlot"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
   alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-  normalize=TRUE, inter=c(-0.1, 0.1),
   force=FALSE, ...) standardGeneric("segmentBins"))
 setGeneric("smoothOutlierBins", function(object,
   logTransform=TRUE, force=FALSE, ...)

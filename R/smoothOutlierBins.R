@@ -39,7 +39,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Argument "object":
   if (!force && ("segmented" %in% assayDataElementNames(object)))
-    stop("Data has already been segmented. Changing the normalization will ",
+    stop("Data has already been segmented. Smoothing the outliers will ",
       "remove segmentation (and possible calling) results. Please specify ",
       "force=TRUE, if you want this.")
 
