@@ -15,7 +15,7 @@
 \title{Segments normalized copy number data}
 
 \usage{
-segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1,
+segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", undo.SD=1,
   normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...)
 }
 

@@ -439,7 +439,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     fit <- assayDataElement(x, "fit")[condition, , drop=FALSE]
   }
   signal <- counts / fit
-  signal[fit <= 0] <- 0
+  signal[fit < 0] <- 0
   signal <- scale(signal, center=FALSE,
     scale=apply(signal, 2, mean, na.rm=TRUE))
   noise <- apply(signal, 2, sdDiff, na.rm=TRUE)

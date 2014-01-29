@@ -33,12 +33,16 @@
 
 setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
   definition=function(object, fit=NULL,
-  type=c("ratio", "addition"), adjustIncompletes=TRUE, ...) {
+  type=c("ratio", "addition", "none"), adjustIncompletes=TRUE, ...) {
   counts <- assayDataElement(object, "counts")
   if (adjustIncompletes) {
     counts <- counts / fData(object)$bases * 100L
     counts[fData(object)$bases == 0] <- 0L
   }
+  type <- match.arg(type)
+  if (type == "none")
+    fit <- matrix(1, nrow=nrow(counts), ncol=ncol(counts),
+      dimnames=dimnames(counts))
   if (is.null(fit)) {
     if (! "fit" %in% assayDataElementNames(object))
       object <- estimateCorrection(object, ...)
@@ -47,7 +51,6 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
   if (!is.matrix(fit))
     stop("Argument fit has to be either a matrix, a QDNAseqReadCounts object, ",
       "or NULL, in which case estimateCorrection() is executed first.")
-  type <- match.arg(type)
   if (type == "addition") {
     gc <- round(fData(object)$gc)
     mappability <- round(fData(object)$mappability)
@@ -64,7 +67,7 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
     }
   } else {
     corrected <- counts / fit
-    corrected[fit <= 0] <- 0
+    corrected[fit < 0] <- 0
   }
   new("QDNAseqCopyNumbers", bins=featureData(object), copynumber=corrected,
     phenodata=phenoData(object))
