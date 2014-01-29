@@ -19,8 +19,8 @@ log2offset <- function(offset=.Machine$double.xmin) {
   offset;
 }
 
-
 log2adhoc <- function(x, offset=log2offset()) {
+  x[x < 0] <- 0
   x <- x + offset
   log2(x)
 
