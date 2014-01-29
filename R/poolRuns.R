@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction poolRuns
 #
-# @alias poolRuns,QDNAseqReadCounts,character-method
+# @alias poolRuns,QDNAseqSignals,character-method
 #
 # @title "Pools binned read counts across samples"
 #
@@ -28,7 +28,7 @@
 # }
 #
 #*/#########################################################################
-setMethod("poolRuns", signature=c(object="QDNAseqReadCounts",
+setMethod("poolRuns", signature=c(object="QDNAseqSignals",
   samples="character"), definition=function(object, samples, force=FALSE) {
 
   if (!force && "segmented" %in% assayDataElementNames(object))
@@ -49,17 +49,17 @@ setMethod("poolRuns", signature=c(object="QDNAseqReadCounts",
   oldsamples <- sampleNames(object)
 
   bins <- featureData(object)
-  phenodata <- phenoData(object)
+  phenodata <- pData(object)
   phenodata[, 1] <- samples
   newphenodata <- phenodata[0, ]
-  if (class(object) == "QDNAseqReadCounts") {
+  if (inherits(object, "QDNAseqReadCounts")) {
     counts <- assayDataElement(object, "counts")
-    newcounts <- matrix(NA_integer_, nrow=nrow(counts),
-      ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
-  } else if (class(object) == "QDNAseqCopyNumbers") {
+    newcounts <- matrix(NA_integer_, nrow=nrow(object),
+      ncol=length(newsamples), dimnames=list(featureNames(object), newsamples))
+  } else if (inherits(object, "QDNAseqCopyNumbers")) {
     copynumber <- assayDataElement(object, "copynumber")
-    newcopynumber <- matrix(NA_real_, nrow=nrow(counts),
-      ncol=length(newsamples), dimnames=list(rownames(counts), newsamples))
+    newcopynumber <- matrix(NA_real_, nrow=nrow(object),
+      ncol=length(newsamples), dimnames=list(featureNames(object), newsamples))
   }
   
   concatenateIfNotEqual <- function(x) {
@@ -69,9 +69,9 @@ setMethod("poolRuns", signature=c(object="QDNAseqReadCounts",
 
   for (newsample in newsamples) {
     replicates <- samples == newsample
-    if (class(object) == "QDNAseqReadCounts") {
+    if (inherits(object, "QDNAseqReadCounts")) {
       newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
-    } else if (class(object) == "QDNAseqCopyNumbers") {
+    } else if (inherits(object, "QDNAseqCopyNumbers")) {
       newcopynumber[, newsample] <- rowMeans(copynumber[, replicates,
         drop=FALSE])
     }
@@ -86,11 +86,14 @@ setMethod("poolRuns", signature=c(object="QDNAseqReadCounts",
     newphenodata <- rbind(newphenodata, oldphenodata[1,])
   }
   rownames(newphenodata) <- newphenodata[, 1]
+  newphenodata <- AnnotatedDataFrame(newphenodata,
+    varMetadata=varMetadata(object))
 
-  if (class(object) == "QDNAseqReadCounts") {
+  if (inherits(object, "QDNAseqReadCounts")) {
+    storage.mode(newcounts) <- "integer"
     object2 <- new("QDNAseqReadCounts", bins=bins, counts=newcounts,
       phenodata=newphenodata)
-  } else if (class(object) == "QDNAseqCopyNumbers") {
+  } else if (inherits(object, "QDNAseqCopyNumbers")) {
     object2 <- new("QDNAseqCopyNumbers", bins=bins, copynumber=newcopynumber,
       phenodata=newphenodata)
   }
