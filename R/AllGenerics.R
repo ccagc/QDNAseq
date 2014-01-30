@@ -25,7 +25,7 @@ setGeneric("noisePlot", function(x, y, ...)
 setGeneric("normalizeBins", function(object, method="median", force=FALSE)
   standardGeneric("normalizeBins"))
 setGeneric("normalizeSegmentedBins", function(object, inter=c(-0.1, 0.1),
-  force=FALSE, ...) standardGeneric("normalizeSegmentedBins"))
+  force=FALSE) standardGeneric("normalizeSegmentedBins"))
 setGeneric("poolRuns", function(object, samples, force=FALSE)
   standardGeneric("poolRuns"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,

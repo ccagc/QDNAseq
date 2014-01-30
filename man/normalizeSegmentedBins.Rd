@@ -15,7 +15,7 @@
 \title{Normalize segmented bins}
 
 \usage{
-normalizeSegmentedBins(object, inter=c(-0.1, 0.1), force=FALSE, ...)
+normalizeSegmentedBins(object, inter=c(-0.1, 0.1), force=FALSE)
 }
 
 \description{

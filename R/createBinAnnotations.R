@@ -166,7 +166,7 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
   vmsg("Iteration #1 with ", format(previous, big.mark=","),
     " bins.")
   object <- estimateCorrection(object, ...)
-  counts <- assayDataElement(object, "counts") /
+  counts <- assayDataElement(object, "counts")
   fit <- assayDataElement(object, "fit")
   residuals <- counts / fit - 1
   residuals[fit <= 0] <- 0
@@ -183,7 +183,7 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
     vmsg("Iteration #", iter, " with ", format(previous, big.mark=","),
       " bins.")
     object <- estimateCorrection(object, ...)
-    counts <- assayDataElement(object, "counts") /
+    counts <- assayDataElement(object, "counts")
     fit <- assayDataElement(object, "fit")
     residuals <- counts / fit - 1
     residuals[fit <= 0] <- 0
