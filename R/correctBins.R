@@ -67,7 +67,7 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
     }
   } else {
     corrected <- counts / fit
-    corrected[fit < 0] <- 0
+    corrected[fit <= 0] <- 0
   }
   new("QDNAseqCopyNumbers", bins=featureData(object), copynumber=corrected,
     phenodata=phenoData(object))
