@@ -82,6 +82,11 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
       d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
     })
   }
+  if (0 %in% values) {
+    vmsg("These samples cannot be normalized (", method, "=0):\n",
+      paste(sampleNames(object)[values == 0], collapse=", "))
+    values[values == 0] <- 1
+  }
   copynumber <- scale(copynumber, center=FALSE, scale=values)
 
   # Expand to full set of bins
