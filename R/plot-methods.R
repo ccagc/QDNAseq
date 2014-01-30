@@ -30,7 +30,7 @@
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   function (x, y, main=NULL, includeReadCounts=TRUE,
-  logTransform=TRUE,
+  logTransform=TRUE, sdFUN=sdDiff,
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
@@ -73,6 +73,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         ylim <- range(copynumber)
       }
   }
+  sdFUN <- match.fun(sdFUN)
+  noise <- apply(scale(copynumber, center=FALSE,
+    scale=apply(copynumber, 2, mean, na.rm=TRUE)), 2, sdFUN, na.rm=TRUE)
   if (logTransform)
     copynumber <- log2adhoc(copynumber)
   if (is.null(main))
@@ -192,10 +195,15 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
       points(pos, dels, pch=25, col=segcol, bg=segcol, cex=0.5)
     }
     par(xpd=FALSE)
-    ### MAD
-    mtext(substitute(hat(sigma)[Delta]==sd, list(sd=sprintf("%.3g",
-      madDiff(cn, na.rm=TRUE)))), side=3, line=0,
-      adj=1, cex=par("cex"))
+    ### estimate for standard deviation
+    if ("generic" %in% slotNames(sdFUN) &&
+      length(grep("Diff$", sdFUN@generic)) == 1) {
+      symbol <- quote(hat(sigma)[Delta])
+    } else {
+      symbol <- substitute(hat(sigma))
+    }
+    mtext(substitute(symbol==sd, list(symbol=symbol, sd=sprintf("%.3g",
+      noise[i]))), side=3, line=0, adj=1, cex=par("cex"))
     ### number of data points
     str <- paste(round(sum(condition) / 1000), "k x ", sep="")
     probe <- median(bpend(x)-bpstart(x)+1)

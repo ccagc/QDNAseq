@@ -59,6 +59,9 @@ export("chromosomes")
 export("bpstart")
 export("bpend")
 
+export("madDiff")
+export("sdDiff")
+
 exportClasses("QDNAseqCopyNumbers")
 exportClasses("QDNAseqReadCounts")
 
