@@ -7,7 +7,7 @@ print(data)
 stopifnot(inherits(data, "QDNAseqReadCounts"))
 
 # Plot isobars of read counts
-readCountPlot(data)
+isobarPlot(data)
 
 # Plot copy number profile
 plot(data, ylim=c(-100, 200))

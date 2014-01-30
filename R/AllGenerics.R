@@ -16,6 +16,8 @@ setGeneric("highlightFilters", function(object, col="red", residual=NA,
   blacklist=NA, mappability=NA, bases=NA, type="union",
   logTransform=TRUE, ...)
   standardGeneric("highlightFilters"))
+setGeneric("isobarPlot", function(x, y, ...)
+  standardGeneric("isobarPlot"))
 setGeneric("makeCgh", function(object, filter=TRUE, ...)
   standardGeneric("makeCgh"))
 setGeneric("noisePlot", function(x, y, ...)
@@ -26,8 +28,6 @@ setGeneric("normalizeSegmentedBins", function(object, inter=c(-0.1, 0.1),
   force=FALSE, ...) standardGeneric("normalizeSegmentedBins"))
 setGeneric("poolRuns", function(object, samples, force=FALSE)
   standardGeneric("poolRuns"))
-setGeneric("readCountPlot", function(x, y, ...)
-  standardGeneric("readCountPlot"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
   alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
   force=FALSE, ...) standardGeneric("segmentBins"))

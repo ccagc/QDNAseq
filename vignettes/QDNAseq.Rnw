@@ -68,7 +68,7 @@ Apply filters and plot median read counts as a function of GC content and mappab
 
 <<label=readcounts,include=FALSE>>=
 LGG150 <- applyFilters(LGG150, residual=TRUE, blacklist=TRUE)
-readCountPlot(LGG150)
+isobarPlot(LGG150)
 @
 
 \begin{figure}

@@ -303,9 +303,9 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 
 
 #########################################################################/**
-# @RdocFunction readCountPlot
+# @RdocFunction isobarPlot
 #
-# @alias readCountPlot,QDNAseqReadCounts,missing-method
+# @alias isobarPlot,QDNAseqReadCounts,missing-method
 #
 # @title "Plot median read counts as a function of GC content and mappability"
 #
@@ -332,41 +332,53 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 # }
 #
 #*/#########################################################################
-setMethod("readCountPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
-  definition=function(x, y, main=NULL, adjustIncompletes=TRUE, loessFit=FALSE,
+setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
+  definition=function(x, y, main=NULL,
+  what=c("read counts", "fit", "residuals"), adjustIncompletes=TRUE,
   ...) {
-  if (is.null(main))
-    main <- paste(sampleNames(x), "median read counts")
-  if (loessFit) {
-    counts <- assayDataElement(x, "loess")
-  } else {
+  what <- match.arg(what)
+  if (what == "read counts") {
+    signal <- assayDataElement(x, "counts")
+    if (adjustIncompletes) {
+      signal <- signal / fData(x)$bases * 100L
+      signal[fData(x)$bases == 0] <- 0L
+    }
+    if (is.null(main))
+      main <- paste(sampleNames(x), "median read counts")
+  } else if (what == "fit") {
+    signal <- assayDataElement(x, "fit")
+    if (is.null(main))
+      main <- paste(sampleNames(x), "loess fit")
+  } else if (what == "residuals") {
     counts <- assayDataElement(x, "counts")
     if (adjustIncompletes) {
       counts <- counts / fData(x)$bases * 100L
       counts[fData(x)$bases == 0] <- 0L
     }
+    fit <- assayDataElement(x, "fit")
+    signal <- counts / fit
+    signal[fit <= 0] <- 0
+    if (is.null(main))
+      main <- paste(sampleNames(x), "median loess residuals")
   }
   condition <- binsToUse(x)
   gc <- round(fData(x)$gc)
   mappability <- round(fData(x)$mappability)
-  median.counts <- aggregate(counts[condition, ], by=list(gc=gc[condition],
+  median.signal <- aggregate(signal[condition, ], by=list(gc=gc[condition],
     mappability=mappability[condition]), FUN=median)
-  median.counts <- median.counts[!is.na(median.counts$gc), ]
-  median.counts <- median.counts[!is.na(median.counts$mappability), ]
-  rownames(median.counts) <- paste(median.counts$gc, "-",
-    median.counts$mappability, sep="")
-  xx <- min(median.counts$mappability):max(median.counts$mappability)
-  yy <- min(median.counts$gc):max(median.counts$gc)
+  median.signal <- median.signal[!is.na(median.signal$gc), ]
+  median.signal <- median.signal[!is.na(median.signal$mappability), ]
+  rownames(median.signal) <- paste(median.signal$gc, "-",
+    median.signal$mappability, sep="")
+  xx <- min(median.signal$mappability):max(median.signal$mappability)
+  yy <- min(median.signal$gc):max(median.signal$gc)
   m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
 
-  for (i in seq_len(ncol(counts))) {
+  for (i in seq_len(ncol(x))) {
     vmsg("Plotting sample ", main[i])
-    for (j in 1:nrow(median.counts))
-      m[as.character(median.counts[j, "mappability"]),
-        as.character(median.counts[j, "gc"])] <- median.counts[j, i+2L]
-      ## For the loess fit, the line above would be " <- fit[j]"
-      ## For residuals, the line above would be " <- l$residuals[j]"
-      ## Both naturally also require the actual loess fitting.
+    for (j in 1:nrow(median.signal))
+      m[as.character(median.signal[j, "mappability"]),
+        as.character(median.signal[j, "gc"])] <- median.signal[j, i+2L]
     image(xx, yy, m, col=paste("#", c(sprintf("%02X", 0L:255L),
       rep("FF", 256L)), c(rep("FF", 256L), sprintf("%02X", 255L:0L)),
       sprintf("%02X", 255L), sep=""),
@@ -390,8 +402,6 @@ setMethod("readCountPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     } else {
       str <- paste(str, round(probe / 1000), " kbp", sep="")
     }
-    # str <- paste(str, ", ", format(nrow(median.counts), big.mark=","),
-    #   " combinations of GC content and mappability", sep="")
     mtext(str, side=3, line=0, adj=0, cex=par("cex"))
 
     reads <- sum(assayDataElement(x, "counts")[condition, i], na.rm=TRUE)
@@ -439,7 +449,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     fit <- assayDataElement(x, "fit")[condition, , drop=FALSE]
   }
   signal <- counts / fit
-  signal[fit < 0] <- 0
+  signal[fit <= 0] <- 0
   signal <- scale(signal, center=FALSE,
     scale=apply(signal, 2, mean, na.rm=TRUE))
   noise <- apply(signal, 2, sdDiff, na.rm=TRUE)
