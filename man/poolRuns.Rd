@@ -10,7 +10,7 @@
 \alias{poolRuns}
 
 
-\alias{poolRuns,QDNAseqReadCounts,character-method}
+\alias{poolRuns,QDNAseqSignals,character-method}
 
 \title{Pools binned read counts across samples}
 
