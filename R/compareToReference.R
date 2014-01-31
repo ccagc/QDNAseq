@@ -14,7 +14,6 @@
 # \arguments{
 #   \item{object}{...}
 #   \item{references}{...}
-#   \item{offset}{...}
 #   \item{force}{...}
 # }
 #
@@ -30,8 +29,7 @@
 #
 #*/#########################################################################
 setMethod("compareToReference", signature=c(object="QDNAseqCopyNumbers",
-  references="numeric"), definition=function(object, references,
-  offset=.Machine$double.xmin, force=FALSE) {
+  references="numeric"), definition=function(object, references, force=FALSE) {
 
   if (!force && "segmented" %in% assayDataElementNames(object))
     stop("Data has already been segmented. Comparing to reference will ",
@@ -55,10 +53,11 @@ setMethod("compareToReference", signature=c(object="QDNAseqCopyNumbers",
       "are samples in object.")
   for (i in seq_along(references)) {
     if (!is.na(references[i]) && references[i] != FALSE) {
-      assayDataElement(object, "copynumber")[, i] <-
-        (assayDataElement(object, "copynumber")[, i] + offset) /
-        (assayDataElement(object, "copynumber")[, references[i]] + offset) -
-        offset
+      test <- assayDataElement(object, "copynumber")[, i]
+      reference <- assayDataElement(object, "copynumber")[, references[i]]
+      ratio <- test / reference
+      ratio[reference == 0] <- 0
+      assayDataElement(object, "copynumber")[, i] <- ratio
       sampleNames(object)[i] <- paste(sampleNames(object)[i], " vs. ",
         sampleNames(object)[references[i]], sep="")
     }

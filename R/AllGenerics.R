@@ -3,8 +3,7 @@ setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
   standardGeneric("applyFilters"))
 setGeneric("callBins", function(object, ...)
   standardGeneric("callBins"))
-setGeneric("compareToReference", function(object, references, offset=2^-10,
-  force=FALSE)
+setGeneric("compareToReference", function(object, references, force=FALSE)
   standardGeneric("compareToReference"))
 setGeneric("correctBins", function(object, fit=NULL,
   type="ratio", adjustIncompletes=TRUE, ...)
