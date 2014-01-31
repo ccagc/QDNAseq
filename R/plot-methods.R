@@ -73,11 +73,6 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         ylim <- range(copynumber)
       }
   }
-  sdFUN <- match.fun(sdFUN)
-  noise <- apply(scale(copynumber, center=FALSE,
-    scale=apply(copynumber, 2, mean, na.rm=TRUE)), 2, sdFUN, na.rm=TRUE)
-  if (logTransform)
-    copynumber <- log2adhoc(copynumber)
   if (is.null(main))
     main <- sampleNames(x)
   if (includeReadCounts && "reads" %in% names(pData(x)))
@@ -86,7 +81,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   if (length(ylab) == 1)
     ylab <- rep(ylab, times=ncol(x))
   all.chrom <- chromosomes(x)
-  if (class(x) %in% c("cghRaw", "cghSeg", "cghCall")) {
+  if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
+    copynumber <- unlog2adhoc(copynumber)
     chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
   } else {
     all.chrom.lengths <- aggregate(bpend(x),
@@ -108,6 +104,11 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     chrom.ends <- c(chrom.ends, cumul)
   }
   names(chrom.ends) <- names(chrom.lengths)
+  sdFUN <- match.fun(sdFUN)
+  noise <- apply(scale(copynumber, center=FALSE,
+    scale=apply(copynumber, 2, mean, na.rm=TRUE)), 2, sdFUN, na.rm=TRUE)
+  if (logTransform)
+    copynumber <- log2adhoc(copynumber)
   for (i in seq_len(ncol(x))) {
     vmsg("Plotting sample ", main[i])
     cn <- copynumber[, i]
