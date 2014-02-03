@@ -11,7 +11,22 @@
 #   An object of this class contains the following elements:
 #   \describe{
 #     \item{\code{copynumber}}{(@numeric) Corrected
-#       "count" signals in \eqn{[0,+\infty)}}.
+#       "count" signals in \eqn{[0,+\infty)} An object with only this field is
+#       created by @see "correctBins".}
+#     \item{\code{segmented}}{(@numeric; optional) Segmented data in
+#       \eqn{[0,+\infty)}, added by calling @see "segmentBins".}
+#     \item{\code{calls}}{(@integer; optional) Calls as -2=deletion, -1=loss,
+#       0=normal, 1=gain, 2=amplification, added by calling @see "callBins".}
+#     \item{\code{probdloss}}{(@numeric; optional) Probabilities of deletions in
+#       \eqn{[0,1]}, added by calling @see "callBins".}
+#     \item{\code{probloss}}{(@numeric; optional) Probabilities of losses in
+#       \eqn{[0,1]}, added by calling @see "callBins".}
+#     \item{\code{probnorm}}{(@numeric; optional) Probabilities of normal copy
+#       number in \eqn{[0,1]}, added by calling @see "callBins".}
+#     \item{\code{probgain}}{(@numeric; optional) Probabilities of gains in
+#       \eqn{[0,1]}, added by calling @see "callBins".}
+#     \item{\code{probamp}}{(@numeric; optional) Probabilities of amplifications
+#       in \eqn{[0,1]}, added by calling @see "callBins".}
 #   }
 # }
 #

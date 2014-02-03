@@ -21,12 +21,14 @@
 \section{Assay data elements}{
   An object of this class contains (a subset) the following elements:
   \describe{
-    \item{\code{counts}}{(\code{\link[base]{numeric}}) Binned uncorrected read counts
-      as non-negative integers in \eqn{\{0,1,2,...\}}.
-      An object with only this field is created by \code{\link{binReadCounts}}().}
-    \item{\code{fit}}{(\code{\link[base]{numeric}}; optional) Loess fit of "count" signals
-      as non-negative doubles in \eqn{[0,+\infty)}.
-      This element is added after calling \code{\link{estimateCorrection}}().}
+    \item{\code{counts}}{(\code{\link[base]{numeric}}) Binned read counts as non-negative
+      integers in \eqn{\{0,1,2,...\}}. An object with only this field is
+      created by \code{\link{binReadCounts}}().}
+    \item{\code{fit}}{(\code{\link[base]{numeric}}; optional) Loess fit of "count" signals as
+      doubles. Normally, these should all be positive values, but a small
+      number of edge case bins might contain negatives, especially when
+      fitting unfiltered data. This element is added after calling \code{\link[NA]{NA}}
+      "estimateCorrection".}
   }
 }
 

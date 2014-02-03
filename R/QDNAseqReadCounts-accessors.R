@@ -10,12 +10,14 @@
 # \section{Assay data elements}{
 #   An object of this class contains (a subset) the following elements:
 #   \describe{
-#     \item{\code{counts}}{(@numeric) Binned uncorrected read counts
-#       as non-negative integers in \eqn{\{0,1,2,...\}}.
-#       An object with only this field is created by @see "binReadCounts".}
-#     \item{\code{fit}}{(@numeric; optional) Loess fit of "count" signals
-#       as non-negative doubles in \eqn{[0,+\infty)}.
-#       This element is added after calling @see "estimateCorrection".}
+#     \item{\code{counts}}{(@numeric) Binned read counts as non-negative
+#       integers in \eqn{\{0,1,2,...\}}. An object with only this field is
+#       created by @see "binReadCounts".}
+#     \item{\code{fit}}{(@numeric; optional) Loess fit of "count" signals as
+#       doubles. Normally, these should all be positive values, but a small
+#       number of edge case bins might contain negatives, especially when
+#       fitting unfiltered data. This element is added after calling @see
+#       "estimateCorrection".}
 #   }
 # }
 #
