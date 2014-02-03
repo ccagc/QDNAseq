@@ -8,15 +8,13 @@
 \author{Ilari Scheinin}
 \maketitle
 
-\tableofcontents
-
 \section{Running QDNAseq}
 
 This is a short tutorial on how to use the QDNseq package. It covers an example
 run using the included data set of chromosome 9 of a low grade glioma (LGG) s
 ample. First step is naturally to load the package.
 
-<<reg>>=
+<<>>=
 library(QDNAseq)
 @
 
@@ -24,7 +22,7 @@ Then we need to obtain bin annotations. These are available pre-calculated for
 genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp.
 They can be downloaded for example with:
 
-<<reg, eval=FALSE>>=
+<<eval=FALSE>>=
 bins <- downloadBinAnnotations(binSize=15)
 @
 
@@ -33,7 +31,7 @@ section on generating the bin annotations.
 
 Next step is to load the sequencing data from bam files. This can be done for example with one of the commands below.
 
-<<reg, echo=TRUE, eval=FALSE>>=
+<<eval=FALSE>>=
 readCounts <- binReadCounts(bins)
 # all files ending in .bam from the current working directory
 
@@ -52,78 +50,76 @@ This will return an object of class QDNAseqReadCounts. For the purpose of this
 tutorial, we load the example data set of chromosome 9 of low grade glioma
 sample LGG150.
 
-<<reg>>=
+<<>>=
 data(LGG150)
 readCounts <- LGG150
 readCounts
 @
 
-Plot a raw copy number profile (read counts across the genome), and highlight bins removed with default filtering.
+Plot a raw copy number profile (read counts across the genome), and highlight bins removed with default filtering (Figure~\ref{fig:rawprofile}).
 
-<<label=rawprofile,include=FALSE>>=
+<<label=rawprofile, eval=FALSE>>=
 plot(readCounts, logTransform=FALSE)
 highlightFilters(readCounts, logTransform=FALSE, residual=TRUE, blacklist=TRUE)
 @
 
 \begin{figure}[h]
-\begin{center}
-<<label=rawprofile,fig=TRUE,echo=FALSE>>=
+	\centering
+<<fig=TRUE, echo=FALSE>>=
 <<rawprofile>>
 @
-\end{center}
-\caption{Read counts per bins. Highlighted with red are bins that will be
-filtered out.}
-\label{fig:rawprofile}
+	\caption{Read counts per bins. Highlighted with red are bins that will be
+		filtered out.}
+	\label{fig:rawprofile}
 \end{figure}
 
 Apply filters and plot median read counts as a function of GC content and
-mappability. As the example data set only contains chromosome 9 and not the
-whole genome, this looks jagged. Normally, a smoother distribution is to be
-expected.
+mappability (Figure~\ref{fig:isobar}). As the example data set only contains
+chromosome 9 and not the whole genome, this looks jagged. Normally, a smoother
+distribution is to be expected.
 
-<<label=readcounts,include=FALSE>>=
+<<label=isobar, eval=FALSE>>=
 readCountsFiltered <- applyFilters(readCounts, residual=TRUE, blacklist=TRUE)
 isobarPlot(readCountsFiltered)
 @
 
 \begin{figure}[h]
-\begin{center}
-<<label=readcounts,fig=TRUE,echo=FALSE>>=
-<<readcounts>>
+	\centering
+<<fig=TRUE, echo=FALSE>>=
+<<isobar>>
 @
-\end{center}
-\caption{Median read counts per bin shown as a function of GC content and
-mappability. As the example data only contains chromosome 9, this looks a lot
-less smooth than a whole-genome plot should.}
-\label{fig:readcounts}
+	\caption{Median read counts per bin shown as a function of GC content and
+		mappability. As the example data only contains chromosome 9, this looks
+		a lot less smooth than a whole-genome plot should.}
+	\label{fig:isobar}
 \end{figure}
 
 Estimate the correction for GC content and mappability, and make a plot for the
 relationship between the observed standard deviation in the data and its read
-depth. The theoretical expectation is a linear relationship, which is shown in
-the plot with a black line. Samples with low-quality DNA will be noisier than
-expected and appear further above the line than good-quality samples.
+depth (Figure~\ref{fig:noise}). The theoretical expectation is a linear
+relationship, which is shown in the plot with a black line. Samples with
+low-quality DNA will be noisier than expected and appear further above the line
+than good-quality samples.
 
-<<label=noise,include=FALSE>>=
+<<label=noise, eval=FALSE>>=
 readCountsFiltered <- estimateCorrection(readCountsFiltered)
 noisePlot(readCountsFiltered)
 @
 
 \begin{figure}[h]
-\begin{center}
-<<label=noise,fig=TRUE,echo=FALSE>>=
+	\centering
+<<fig=TRUE, echo=FALSE>>=
 <<noise>>
 @
-\end{center}
-\caption{The relationship between sequence depth and noise.}
-\label{fig:profile}
+	\caption{The relationship between sequence depth and noise.}
+	\label{fig:noise}
 \end{figure}
 
 Next, we apply the correction for GC content and mappability. This will return
 a QDNAseqCopyNumbers object, which we then normalize, smooth outliers, and plot
 the copy number profile.
 
-<<label=profile,include=FALSE>>=
+<<label=profile, eval=FALSE>>=
 copyNumbers <- correctBins(readCountsFiltered)
 copyNumbersNormalized <- normalizeBins(copyNumbers)
 copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
@@ -131,44 +127,43 @@ plot(copyNumbersSmooth)
 @
 
 \begin{figure}[h]
-\begin{center}
-<<label=profile,fig=TRUE,echo=FALSE>>=
+	\centering
+<<fig=TRUE, echo=FALSE>>=
 <<profile>>
 @
-\end{center}
-\caption{Copy number profile after correcting for GC content and mappability.}
-\label{fig:profile}
+	\caption{Copy number profile after correcting for GC content and mappability.}
 \end{figure}
 
 Data is now ready to be analyzed with a downstream package of choice. Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
 
-<<label=segmentation,include=FALSE>>=
+<<label=segments, eval=FALSE>>=
 copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
 plot(copyNumbersSegmented)
 @
 
 \begin{figure}[h]
-\begin{center}
-<<label=segmentation,fig=TRUE,echo=FALSE>>=
-<<segmentation>>
+	\centering
+<<fig=TRUE, echo=FALSE>>=
+<<segments>>
 @
-\end{center}
-\caption{A plot}
-\label{fig:segmentation}
+	\caption{A plot}
 \end{figure}
 
 Tune segmentation parameters and iterate until satisfied. Next, call aberrations, and plot the final results.
 
-<<reg>>=
-# copyNumbersCalled <- callBins(copyNumbersSegmented)
-# plot(copyNumbersCalled)
+<<eval=FALSE>>=
+copyNumbersCalled <- callBins(copyNumbersSegmented)
+plot(copyNumbersCalled)
 @
 
 Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
 
-<<reg>>=
-# cgh <- makeCgh(copyNumbersCalled)
+<<eval=FALSE>>=
+cgh <- makeCgh(copyNumbersCalled)
 @
+
+This command can also be used to generate cghRaw or cghSeg objects by running
+it before segmentation or calling.
 
 % caching
 
@@ -179,9 +174,11 @@ Finally, for other downstream analyses, such as running CGHregions, it might be 
 % cache/readCounts/100kbp = 32M
 % cache/readCounts/1000kbp = 5.2M
 
+\clearpage
+
 \section{Generating bin annotations}
 
-<<reg, eval=FALSE>>=
+<<eval=FALSE>>=
 # load required packages for human reference genome build hg19
 library(QDNAseq)
 library(Biobase)
@@ -237,6 +234,14 @@ saveRDS(bins, paste('QDNAseq.hg19.', binsize, 'kbp.SR50.rds', sep=''),
 
 % where to download ENCODE
 % how 1000 genomes were downloaded
+
+\section{Session Information}
+
+The version number of R and packages loaded for generating the vignette were:
+
+<<echo=FALSE>>=
+sessionInfo()
+@
 
 \end{document}
 

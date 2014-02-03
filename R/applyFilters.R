@@ -3,7 +3,7 @@
 #
 # @alias applyFilters,QDNAseqReadCounts-method
 #
-# @title "Adjusts the filter on which bins are used"
+# @title "Adjusts the filtering on which bins are used"
 #
 # @synopsis
 #
@@ -12,46 +12,37 @@
 # }
 #
 # \arguments{
-#   \item{object}{A QDNAseqReadCounts object ...}
-#   \item{residual}{...}
-#   \item{blacklist}{...}
-#   \item{mappability}{...}
-#   \item{bases}{...}
-#   \item{filterAllosomes}{...}
-#   \item{force}{...}
+#   \item{object}{A @see "QDNAseqReadCounts" object.}
+#   \item{residual}{Either a @logical specifying whether to filter based on
+#     loess residuals of the calibration set, or if a @numeric, the cutoff as
+#     number of standard deviations estimated with @see "matrixStats::madDiff"
+#     to use for. Default is @TRUE, which corresponds to 4.0 standard
+#     deviations.}
+#   \item{blacklist}{Either a @logical specifying whether to filter based on
+#     overlap with blacklisted regions, or if numeric, the maximum percentage of
+#     overlap allowed. Default is @TRUE, which corresponds to no overlap allowd
+#     (i.e. value of 0).}
+#   \item{mappability}{A @numeric in \eqn{[0,100]} to specify filtering out bins
+#     with mappabilities lower than the number specified. NA (default) or
+#     @FALSE will not filter based on mappability.}
+#   \item{bases}{A @numeric specifying the minimum percentage of characterized
+#     bases (not Ns) in the reference genome sequence. NA (default) or
+#     @FALSE will not filted based on uncharacterized bases.}
+#   \item{filterAllosomes}{A @logical specifying whether to filter out the sex
+#     chromosomes. Default is @TRUE.}
 # }
 #
 # \value{
-#   Returns a named @list with element 'phenodata' ...
+#   Returns a @see "QDNAseqReadCounts" object with updated filtering.
 # }
 #
 # @author "IS"
-#
-# \seealso{
-#   ...
-# }
 #
 # @keyword IO
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
-  bases=NA, filterAllosomes=TRUE, force=FALSE) {
-  if (!force && 'segmented' %in% assayDataElementNames(object))
-    stop('Data has already been segmented. Re-filtering will ',
-      'remove segmentation (and possible calling) results. Please specify ',
-      'force=TRUE, if you want this.')
-  if ('segmented' %in% assayDataElementNames(object))
-    assayDataElement(object, 'segmented') <- NULL
-  if ('calls' %in% assayDataElementNames(object)) {
-    assayDataElement(object, 'calls') <- NULL
-    assayDataElement(object, 'probloss') <- NULL
-    assayDataElement(object, 'probnorm') <- NULL
-    assayDataElement(object, 'probgain') <- NULL
-    if ('probdloss' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probdloss') <- NULL
-    if ('probamp' %in% assayDataElementNames(object))
-      assayDataElement(object, 'probamp') <- NULL
-  }
+  bases=NA, filterAllosomes=TRUE) {
 
   condition <- rep(TRUE, times=nrow(object))
   msg <- c('total bins'=sum(condition))

@@ -27,8 +27,8 @@
     \item{\code{fit}}{(\code{\link[base]{numeric}}; optional) Loess fit of "count" signals as
       doubles. Normally, these should all be positive values, but a small
       number of edge case bins might contain negatives, especially when
-      fitting unfiltered data. This element is added after calling \code{\link[NA]{NA}}
-      "estimateCorrection".}
+      fitting unfiltered data. This element is added after calling
+      \code{\link{estimateCorrection}}().}
   }
 }
 

@@ -1,5 +1,5 @@
 setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
-  mappability=NA, bases=NA, filterAllosomes=TRUE, force=FALSE)
+  mappability=NA, bases=NA, filterAllosomes=TRUE)
   standardGeneric("applyFilters"))
 setGeneric("callBins", function(object, ...)
   standardGeneric("callBins"))

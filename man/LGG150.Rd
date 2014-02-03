@@ -15,7 +15,7 @@
 
  \description{
    An example data set of read counts from chromosome 9 of sample LGG150,
-   contained within a QDDNAseqReadCounts object.
+   contained within a \code{\link{QDNAseqReadCounts}} object.
  }
 
  \author{Ilari Scheinin}

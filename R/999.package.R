@@ -7,7 +7,8 @@
 #
 # \section{Details}{
 #   A package to detect chromosomal aberrations from whole-genome sequencing
-#   data. QDNAseqReadCounts class is used as the main data structure.
+#   data. @see "QDNAseqReadCounts" and @see "QDNAseqCopyNumbers" classes are
+#   used as the main data structures.
 # }
 #
 # \section{How to cite this package}{
