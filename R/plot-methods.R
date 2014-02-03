@@ -34,7 +34,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
-  if (class(x) %in% c("QDNAseqCopyNumbers", "QDNAseqReadCounts")) {
+  if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
     condition <- binsToUse(x)
   } else {
     condition <- rep(TRUE, times=nrow(x))
