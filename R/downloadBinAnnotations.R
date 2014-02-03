@@ -54,4 +54,22 @@ downloadBinAnnotations <- function(binSize, genome='hg19', type='SR50',
   bins
 }
 
+setMethod("show", signature=c(object="AnnotatedDataFrame"), definition=function(object) {
+  if (!is.null(attr(object, "QDNAseqVersion"))) {
+    cat("QDNAseq bin annotations\n")
+    cat("WARNING: These bin annotations are outdated, please re-download",
+    " from URL:\n", "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/",
+    "QDNAseq.hg19.", round((object$end[1] - object$start[1] + 1) / 1000),
+    "kbp.SR50.rds\n", sep="")
+    } else if (!is.null(attr(object, "QDNAseq"))) {
+      info <- attr(object, "QDNAseq")
+    cat("QDNAseq bin annotations for ", info$organism,
+      ", build ", info$build, ".\n", sep="")
+    cat("Created by ", info$author,
+      " with QDNAseq ", as.character(info$version),
+      ", ", info$date, ".\n", sep="")
+  }
+  Biobase:::.showAnnotatedDataFrame((object))
+})
+
 # EOF
