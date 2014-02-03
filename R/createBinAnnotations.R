@@ -169,7 +169,7 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
   counts <- assayDataElement(object, "counts")
   fit <- assayDataElement(object, "fit")
   residuals <- counts / fit - 1
-  residuals[fit <= 0] <- 0
+  residuals[fit == 0] <- NA
   residuals[!binsToUse(object), ] <- NA
   residual <- apply(residuals, 1, median, na.rm=TRUE)
   cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
@@ -186,7 +186,7 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
     counts <- assayDataElement(object, "counts")
     fit <- assayDataElement(object, "fit")
     residuals <- counts / fit - 1
-    residuals[fit <= 0] <- 0
+    residuals[fit == 0] <- NA
     residuals[!binsToUse(object), ] <- NA
     residual <- apply(residuals, 1, median, na.rm=TRUE)
     binsToUse(object) <- binsToUse(object) & !is.na(residual) &
