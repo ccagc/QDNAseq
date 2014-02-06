@@ -61,13 +61,18 @@ setMethod("show", signature=c(object="AnnotatedDataFrame"), definition=function(
     " from URL:\n", "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/",
     "QDNAseq.hg19.", round((object$end[1] - object$start[1] + 1) / 1000),
     "kbp.SR50.rds\n", sep="")
-    } else if (!is.null(attr(object, "QDNAseq"))) {
-      info <- attr(object, "QDNAseq")
+  } else if (!is.null(attr(object, "QDNAseq"))) {
+    info <- attr(object, "QDNAseq")
     cat("QDNAseq bin annotations for ", info$organism,
       ", build ", info$build, ".\n", sep="")
     cat("Created by ", info$author,
       " with QDNAseq ", as.character(info$version),
-      ", ", info$date, ".\n", sep="")
+      ", ", as.character(info$date), ".\n", sep="")
+    if (info$version < "0.7.5")
+      cat("WARNING: These bin annotations are outdated, please re-download",
+      " from URL:\n", "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/",
+      "QDNAseq.hg19.", round((object$end[1] - object$start[1] + 1) / 1000),
+      "kbp.SR50.rds\n", sep="")
   }
   Biobase:::.showAnnotatedDataFrame((object))
 })
