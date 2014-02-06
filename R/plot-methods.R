@@ -446,11 +446,16 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
 #
 #*/#########################################################################
 setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
-  definition=function(x, y, main="Noise Plot", fit=NULL, ...) {
+  definition=function(x, y, main="Noise Plot", adjustIncompletes=TRUE,
+  fit=NULL, ...) {
   condition <- binsToUse(x)
   totalReads <- x$reads
   counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
   usedReads <- apply(counts, 2, sum)
+  if (adjustIncompletes) {
+    counts <- counts / fData(x)$bases[condition] * 100L
+    counts[fData(x)$bases[condition] == 0] <- 0L
+  }
   reciprocalOfAverageUsedReadsPerBin <- 1/(usedReads/sum(condition))
   if (is.null(fit)) {
     if (! "fit" %in% assayDataElementNames(x))
