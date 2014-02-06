@@ -1,6 +1,16 @@
 Package: QDNAseq
 ================
 
+Version: 0.7.5 [2014-02-06]
+o Introduced smoothOutlierBins() and normalizeSegmentedBins() as separate
+  functions instead of them being parts of normalizeBins() and segmentBins().
+o Renamed readCountPlot() to isobarPlot() and added an option to plot loess
+  fits and residuals in addition to median read counts.
+o Standard deviation in the top-right corner of profile plots is now calculated
+  without taking a log2-tranformation.
+o DOCUMENTATION: Updates to the manual pages and vignette.
+
+
 Version: 0.7.0 [2014-01-28]
 o QDNAseqCopyNumbers now stores all signals on the original non-log scale.
 o Now using classes QDNAseqReadCounts and QDNAseqCopyNumbers which both
