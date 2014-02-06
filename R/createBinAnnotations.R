@@ -160,16 +160,21 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
   blacklist
 }
 
-iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
+iterateResiduals <- function(object, adjustIncompletes=TRUE,
+  cutoff=4.0, maxIter=30, ...) {
   first <- sum(binsToUse(object))
   previous <- first
   vmsg("Iteration #1 with ", format(previous, big.mark=","),
     " bins.")
   object <- estimateCorrection(object, ...)
   counts <- assayDataElement(object, "counts")
+  if (adjustIncompletes) {
+    counts <- counts / fData(object)$bases * 100L
+    counts[fData(object)$bases == 0] <- 0L
+  }
   fit <- assayDataElement(object, "fit")
   residuals <- counts / fit - 1
-  residuals[fit == 0] <- NA
+  # residuals[fit == 0] <- NA
   residuals[!binsToUse(object), ] <- NA
   residual <- apply(residuals, 1, median, na.rm=TRUE)
   cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
@@ -183,10 +188,9 @@ iterateResiduals <- function(object, cutoff=4.0, maxIter=30, ...) {
     vmsg("Iteration #", iter, " with ", format(previous, big.mark=","),
       " bins.")
     object <- estimateCorrection(object, ...)
-    counts <- assayDataElement(object, "counts")
     fit <- assayDataElement(object, "fit")
     residuals <- counts / fit - 1
-    residuals[fit == 0] <- NA
+    # residuals[fit == 0] <- NA
     residuals[!binsToUse(object), ] <- NA
     residual <- apply(residuals, 1, median, na.rm=TRUE)
     binsToUse(object) <- binsToUse(object) & !is.na(residual) &
