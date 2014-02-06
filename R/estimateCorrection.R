@@ -61,10 +61,10 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
   mappability <- round(fData(object)$mappability)
   condition <- condition & !is.na(gc) & !is.na(mappability)
   # to interpolate
-  # all.combinations <- expand.grid(gc=unique(gc[!is.na(gc)]),
-  #   mappability=unique(mappability[!is.na(mappability)]))
-  # rownames(all.combinations) <- paste0(all.combinations$gc, "-",
-  #   all.combinations$mappability)
+  all.combinations <- expand.grid(gc=unique(gc[!is.na(gc)]),
+    mappability=unique(mappability[!is.na(mappability)]))
+  rownames(all.combinations) <- paste0(all.combinations$gc, "-",
+    all.combinations$mappability)
   for (i in seq_len(ncol(counts))) {
     if (is.na(span[i]) && is.na(family[i])) {
       vmsg("  Skipping sample ", sampleNames(object)[i], "...")
@@ -82,10 +82,10 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         median.counts$mappability)
       l <- loess(x ~ gc * mappability,
         data=median.counts, span=span[i], family=family[i], ...)
-      fit <- l$fitted
-      names(fit) <- rownames(median.counts)
-      # fit <- as.vector(predict(l, all.combinations))
-      # names(fit) <- rownames(all.combinations)
+      # fit <- l$fitted
+      # names(fit) <- rownames(median.counts)
+      fit <- as.vector(predict(l, all.combinations))
+      names(fit) <- rownames(all.combinations)
       residual <- corvals / fit[paste0(gc, "-", mappability)] - 1
       cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
       prevGoodBins <- condition
@@ -100,10 +100,10 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
           median.counts2$mappability)
         l2 <- loess(x ~ gc * mappability,
           data=median.counts2, span=span[i], family=family[i], ...)
-        fit2 <- l$fitted
-        names(fit2) <- rownames(median.counts)
-        # fit2 <- as.vector(predict(l2, all.combinations))
-        # names(fit2) <- rownames(all.combinations)
+        # fit2 <- l$fitted
+        # names(fit2) <- rownames(median.counts)
+        fit2 <- as.vector(predict(l2, all.combinations))
+        names(fit2) <- rownames(all.combinations)
         fit[!is.na(fit2)] <- fit2[!is.na(fit2)]
         residual <- corvals / fit[paste0(gc, "-", mappability)] - 1
         prevGoodBins <- goodBins
