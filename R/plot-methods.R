@@ -30,7 +30,7 @@
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   function (x, y, main=NULL, includeReadCounts=TRUE,
-  logTransform=TRUE, sdFUN=sdDiff,
+  logTransform=TRUE, sdFUN=sdDiffTrim,
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
@@ -447,7 +447,8 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
 #*/#########################################################################
 setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   definition=function(x, y, main="Noise Plot", adjustIncompletes=TRUE,
-  fit=NULL, ...) {
+  fit=NULL, sdFUN=sdDiffTrim, ...) {
+  sdFUN <- match.fun(sdFUN)
   condition <- binsToUse(x)
   totalReads <- x$reads
   counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
@@ -466,7 +467,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   signal[fit <= 0] <- 0
   signal <- scale(signal, center=FALSE,
     scale=apply(signal, 2, mean, na.rm=TRUE))
-  noise <- apply(signal, 2, sdDiff, na.rm=TRUE)
+  noise <- apply(signal, 2, sdFUN, na.rm=TRUE)
   plot(reciprocalOfAverageUsedReadsPerBin, noise^2, main=main, cex=0.5,
     xlim=c(0, 1.1*max(reciprocalOfAverageUsedReadsPerBin)),
     ylim=c(0, 1.04*max(noise^2)),
