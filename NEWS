@@ -1,6 +1,11 @@
 Package: QDNAseq
 ================
 
+Version: 0.7.6 [2014-02-20]
+o Added a new function for calculating standard deviations using a trimmed
+  (default 0.1%) first-order estimator.
+
+
 Version: 0.7.5 [2014-02-06]
 o Introduced smoothOutlierBins() and normalizeSegmentedBins() as separate
   functions instead of them being parts of normalizeBins() and segmentBins().
