@@ -6,7 +6,7 @@ setGeneric("callBins", function(object, ...)
 setGeneric("compareToReference", function(object, references, force=FALSE)
   standardGeneric("compareToReference"))
 setGeneric("correctBins", function(object, fit=NULL,
-  type="ratio", adjustIncompletes=TRUE, ...)
+  method="ratio", adjustIncompletes=TRUE, ...)
   standardGeneric("correctBins"))
 setGeneric("estimateCorrection", function(object, span=0.65, family="symmetric",
   adjustIncompletes=TRUE, maxIter=1, cutoff=4.0, ...)

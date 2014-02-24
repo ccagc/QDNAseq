@@ -15,7 +15,7 @@
 \title{Correct binned read counts for GC content and mappability}
 
 \usage{
-correctBins(object, fit=NULL, type="ratio", adjustIncompletes=TRUE, ...)
+correctBins(object, fit=NULL, method="ratio", adjustIncompletes=TRUE, ...)
 }
 
 \description{
@@ -25,7 +25,7 @@ correctBins(object, fit=NULL, type="ratio", adjustIncompletes=TRUE, ...)
 \arguments{
   \item{object}{An \code{\link{QDNAseqReadCounts}} object with \code{counts} data.}
   \item{fit}{...}
-  \item{type}{...}
+  \item{method}{...}
   \item{adjustIncompletes}{...}
   \item{...}{Additional arguments passed to \code{\link{estimateCorrection}}().}
 }

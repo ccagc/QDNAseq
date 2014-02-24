@@ -14,7 +14,7 @@
 # \arguments{
 #   \item{object}{An @see "QDNAseqReadCounts" object with \code{counts} data.}
 #   \item{fit}{...}
-#   \item{type}{...}
+#   \item{method}{...}
 #   \item{adjustIncompletes}{...}
 #   \item{...}{Additional arguments passed to @see "estimateCorrection".}
 # }
@@ -33,14 +33,14 @@
 
 setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
   definition=function(object, fit=NULL,
-  type=c("ratio", "addition", "none"), adjustIncompletes=TRUE, ...) {
+  method=c("ratio", "median", "none"), adjustIncompletes=TRUE, ...) {
   counts <- assayDataElement(object, "counts")
   if (adjustIncompletes) {
     counts <- counts / fData(object)$bases * 100L
     counts[fData(object)$bases == 0] <- 0L
   }
-  type <- match.arg(type)
-  if (type == "none")
+  method <- match.arg(method)
+  if (method == "none")
     fit <- matrix(1, nrow=nrow(counts), ncol=ncol(counts),
       dimnames=dimnames(counts))
   if (is.null(fit)) {
@@ -51,7 +51,7 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
   if (!is.matrix(fit))
     stop("Argument fit has to be either a matrix, a QDNAseqReadCounts object, ",
       "or NULL, in which case estimateCorrection() is executed first.")
-  if (type == "addition") {
+  if (method == "median") {
     gc <- round(fData(object)$gc)
     mappability <- round(fData(object)$mappability)
     fit2 <- aggregate(fit, by=list(gc=gc,
