@@ -76,13 +76,17 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
         drop=FALSE])
     }
     oldphenodata <- phenodata[replicates, ]
-    totalReads <- sum(oldphenodata$reads)
+    totalReads <- sum(oldphenodata$total.reads)
+    usedReads <- sum(oldphenodata$used.reads)
     numericCols <- sapply(oldphenodata, is.numeric)
     oldphenodata[1, numericCols] <- apply(oldphenodata[, numericCols,
       drop=FALSE], 2, mean)
     oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
       drop=FALSE], 2, concatenateIfNotEqual)
-    oldphenodata[1, "reads"] <- totalReads
+    oldphenodata[1, "total.reads"] <- totalReads
+    oldphenodata[1, "used.reads"] <- usedReads
+    oldphenodata[1, "expected.variance"] <- sum(binsToUse(object)) / usedReads
+    
     newphenodata <- rbind(newphenodata, oldphenodata[1,])
   }
   rownames(newphenodata) <- newphenodata[, 1]

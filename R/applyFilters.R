@@ -75,6 +75,9 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
   msg <- c(msg, 'final bins'=sum(condition))
 
   binsToUse(object) <- condition
+  object$used.reads <- colSums(assayDataElement(object, "counts")[condition, ,
+    drop=FALSE])
+  object$expected.variance <- sum(condition) / object$used.reads
   vmsg(paste(format(msg, big.mark=','), names(msg),
     sep='\t', collapse='\n'))
   object

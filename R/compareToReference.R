@@ -60,6 +60,7 @@ setMethod("compareToReference", signature=c(object="QDNAseqCopyNumbers",
       assayDataElement(object, "copynumber")[, i] <- ratio
       sampleNames(object)[i] <- paste(sampleNames(object)[i], " vs. ",
         sampleNames(object)[references[i]], sep="")
+      object$expected.variance[i] <- object$expected.variance[i] * 2
     }
   }
   toremove <- which(!references)

@@ -30,7 +30,7 @@
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   function (x, y, main=NULL, includeReadCounts=TRUE,
-  logTransform=TRUE, sdFUN=sdDiffTrim,
+  logTransform=TRUE, sdFUN="sdDiffTrim",
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
@@ -75,8 +75,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   }
   if (is.null(main))
     main <- sampleNames(x)
-  if (includeReadCounts && "reads" %in% names(pData(x)))
-    main <- paste(main, " (", format(x$reads, trim=TRUE, big.mark=","),
+  if (includeReadCounts && "total.reads" %in% names(pData(x)))
+    main <- paste(main, " (", format(x$total.reads, trim=TRUE, big.mark=","),
       " reads)", sep="")
   if (length(ylab) == 1)
     ylab <- rep(ylab, times=ncol(x))
@@ -201,14 +201,15 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     }
     par(xpd=FALSE)
     ### estimate for standard deviation
-    if ("generic" %in% slotNames(sdFUN) &&
-      length(grep("Diff$", sdFUN@generic)) == 1) {
-      symbol <- quote(hat(sigma)[Delta])
+    if (is.numeric(x$expected.variance[i])) {
+      sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
+        list(e=sprintf("%.3g", sqrt(x$expected.variance)),
+        symbol=symbol, sd=sprintf("%.3g", noise[i])))
     } else {
-      symbol <- substitute(hat(sigma))
+      sdexp <- substitute(symbol==sd,
+        list(symbol=symbol, sd=sprintf("%.3g", noise[i])))
     }
-    mtext(substitute(symbol==sd, list(symbol=symbol, sd=sprintf("%.3g",
-      noise[i]))), side=3, line=0, adj=1, cex=par("cex"))
+    mtext(sdexp, side=3, line=0, adj=1, cex=par("cex"))
     ### number of data points
     str <- paste(round(sum(condition) / 1000), "k x ", sep="")
     probe <- median(bpend(x)-bpstart(x)+1)
@@ -451,10 +452,10 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
 #*/#########################################################################
 setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   definition=function(x, y, main="Noise Plot", adjustIncompletes=TRUE,
-  fit=NULL, sdFUN=sdDiffTrim, ...) {
+  fit=NULL, sdFUN="sdDiffTrim", ...) {
   sdFUN <- match.fun(sdFUN)
   condition <- binsToUse(x)
-  totalReads <- x$reads
+  # totalReads <- x$total.reads
   counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
   usedReads <- apply(counts, 2, sum)
   if (adjustIncompletes) {
