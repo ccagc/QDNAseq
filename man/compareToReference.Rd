@@ -10,12 +10,12 @@
 \alias{compareToReference}
 
 
-\alias{compareToReference,QDNAseqReadCounts,numeric-method}
+\alias{compareToReference,QDNAseqCopyNumbers,numeric-method}
 
 \title{Divide binned read counts with those of reference samples}
 
 \usage{
-compareToReference(object, references, offset=2^-10, force=FALSE)
+compareToReference(object, references, force=FALSE)
 }
 
 \description{
@@ -25,7 +25,6 @@ compareToReference(object, references, offset=2^-10, force=FALSE)
 \arguments{
   \item{object}{...}
   \item{references}{...}
-  \item{offset}{...}
   \item{force}{...}
 }
 

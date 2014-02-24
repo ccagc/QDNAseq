@@ -1,9 +1,9 @@
 #########################################################################/**
-# @RdocFunction normalizeBins
+# @RdocFunction smoothOutlierBins
 #
-# @alias normalizeBins,QDNAseqCopyNumbers-method
+# @alias smoothOutlierBins,QDNAseqCopyNumbers-method
 #
-# @title "Normalizes binned read counts"
+# @title "Smooth outlier bins after normalization"
 #
 # @synopsis
 #
@@ -14,37 +14,34 @@
 # \arguments{
 #   \item{object}{A @see "QDNAseqCopyNumbers" object with \code{copynumber}
 #     data.}
-#   \item{method}{A @character string specifying the normalization method.
-#     Choices are "mean", "median" (default), or "mode". A partial
-#     string sufficient to uniquely identify the choice is permitted.}
+#   \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
 #   \item{force}{Running this function will remove possible segmentation and
 #     calling results. When they are present, running requires specifying
 #     \code{force} is @TRUE.}
+#   \item{...}{Additional arguments passed to @see "DNAcopy::smooth.CNA".}
 # }
 #
 # \value{
-#   Returns a @see "QDNAseqCopyNumbers" object with the assay data element
-#   \code{copynumber} scaled with the chosen method.
+#   Returns a @see "QDNAseqCopyNumbers" object with the values for outliers
+#   smoothed. See @see "DNAcopy::smooth.CNA" for more details. If
+#   \code{logTransform} is @TRUE, these signals are log2-transformed prior
+#   to smoothing, but afterwards back-transformed..
 # }
 #
 # @author "IS"
 #
 #*/#########################################################################
 ## Adapted from CGHcall::normalize()
-setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
-  definition=function(object, method=c("median", "mean", "mode"),
-  force=FALSE) {
+setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
+  definition=function(object, logTransform=TRUE, force=FALSE, ...) {
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Validate arguments
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Argument "object":
   if (!force && ("segmented" %in% assayDataElementNames(object)))
-    stop("Data has already been segmented. Re-normalizing will ",
+    stop("Data has already been segmented. Smoothing the outliers will ",
       "remove segmentation (and possible calling) results. Please specify ",
       "force=TRUE, if you want this.")
-
-  # Argument "method":
-  method <- match.arg(method);
 
   if ("segmented" %in% assayDataElementNames(object))
     assayDataElement(object, "segmented") <- NULL
@@ -68,26 +65,25 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
   # Sanity check
   stopifnot(is.matrix(copynumber))
 
+  # Log transform?
+  if (logTransform)
+    copynumber <- log2adhoc(copynumber)
+
   # Filter
   condition <- binsToUse(object)
 
-  vmsg("Applying ", method, " normalization ...")
-  if (method == "mean") {
-    values <- colMeans(copynumber[condition, , drop=FALSE], na.rm=TRUE)
-  } else if (method == "median") {
-    values <- colMedians(copynumber[condition, , drop=FALSE], na.rm=TRUE)
-  } else if (method == "mode") {
-    values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
-      FUN=function(x) {
-      d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
-    })
-  }
-  if (0 %in% values) {
-    vmsg("These samples cannot be normalized (", method, "=0):\n",
-      paste(sampleNames(object)[values == 0], collapse=", "))
-    values[values == 0] <- 1
-  }
-  copynumber <- scale(copynumber, center=FALSE, scale=values)
+  vmsg("Smoothing outliers ...")
+  CNA.object <- CNA(copynumber, chrom=fData[,"chromosome"],
+    maploc=fData[,"start"], data.type="logratio", presorted=TRUE)
+  CNA.object <- smooth.CNA(CNA.object, ...)
+  CNA.object <- CNA.object[, -(1:2), drop=FALSE]
+  copynumber <- as.matrix(CNA.object)
+  # Not needed anymore
+  CNA.object <- NULL
+
+  # Log transform?
+  if (logTransform)
+    copynumber <- unlog2adhoc(copynumber)
 
   # Expand to full set of bins
   copynumber2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),

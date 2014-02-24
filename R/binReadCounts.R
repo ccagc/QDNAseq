@@ -120,7 +120,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     gc(FALSE)
   }
 
-  phenodata$reads <- colSums(counts)
+  condition <- binsToUse(bins)
+  phenodata$total.reads <- colSums(counts)
+  phenodata$used.reads <- colSums(counts[condition, , drop=FALSE])
+  phenodata$expected.variance <- sum(condition) / phenodata$used.reads
   new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 

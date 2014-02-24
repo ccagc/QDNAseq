@@ -10,13 +10,13 @@
 \alias{highlightFilters}
 
 
-\alias{highlightFilters,QDNAseqReadCounts-method}
+\alias{highlightFilters,QDNAseqSignals-method}
 
 \title{Highlights data points in a plotted profile to evaluate filtering}
 
 \usage{
 highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, bases=NA,
-  type="union", ...)
+  type="union", logTransform=TRUE, ...)
 }
 
 \description{
@@ -24,13 +24,14 @@ highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, b
 }
 
 \arguments{
-  \item{object}{A QDNAseqReadCounts object ...}
+  \item{object}{A QDNAseqCopyNumbers object ...}
   \item{col}{...}
   \item{residual}{...}
   \item{blacklist}{...}
   \item{mappability}{...}
   \item{bases}{...}
   \item{type}{...}
+  \item{logTransform}{...}
   \item{...}{Further arguments to points.}
 }
 

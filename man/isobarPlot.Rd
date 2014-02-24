@@ -6,16 +6,16 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{readCountPlot}
-\alias{readCountPlot}
+\name{isobarPlot}
+\alias{isobarPlot}
 
 
-\alias{readCountPlot,QDNAseqReadCounts,missing-method}
+\alias{isobarPlot,QDNAseqReadCounts,missing-method}
 
 \title{Plot median read counts as a function of GC content and mappability}
 
 \usage{
-readCountPlot(x, y, ...)
+isobarPlot(x, y, ...)
 }
 
 \description{

@@ -1,38 +1,41 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  correctBins.R
+%  estimateCorrection.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{correctBins}
-\alias{correctBins}
+\name{estimateCorrection}
+\alias{estimateCorrection}
 
 
-\alias{correctBins,QDNAseqReadCounts-method}
+\alias{estimateCorrection,QDNAseqReadCounts-method}
 
-\title{Correct binned read counts for GC content and mappability}
+\title{Estimate correction to read counts for GC content and mappability}
 
 \usage{
-correctBins(object, fit=NULL, method="ratio", adjustIncompletes=TRUE, ...)
+estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
+  maxIter=1, cutoff=4, ...)
 }
 
 \description{
- Correct binned read counts for GC content and mappability.
+ Estimate correction to read counts for GC content and mappability.
 }
 
 \arguments{
   \item{object}{An \code{\link{QDNAseqReadCounts}} object with \code{counts} data.}
-  \item{fit}{...}
-  \item{method}{...}
+  \item{span}{...}
+  \item{family}{...}
   \item{adjustIncompletes}{...}
-  \item{...}{Additional arguments passed to \code{\link{estimateCorrection}}().}
+  \item{maxIter}{...}
+  \item{cutoff}{...}
+  \item{...}{Additional aguments passed to \code{\link[stats]{loess}}.}
 }
 
 \value{
   Returns a \code{\link{QDNAseqReadCounts}} object with the assay data element
-  \code{corrected} added.
+  \code{fit} added.
 }
 
 \author{Ilari Scheinin}

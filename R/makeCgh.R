@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction makeCgh
 #
-# @alias makeCgh,QDNAseqReadCounts-method
+# @alias makeCgh,QDNAseqCopyNumbers-method
 #
 # @title "Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object"
 #
@@ -12,7 +12,7 @@
 # }
 #
 # \arguments{
-#   \item{object}{A @see "QDNAseqReadCounts" object.}
+#   \item{object}{A @see "QDNAseqCopyNumbers" object.}
 #   \item{filter}{If @TRUE, bins are filtered, otherwise not.}
 #   \item{...}{Not used.}
 # }
@@ -25,17 +25,22 @@
 #
 # @author "IS"
 #*/#########################################################################
-setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
+setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
   definition=function(object, filter=TRUE, ...) {
 
   # Decide which cgh* class to create
   names <- assayDataElementNames(object)
   if ('calls' %in% names) {
     className <- 'cghCall'
+    segmented(object) <- log2adhoc(segmented(object))
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else if ('segmented' %in% names) {
     className <- 'cghSeg'
+    segmented(object) <- log2adhoc(segmented(object))
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else if ('copynumber' %in% names) {
     className <- 'cghRaw'
+    copynumber(object) <- log2adhoc(copynumber(object))
   } else {
     stop("Cannot create a CGHbase::cgh* object without at least one of the assay data elements being 'calls', 'segmented' or 'copynumber': ", paste(sQuote(names), collapse=", "))
   }
@@ -57,11 +62,6 @@ setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
   names[names == 'end'] <- 'End'
   colnames(fData(object)) <- names
 
-  # Remove certain assay data elements
-  names <- c('counts', 'corrected', 'residuals')
-  names <- intersect(names, assayDataElementNames(object))
-  for (name in names) assayDataElement(object, name) <- NULL
-
   # Instantiate choose cgh* object
   cgh <- new(className, assayData=assayData(object),
              featureData=featureData(object), phenoData=phenoData(object))
@@ -70,17 +70,17 @@ setMethod('makeCgh', signature=c(object='QDNAseqReadCounts'),
 })
 
 
-# Methods for coercing a QDNAseqReadCounts object into
+# Methods for coercing a QDNAseqCopyNumbers object into
 # cghRaw, cghSeg and cghCall object using as(from, to).
-setAs("QDNAseqReadCounts", "cghRaw", function(from) {
+setAs("QDNAseqCopyNumbers", "cghRaw", function(from) {
   makeCgh(from, filter=FALSE)
 })
 
-setAs("QDNAseqReadCounts", "cghSeg", function(from) {
+setAs("QDNAseqCopyNumbers", "cghSeg", function(from) {
   makeCgh(from, filter=FALSE)
 })
 
-setAs("QDNAseqReadCounts", "cghCall", function(from) {
+setAs("QDNAseqCopyNumbers", "cghCall", function(from) {
   makeCgh(from, filter=FALSE)
 })
 

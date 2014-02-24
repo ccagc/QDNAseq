@@ -11,11 +11,11 @@
 \docType{data}
 
 
- \title{LGG150 chromosome 9}
+ \title{LGG150 chromosomes 7-10}
 
  \description{
-   An example data set of read counts from chromosome 9 of sample LGG150,
-   contained within a QDDNAseqReadCounts object.
+   An example data set of read counts from chromosomes 7-10 of sample
+   LGG150, contained within a \code{\link{QDNAseqReadCounts}} object
  }
 
  \author{Ilari Scheinin}

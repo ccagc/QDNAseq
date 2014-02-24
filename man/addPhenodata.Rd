@@ -13,7 +13,7 @@
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
-addPhenodata(obj, phenofile)
+addPhenodata(object, phenofile)
 }
 
 \description{
@@ -21,8 +21,10 @@ addPhenodata(obj, phenofile)
 }
 
 \arguments{
-  \item{obj}{A named \code{\link[base]{list}} containing ...}
-  \item{phenofile}{A \code{\link[base:connections]{connection}} of a filename specifying ...}
+  \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
+  object.}
+  \item{phenofile}{A file name with phenotypic data for samples in
+  \code{object}.}
 }
 
 \value{

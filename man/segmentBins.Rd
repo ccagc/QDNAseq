@@ -10,13 +10,13 @@
 \alias{segmentBins}
 
 
-\alias{segmentBins,QDNAseqReadCounts-method}
+\alias{segmentBins,QDNAseqCopyNumbers-method}
 
 \title{Segments normalized copy number data}
 
 \usage{
 segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", undo.SD=1,
-  normalize=TRUE, inter=c(-0.1, 0.1), force=FALSE, ...)
+  force=FALSE, ...)
 }
 
 \description{
@@ -24,7 +24,7 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
 }
 
 \arguments{
-  \item{object}{An object of class QDNAseqReadCounts.}
+  \item{object}{An object of class QDNAseqCopyNumbers.}
   \item{smoothBy}{An optional integer value to perform smoothing before
     segmentation by taking the mean of every smoothBy bins, and then segment
     those means. Default is to perform no smoothing.}
@@ -36,17 +36,13 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
     apart.}
   \item{undo.SD}{The number of SDs between means to keep a split if
     undo.splits="sdundo".}
-  \item{normalize}{Whether to perform normalization after segmentation with
-    \code{\link[CGHcall]{postsegnormalize}} of the \pkg{CGHcall} package.}
-  \item{inter}{If performing normalization, the interval in which the
-    function should search for the normal level.}
   \item{force}{Whether to force execution when it causes removal of
     downstream calling results.}
   \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 
 \value{
-  Returns an object of class QDNAseqReadCounts with segmentation results
+  Returns an object of class QDNAseqCopyNumbers with segmentation results
     added.
 }
 
@@ -55,7 +51,5 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
 \seealso{
   Internally, \code{\link[DNAcopy]{segment}} of the \pkg{DNAcopy} package,
   which implements the CBS method, is used to segment the data.
-  Optionally, normalization is performed with \code{\link[CGHcall]{postsegnormalize}}
-  of the \pkg{CGHcall} package.
 }
 

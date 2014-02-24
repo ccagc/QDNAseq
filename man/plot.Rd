@@ -10,7 +10,7 @@
 \alias{plot}
 
 
-\alias{plot,QDNAseqReadCounts,missing-method}
+\alias{plot,QDNAseqSignals,missing-method}
 
 \title{Plot copy number profile}
 

@@ -1,6 +1,34 @@
 Package: QDNAseq
 ================
 
+Version: 0.7.7 [2014-02-24]
+o Added the value of expected standard deviation (based on sequence depth)
+  to copy number profile plots, and an option to choose which labels to to show
+  along the x-axis of noisePlot(): average number of reads per bin, its
+  reciprocal, or total number of reads.
+
+
+Version: 0.7.6 [2014-02-20]
+o Added a new function for calculating standard deviations using a trimmed
+  (default 0.1%) first-order estimator.
+
+
+Version: 0.7.5 [2014-02-06]
+o Introduced smoothOutlierBins() and normalizeSegmentedBins() as separate
+  functions instead of them being parts of normalizeBins() and segmentBins().
+o Renamed readCountPlot() to isobarPlot() and added an option to plot loess
+  fits and residuals in addition to median read counts.
+o Standard deviation in the top-right corner of profile plots is now calculated
+  without taking a log2-tranformation.
+o DOCUMENTATION: Updates to the manual pages and vignette.
+
+
+Version: 0.7.0 [2014-01-28]
+o QDNAseqCopyNumbers now stores all signals on the original non-log scale.
+o Now using classes QDNAseqReadCounts and QDNAseqCopyNumbers which both
+  inherits from QDNAseqSignals.
+
+
 Version: 0.6.3 [2014-01-25]
 o Added support for coercing an QDNAseqReadCounts object to an
   CGHcall::cghRaw object via as(x, "cghRaw") and similar for coercing

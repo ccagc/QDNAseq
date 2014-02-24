@@ -1,7 +1,7 @@
 #########################################################################/**
 # @RdocFunction poolRuns
 #
-# @alias poolRuns,QDNAseqReadCounts,character-method
+# @alias poolRuns,QDNAseqSignals,character-method
 #
 # @title "Pools binned read counts across samples"
 #
@@ -28,17 +28,17 @@
 # }
 #
 #*/#########################################################################
-setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
-  samples='character'), definition=function(object, samples, force=FALSE) {
+setMethod("poolRuns", signature=c(object="QDNAseqSignals",
+  samples="character"), definition=function(object, samples, force=FALSE) {
 
-  if (!force && 'copynumber' %in% assayDataElementNames(object))
-    stop('Data has already been normalized. Pooling runs will ',
-      'remove normalization (and possible segmentation and calling) ',
-      'results. Please specify force=TRUE, if you want this.')
+  if (!force && "segmented" %in% assayDataElementNames(object))
+    stop("Data has already been segmented. Pooling runs will ",
+      "remove segmentation (and possible calling) ",
+      "results. Please specify force=TRUE, if you want this.")
 
   if (length(samples) != ncol(object))
-    stop('Parameter samples must be a vector of equal length as there are ',
-      ' samples in object.')
+    stop("Parameter samples must be a vector of equal length as there are ",
+      " samples in object.")
 
   newsamples <- sort(unique(samples))
   if (length(newsamples) == ncol(object)) {
@@ -48,47 +48,59 @@ setMethod('poolRuns', signature=c(object='QDNAseqReadCounts',
   }
   oldsamples <- sampleNames(object)
 
+  bins <- featureData(object)
   phenodata <- pData(object)
   phenodata[, 1] <- samples
-  bins <- featureData(object)
-  counts <- assayDataElement(object, 'counts')
-  if ('corrected' %in% assayDataElementNames(object))
-    corrected <- assayDataElement(object, 'corrected')
-
   newphenodata <- phenodata[0, ]
-  newcounts <- matrix(NA_integer_, nrow=nrow(counts), ncol=length(newsamples),
-    dimnames=list(rownames(counts), newsamples))
-  if ('corrected' %in% assayDataElementNames(object))
-    newcorrected <- matrix(NA_real_, nrow=nrow(counts), ncol=length(newsamples),
-      dimnames=list(rownames(counts), newsamples))
-
+  if (inherits(object, "QDNAseqReadCounts")) {
+    counts <- assayDataElement(object, "counts")
+    newcounts <- matrix(NA_integer_, nrow=nrow(object),
+      ncol=length(newsamples), dimnames=list(featureNames(object), newsamples))
+  } else if (inherits(object, "QDNAseqCopyNumbers")) {
+    copynumber <- assayDataElement(object, "copynumber")
+    newcopynumber <- matrix(NA_real_, nrow=nrow(object),
+      ncol=length(newsamples), dimnames=list(featureNames(object), newsamples))
+  }
+  
   concatenateIfNotEqual <- function(x) {
     x <- sort(unique(x))
-    paste(x, collapse=';')
+    paste(x, collapse=";")
   }
 
   for (newsample in newsamples) {
     replicates <- samples == newsample
-    newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
-    if ('corrected' %in% assayDataElementNames(object))
-      newcorrected[, newsample] <- rowMeans(corrected[, replicates,
+    if (inherits(object, "QDNAseqReadCounts")) {
+      newcounts[, newsample] <- rowSums(counts[, replicates, drop=FALSE])
+    } else if (inherits(object, "QDNAseqCopyNumbers")) {
+      newcopynumber[, newsample] <- rowMeans(copynumber[, replicates,
         drop=FALSE])
+    }
     oldphenodata <- phenodata[replicates, ]
-    totalReads <- sum(oldphenodata$reads)
+    totalReads <- sum(oldphenodata$total.reads)
+    usedReads <- sum(oldphenodata$used.reads)
     numericCols <- sapply(oldphenodata, is.numeric)
     oldphenodata[1, numericCols] <- apply(oldphenodata[, numericCols,
       drop=FALSE], 2, mean)
     oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
       drop=FALSE], 2, concatenateIfNotEqual)
-    oldphenodata[1, 'reads'] <- totalReads
+    oldphenodata[1, "total.reads"] <- totalReads
+    oldphenodata[1, "used.reads"] <- usedReads
+    oldphenodata[1, "expected.variance"] <- sum(binsToUse(object)) / usedReads
+    
     newphenodata <- rbind(newphenodata, oldphenodata[1,])
   }
   rownames(newphenodata) <- newphenodata[, 1]
+  newphenodata <- AnnotatedDataFrame(newphenodata,
+    varMetadata=varMetadata(object))
 
-  object2 <- new('QDNAseqReadCounts', bins=bins, counts=newcounts,
-    phenodata=newphenodata)
-  if ('corrected' %in% assayDataElementNames(object))
-    assayDataElement(object2, 'corrected') <- newcorrected
+  if (inherits(object, "QDNAseqReadCounts")) {
+    storage.mode(newcounts) <- "integer"
+    object2 <- new("QDNAseqReadCounts", bins=bins, counts=newcounts,
+      phenodata=newphenodata)
+  } else if (inherits(object, "QDNAseqCopyNumbers")) {
+    object2 <- new("QDNAseqCopyNumbers", bins=bins, copynumber=newcopynumber,
+      phenodata=newphenodata)
+  }
   object2
 })
 

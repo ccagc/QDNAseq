@@ -10,8 +10,10 @@
 # }
 #
 # \arguments{
-#   \item{obj}{A named @list containing ...}
-#   \item{phenofile}{A @connection of a filename specifying ...}
+#   \item{object}{A @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers"
+#   object.}
+#   \item{phenofile}{A file name with phenotypic data for samples in
+#   \code{object}.}
 # }
 #
 # \value{
@@ -26,11 +28,11 @@
 #
 # @keyword IO
 #*/#########################################################################
-addPhenodata <- function(obj, phenofile) {
+addPhenodata <- function(object, phenofile) {
   pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
     row.names=1L)
-  pData(obj) <- cbind(pData(obj), pdata[sampleNames(obj), ])
-  obj
+  pData(object) <- cbind(pData(object), pdata[sampleNames(object), ])
+  object
 }
 
 # EOF

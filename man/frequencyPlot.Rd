@@ -10,7 +10,7 @@
 \alias{frequencyPlot}
 
 
-\alias{frequencyPlot,QDNAseqReadCounts,missing-method}
+\alias{frequencyPlot,QDNAseqCopyNumbers,missing-method}
 
 \title{Plot copy number aberration frequencies}
 

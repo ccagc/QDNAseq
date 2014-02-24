@@ -20,14 +20,15 @@
 
 \section{Details}{
   A package to detect chromosomal aberrations from whole-genome sequencing
-  data. QDNAseqReadCounts class is used as the main data structure.
+  data. \code{\link{QDNAseqReadCounts}} and \code{\link{QDNAseqCopyNumbers}} classes are
+  used as the main data structures.
 }
 
 \section{How to cite this package}{
   Whenever using this package, please cite
   \preformatted{
 Ilari Scheinin (2014). QDNAseq: Quantitative DNA sequencing for chromosomal
-aberrations. R package version 0.6.3.
+aberrations. R package version 0.7.7.
 }
 \emph{}
 
