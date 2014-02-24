@@ -452,10 +452,10 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
 #*/#########################################################################
 setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   definition=function(x, y, main="Noise Plot", adjustIncompletes=TRUE,
-  fit=NULL, sdFUN="sdDiffTrim", ...) {
+  fit=NULL, sdFUN="sdDiffTrim", xAxis=c("average reads per bin",
+  "reciprocal of average reads per bin", "total reads"), ...) {
   sdFUN <- match.fun(sdFUN)
   condition <- binsToUse(x)
-  # totalReads <- x$total.reads
   counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
   usedReads <- apply(counts, 2, sum)
   if (adjustIncompletes) {
@@ -475,21 +475,33 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     xlim=c(0, 1.1*max(reciprocalOfAverageUsedReadsPerBin)),
     ylim=c(0, 1.04*max(noise^2)),
     xlab=NA, ylab=NA, xaxs="i", yaxs="i", xaxt="n", yaxt="n", ...)
-  if (ncol(x) > 1) {
-    relationship <- lm(totalReads ~ usedReads)
-  } else {
-    relationship <- lm(totalReads ~ 0 + usedReads)
-  }
   at <- axTicks(side=1)
-  usedReadsAtTicks <- sum(condition)/at
-  labels <- round(predict(relationship,
-    newdata=data.frame(usedReads=usedReadsAtTicks)) / 1e6, digits=1)
-  labels[1] <- NA
+  xAxis <- match.arg(xAxis)
+  if (xAxis == "total reads") {
+    totalReads <- x$total.reads
+    if (ncol(x) > 1) {
+      relationship <- lm(totalReads ~ usedReads)
+    } else {
+      relationship <- lm(totalReads ~ 0 + usedReads)
+    }
+    usedReadsAtTicks <- sum(condition)/at
+    labels <- round(predict(relationship,
+      newdata=data.frame(usedReads=usedReadsAtTicks)) / 1e6, digits=1)
+    labels[1] <- NA
+    xlab <- "million reads"
+  } else if (xAxis == "reciprocal of average reads per bin") {
+    labels <- round(at, digits=3)
+    xlab <- expression((average~reads~per~bin)^-1)
+  } else {
+    labels <- round(1/at, digits=3)
+    labels[1] <- NA
+    xlab <- expression(average~reads~per~bin)
+  }
   axis(side=1, tck=-.015, at=at, labels=NA)
   axis(side=2, tck=-.015, labels=NA)
   axis(side=1, lwd=0, line=-0.4, at=at, labels=labels)
   axis(side=2, lwd=0, line=-0.4)
-  mtext(side=1, "million reads", line=2, cex=par("cex"))
+  mtext(side=1, xlab, line=2, cex=par("cex"))
   mtext(side=2, expression(hat(sigma)[Delta]^2), line=2, las=1, cex=par("cex"))
   text(reciprocalOfAverageUsedReadsPerBin, noise^2,
     labels=sampleNames(x), pos=4, cex=0.5, ...)
