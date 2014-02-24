@@ -104,9 +104,13 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     chrom.ends <- c(chrom.ends, cumul)
   }
   names(chrom.ends) <- names(chrom.lengths)
+  if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
+    symbol <- quote(hat(sigma)[Delta])
+  } else {
+    symbol <- quote(hat(sigma))
+  }
   sdFUN <- match.fun(sdFUN)
-  noise <- apply(scale(copynumber, center=FALSE,
-    scale=apply(copynumber, 2, mean, na.rm=TRUE)), 2, sdFUN, na.rm=TRUE)
+  noise <- apply(copynumber, 2, sdFUN, na.rm=TRUE)
   if (logTransform)
     copynumber <- log2adhoc(copynumber)
   for (i in seq_len(ncol(x))) {
@@ -465,8 +469,6 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
   }
   signal <- counts / fit
   signal[fit <= 0] <- 0
-  signal <- scale(signal, center=FALSE,
-    scale=apply(signal, 2, mean, na.rm=TRUE))
   noise <- apply(signal, 2, sdFUN, na.rm=TRUE)
   plot(reciprocalOfAverageUsedReadsPerBin, noise^2, main=main, cex=0.5,
     xlim=c(0, 1.1*max(reciprocalOfAverageUsedReadsPerBin)),

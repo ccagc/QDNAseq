@@ -1,6 +1,8 @@
-sdDiffTrim <- function(x, na.rm=FALSE, diff=1L, trim=0.001, ...) {
+sdDiffTrim <- function(x, na.rm=FALSE, diff=1L, trim=0.001, scale=TRUE, ...) {
   if (na.rm) 
     x <- x[!is.na(x)]
+  if (scale)
+    x <- x / mean(x, na.rm=TRUE)
   if (diff > 0L) 
     x <- diff(x, differences=diff)
   n <- length(x)
@@ -11,7 +13,7 @@ sdDiffTrim <- function(x, na.rm=FALSE, diff=1L, trim=0.001, ...) {
   }
   sd <- sd(x, na.rm=FALSE)
   x <- NULL
-  sd/(sqrt(2)^diff)
+  sd / (sqrt(2)^diff)
 }
 
 # EOF
