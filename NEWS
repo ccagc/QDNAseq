@@ -1,6 +1,13 @@
 Package: QDNAseq
 ================
 
+Version: 0.7.7 [2014-02-24]
+o Added the value of expected standard deviation (based on sequence depth)
+  to copy number profile plots, and an option to choose which labels to to show
+  along the x-axis of noisePlot(): average number of reads per bin, its
+  reciprocal, or total number of reads.
+
+
 Version: 0.7.6 [2014-02-20]
 o Added a new function for calculating standard deviations using a trimmed
   (default 0.1%) first-order estimator.
