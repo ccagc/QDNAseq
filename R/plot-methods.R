@@ -347,7 +347,7 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 #
 #*/#########################################################################
 setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
-  definition=function(x, y, main=NULL,
+  definition=function(x, y, main=NULL, nlevels=20L, 
   what=c("read counts", "fit", "residuals"), adjustIncompletes=TRUE,
   ...) {
   what <- match.arg(what)
@@ -406,7 +406,7 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     axis(side=2, lwd=0, line=-0.4)
     mtext(side=1, "mappability", line=2, cex=par("cex"))
     mtext(side=2, "GC content", line=2, cex=par("cex"))
-    contour(xx, yy, m, nlevels=20L, zlim=c(-max(abs(range(m, finite=TRUE))),
+    contour(xx, yy, m, nlevels=nlevels, zlim=c(-max(abs(range(m, finite=TRUE))),
       max(abs(range(m, finite=TRUE)))), add=TRUE)
 
     str <- paste(round(sum(condition) / 1000), "k x ", sep="")
