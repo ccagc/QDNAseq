@@ -23,18 +23,10 @@ frequencyPlot(x, y, ...)
 }
 
 \arguments{
-  \item{x}{...}
-  \item{y}{...}
+  \item{x}{A \code{\link{QDNAseqCopyNumbers}} object with \code{calls} data.}
+  \item{y}{missing}
   \item{...}{...}
 }
 
-\value{
-  Returns a named \code{\link[base]{list}} containing elements ...
-}
-
 \author{Ilari Scheinin}
-
-\seealso{
-  Internally, ...
-}
 

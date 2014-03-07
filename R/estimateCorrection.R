@@ -13,11 +13,20 @@
 #
 # \arguments{
 #   \item{object}{An @see "QDNAseqReadCounts" object with \code{counts} data.}
-#   \item{span}{...}
-#   \item{family}{...}
-#   \item{adjustIncompletes}{...}
-#   \item{maxIter}{...}
-#   \item{cutoff}{...}
+#   \item{span}{For @see "stats::loess", the parameter alpha which controls the 
+#     degree of smoothing.}
+#   \item{family}{For @see "stats::loess", if "gaussian" fitting is by
+#     least-squares, and if "symmetric" a re-descending M estimator is
+#     used with Tukey's biweight function.}
+#   \item{adjustIncompletes}{A boolean(1) specifying whether \code{counts} for
+#     bins with uncharacterized nucleotides (N's) in their reference genome
+#     sequence should be adjusted by dividing them with the percentage of
+#     characterized (A, C, G, T) nucleotides. Defaults to @TRUE.}
+#   \item{maxIter}{An integer(1) specifying the maximum number of iterations to perform, default is 1. If larger, after the first loess fit, bins with median residuals larger than \code{cutoff} are removed, and the fitting repeated until the list of bins to use stabilizes or after \code{maxIter} iterations.}
+#   \item{cutoff}{A numeric(1) specifying the number of standard deviations (as 
+#     estimated with @see "matrixStats::madDiff") the cutoff for removal of bins
+#     with median residuals larger than the cutoff. Not used if \code{maxIter=1}
+#     (default).}
 #   \item{...}{Additional aguments passed to @see "stats::loess".}
 # }
 #

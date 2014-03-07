@@ -3,7 +3,8 @@
 #
 # @alias makeCgh,QDNAseqCopyNumbers-method
 #
-# @title "Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object"
+# @title "Constructs a 'cghRaw', 'cghSeg', or
+#   'cghCall' object"
 #
 # @synopsis
 #

@@ -12,14 +12,16 @@
 
 \alias{makeCgh,QDNAseqCopyNumbers-method}
 
-\title{Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object}
+\title{Constructs a 'cghRaw', 'cghSeg', or
+  'cghCall' object}
 
 \usage{
 makeCgh(object, filter=TRUE, ...)
 }
 
 \description{
- Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object.
+ Constructs a 'cghRaw', 'cghSeg', or
+  'cghCall' object.
 }
 
 \arguments{

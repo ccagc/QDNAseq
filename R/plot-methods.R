@@ -12,20 +12,12 @@
 # }
 #
 # \arguments{
-#   \item{x}{...}
-#   \item{y}{...}
+#   \item{x}{A @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers" object.}
+#   \item{y}{missing}
 #   \item{...}{...}
 # }
 #
-# \value{
-#   Returns a named @list containing elements ...
-# }
-#
 # @author "IS"
-#
-# \seealso{
-#   Internally, ...
-# }
 #
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
@@ -241,20 +233,12 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 # }
 #
 # \arguments{
-#   \item{x}{...}
-#   \item{y}{...}
+#   \item{x}{A @see "QDNAseqCopyNumbers" object with \code{calls} data.}
+#   \item{y}{missing}
 #   \item{...}{...}
 # }
 #
-# \value{
-#   Returns a named @list containing elements ...
-# }
-#
 # @author "IS"
-#
-# \seealso{
-#   Internally, ...
-# }
 #
 #*/#########################################################################
 setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
@@ -330,20 +314,12 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 # }
 #
 # \arguments{
-#   \item{x}{...}
-#   \item{y}{...}
+#   \item{x}{A @see "QDNAseqReadCounts" object.}
+#   \item{y}{missing}
 #   \item{...}{...}
 # }
 #
-# \value{
-#   Returns a named @list containing elements ...
-# }
-#
 # @author "IS"
-#
-# \seealso{
-#   Internally, ...
-# }
 #
 #*/#########################################################################
 setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),

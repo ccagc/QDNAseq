@@ -12,20 +12,20 @@
 # }
 #
 # \arguments{
-#   \item{object}{...}
-#   \item{samples}{...}
-#   \item{force}{...}
+#   \item{object}{A @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers"
+#     object.}
+#   \item{samples}{A character vector of new sample names. Samples with
+#     identical names will be pooled together. Must be the same length as there
+#     are samples in \code{object}.}
+#   \item{force}{Whether to force the operation even when downstream data will
+#     be lost.}
 # }
 #
 # \value{
-#   Returns a named @list containing elements ...
+#   Returns a @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers" object.
 # }
 #
 # @author "IS"
-#
-# \seealso{
-#   Internally, ...
-# }
 #
 #*/#########################################################################
 setMethod("poolRuns", signature=c(object="QDNAseqSignals",

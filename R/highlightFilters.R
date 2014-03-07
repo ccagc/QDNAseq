@@ -12,34 +12,45 @@
 # }
 #
 # \arguments{
-#   \item{object}{A QDNAseqCopyNumbers object ...}
-#   \item{col}{...}
-#   \item{residual}{...}
-#   \item{blacklist}{...}
-#   \item{mappability}{...}
-#   \item{bases}{...}
-#   \item{type}{...}
-#   \item{logTransform}{...}
-#   \item{...}{Further arguments to points.}
+#   \item{object}{A @see "QDNAseqCopyNumbers" object.}
+#   \item{col}{The color used for highlighting.}
+#   \item{residual}{Either a @logical specifying whether to filter based on
+#     loess residuals of the calibration set, or if a @numeric, the cutoff as
+#     number of standard deviations estimated with @see "matrixStats::madDiff"
+#     to use for. Default is @TRUE, which corresponds to 4.0 standard
+#     deviations.}
+#   \item{blacklist}{Either a @logical specifying whether to filter based on
+#     overlap with blacklisted regions, or if numeric, the maximum percentage of
+#     overlap allowed. Default is @TRUE, which corresponds to no overlap allowd
+#     (i.e. value of 0).}
+#   \item{mappability}{A @numeric in \eqn{[0,100]} to specify filtering out bins
+#     with mappabilities lower than the number specified. NA (default) or
+#     @FALSE will not filter based on mappability.}
+#   \item{bases}{A @numeric specifying the minimum percentage of characterized
+#     bases (not Ns) in the reference genome sequence. NA (default) or
+#     @FALSE will not filted based on uncharacterized bases.}
+#   \item{type}{When specifying multiple filters (\code{residual},
+#     \code{blacklist}, \code{mappability}, \code{bases}), whether to highlight
+#     their \code{union} (default) or \code{intersection}.}
+#   \item{logTransform}{Whether the plotted data was log-transformed or not,
+#     should be the same value that was specified for @see "plot".}
+#   \item{...}{Further arguments to @see "graphics::points".}
 # }
 #
 # @author "IS"
-#
-# \seealso{
-#   ...
-# }
 #
 # @keyword IO
 #*/#########################################################################
 
 setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
   definition=function(object, col="red", residual=NA, blacklist=NA,
-  mappability=NA, bases=NA, type="union",
+  mappability=NA, bases=NA, type=c("union", "intersection"),
   logTransform=TRUE,
   ...) {
 
   condition <- rep(TRUE, times=nrow(object))
-  if (match.arg(type, c("union", "intersection")) == "intersection") {
+  type <- match.arg(type)
+  if (type == "intersection") {
     if (!is.na(residual)) {
       if (is.numeric(residual)) {
         condition <- condition & (is.na(fData(object)$residual) |

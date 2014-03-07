@@ -14,17 +14,21 @@
 # }
 #
 # \arguments{
-#   \item{bsgenome}{A BSgenome ...}
+#   \item{bsgenome}{A BSgenome package.}
 #   \item{binSize}{A @numeric scalar specifying the width of the bins
 #    in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #    to 15 kbp bins.}
 #   \item{ignoreUnderscored}{Whether to ignore sequences with underscores
-#     in their names ...}
-#   \item{ignoreMitochondria}{Wheter to ignore mitochondrial DNA  ...}
+#     in their names.}
+#   \item{ignoreMitochondria}{Wheter to ignore the mitochondria.}
 # }
 #
 # \value{
-#   Returns ...
+#   Returns a @data.frame with columns \code{chromosome, start, end, bases, and
+#   gc}, which correspond to the chromosome name, positions of the first and
+#   last base pair in the bin, the percentage of characterized nucleotides (A,
+#   C, G, or T, i.e. non-N), and GC content (percentage of C and G nucleotides
+#   of non-N nucleotides).
 # }
 #
 # @author "IS"

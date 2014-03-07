@@ -10,14 +10,22 @@
 # }
 #
 # \arguments{
-#   \item{bins}{...}
-#   \item{bamfiles}{...}
-#   \item{path}{...}
-#   \item{ext}{...}
-#   \item{bamnames}{...}
-#   \item{phenofile}{...}
-#   \item{cache}{getOption("QDNAseq::cache", FALSE)}
-#   \item{force}{!cache}
+#   \item{bins}{A data.frame or an @see "Biobase::AnnotatedDataFrame" object
+#     containing bin annotations.}
+#   \item{bamfiles}{A character vector of (BAM) file names. If NULL (default),
+#     all files with extension ext, are read from directory path.}
+#   \item{path}{If bamfiles is NULL, directory path to read input files from.
+#     Defaults to the current working directory.}
+#   \item{ext}{File name extension of input files to read, default is "bam".}
+#   \item{bamnames}{An optional character vector of sample names. Defaults to
+#     file names with extension ext removed.}
+#   \item{phenofile}{An optional character(1) specifying a file name for
+#     phenotype data.}
+#   \item{cache}{Whether to read and write intermediate cache files, which can
+#     speed up subsequent analyses of the same files. Defaults to
+#     getOption("QDNAseq::cache", FALSE).}
+#   \item{force}{When using the cache, whether to force reading input data from
+#     the BAM files even when an intermediate cache file is present.}
 #   \item{isPaired}{A logical(1) indicating whether unpaired (FALSE), paired
 #     (TRUE), or any (NA, default) read should be returned.}
 #   \item{isProperPair}{A logical(1) indicating whether improperly paired
@@ -64,10 +72,6 @@
 # }
 #
 # @author "IS"
-#
-# \seealso{
-#   Internally, @see ".binReadCountsPerSample" is used.
-# }
 #
 # @keyword IO
 #*/#########################################################################
@@ -129,50 +133,6 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
 
 
-#########################################################################/**
-# @RdocFunction .binReadCountsPerSample
-#
-# @title "Calculate binned read counts from a BAM file"
-#
-# @synopsis
-#
-# \description{
-#  @get "title".
-# }
-#
-# \arguments{
-#   \item{bins}{...}
-#   \item{bamfile}{...}
-#   \item{cache}{...}
-#   \item{force}{...}
-#   \item{isPaired}{...}
-#   \item{isProperPair}{...}
-#   \item{isUnmappedQuery}{...}
-#   \item{hasUnmappedMate}{...}
-#   \item{isMinusStrand}{...}
-#   \item{isMateMinusStrand}{...}
-#   \item{isFirstMateRead}{...}
-#   \item{isSecondMateRead}{...}
-#   \item{isNotPrimaryRead}{...}
-#   \item{isNotPassingQualityControls}{...}
-#   \item{isDuplicate}{...}
-#   \item{minMapq}{...}
-# }
-#
-# \value{
-#   Returns an @integer @vector.
-# }
-#
-# @author "IS"
-#
-# \seealso{
-#   To retrieve bin read counts for a set of BAM files,
-#   see @see "binReadCounts".
-# }
-#
-# @keyword IO
-# @keyword internal
-#*/#########################################################################
 .binReadCountsPerSample <- function(bins, bamfile, cache, force,
   isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
   isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,

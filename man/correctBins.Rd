@@ -24,15 +24,25 @@ correctBins(object, fit=NULL, method="ratio", adjustIncompletes=TRUE, ...)
 
 \arguments{
   \item{object}{An \code{\link{QDNAseqReadCounts}} object with \code{counts} data.}
-  \item{fit}{...}
-  \item{method}{...}
-  \item{adjustIncompletes}{...}
+  \item{fit}{An optional matrix of values to use for the correction. If
+    NULL (default), assay data \code{fit} from object is used. If it is
+    missing, it is generated with a call to \code{\link{estimateCorrection}}().}
+  \item{method}{A character(1) string speficying the correction method.
+    \code{ratio} (default) divides \code{counts} with \code{fit}.
+    \code{median} calculates the median \code{fit}, and defines the correction
+    for bins with GC content \code{gc} and mappability \code{map} as
+    \code{median(fit) - fit(gc,map)}, which is added to \code{counts}. Method
+    \code{none} leaves \code{counts} untouched.}
+  \item{adjustIncompletes}{A boolean(1) specifying whether \code{counts} for
+    bins with uncharacterized nucleotides (N's) in their reference genome
+    sequence should be adjusted by dividing them with the percentage of
+    characterized (A, C, G, T) nucleotides. Defaults to \code{\link[base:logical]{TRUE}}.}
   \item{...}{Additional arguments passed to \code{\link{estimateCorrection}}().}
 }
 
 \value{
-  Returns a \code{\link{QDNAseqReadCounts}} object with the assay data element
-  \code{corrected} added.
+  Returns a \code{\link{QDNAseqCopyNumbers}} object with assay data element
+  \code{copynumber}.
 }
 
 \author{Ilari Scheinin}

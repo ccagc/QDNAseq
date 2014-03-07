@@ -23,18 +23,18 @@ poolRuns(object, samples, force=FALSE)
 }
 
 \arguments{
-  \item{object}{...}
-  \item{samples}{...}
-  \item{force}{...}
+  \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
+    object.}
+  \item{samples}{A character vector of new sample names. Samples with
+    identical names will be pooled together. Must be the same length as there
+    are samples in \code{object}.}
+  \item{force}{Whether to force the operation even when downstream data will
+    be lost.}
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} containing elements ...
+  Returns a \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.
 }
 
 \author{Ilari Scheinin}
-
-\seealso{
-  Internally, ...
-}
 
