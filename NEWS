@@ -1,6 +1,12 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.0 [2014-03-11]
+o Added parameter scale to plot() to specify whether output should be scale
+  according to chromosome sizes (default is TRUE).
+o Version number bumped to 0.99.0 for Bioconductor.
+
+
 Version: 0.8.0 [2014-03-07]
 o Added more information to the manual pages.
 

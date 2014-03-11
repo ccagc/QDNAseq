@@ -1,12 +1,12 @@
 Package: QDNAseq
-Version: 0.8.0
+Version: 0.99.0
 Depends: R (>= 2.15.0)
 Imports: methods, Biobase (>= 2.18.0),
   CGHbase (>= 1.18.0), CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0),
   matrixStats (>= 0.8.14), R.cache (>= 0.9.0), R.utils (>= 1.28.4),
   Rsamtools (>= 1.10.0)
 Suggests: BSgenome, digest, GenomicRanges, snowfall
-Date: 2014-03-07
+Date: 2014-03-11
 Title: Quantitative DNA sequencing for chromosomal aberrations
 Authors@R: c(person("Ilari", "Scheinin", role=c("aut", "cre", "cph"),
   email = "ilari.scheinin@gmail.com"))

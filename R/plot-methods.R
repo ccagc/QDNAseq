@@ -22,7 +22,7 @@
 #*/#########################################################################
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   function (x, y, main=NULL, includeReadCounts=TRUE,
-  logTransform=TRUE, sdFUN="sdDiffTrim",
+  logTransform=TRUE, scale=TRUE, sdFUN="sdDiffTrim",
   delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
   pointcol="black", segcol="chocolate", misscol=NA,
   ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
@@ -73,29 +73,36 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
   if (length(ylab) == 1)
     ylab <- rep(ylab, times=ncol(x))
   all.chrom <- chromosomes(x)
-  if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
-    copynumber <- unlog2adhoc(copynumber)
-    chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
-  } else {
-    all.chrom.lengths <- aggregate(bpend(x),
-      by=list(chromosome=all.chrom), FUN=max)
-    chrom.lengths <- all.chrom.lengths$x
-    names(chrom.lengths) <- all.chrom.lengths$chromosome
-  }
   chrom <- all.chrom[condition]
   uni.chrom <- unique(chrom)
-  chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
-  pos <- as.numeric(bpstart(x)[condition])
-  pos2 <- as.numeric(bpend(x)[condition])
-  chrom.ends <- integer()
-  cumul <- 0
-  for (i in uni.chrom) {
-    pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
-    pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
-    cumul <- cumul + chrom.lengths[as.character(i)]
-    chrom.ends <- c(chrom.ends, cumul)
+  if (!scale) {
+    pos <- pos2 <- 1:sum(condition)
+    chrom.ends <- aggregate(pos,
+      by=list(chromosome=chrom), FUN=max)$x
+  } else {
+    if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
+      chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+    } else {
+      all.chrom.lengths <- aggregate(bpend(x),
+        by=list(chromosome=all.chrom), FUN=max)
+      chrom.lengths <- all.chrom.lengths$x
+      names(chrom.lengths) <- all.chrom.lengths$chromosome
+    }
+    pos <- as.numeric(bpstart(x)[condition])
+    pos2 <- as.numeric(bpend(x)[condition])
+    chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
+    chrom.ends <- integer()
+    cumul <- 0
+    for (i in uni.chrom) {
+      pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
+      pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
+      cumul <- cumul + chrom.lengths[as.character(i)]
+      chrom.ends <- c(chrom.ends, cumul)
+    }
+    names(chrom.ends) <- names(chrom.lengths)
   }
-  names(chrom.ends) <- names(chrom.lengths)
+  if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
+    copynumber <- unlog2adhoc(copynumber)
   if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
     symbol <- quote(hat(sigma)[Delta])
   } else {
