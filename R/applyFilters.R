@@ -36,6 +36,12 @@
 #   Returns a @see "QDNAseqReadCounts" object with updated filtering.
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+# }
+#
 # @author "IS"
 #
 # @keyword IO

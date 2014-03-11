@@ -17,6 +17,15 @@
 #   \item{...}{...}
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+#   readCountsFiltered <- estimateCorrection(readCountsFiltered)
+#   copyNumbers <- correctBins(readCountsFiltered)
+#   plot(copyNumbers)
+# }
+#
 # @author "IS"
 #
 #*/#########################################################################
@@ -245,6 +254,20 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 #   \item{...}{...}
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+#   readCountsFiltered <- estimateCorrection(readCountsFiltered)
+#   copyNumbers <- correctBins(readCountsFiltered)
+#   copyNumbersNormalized <- normalizeBins(copyNumbers)
+#   copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+#   copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+#   copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
+#   copyNumbersCalled <- callBins(copyNumbersSegmented)
+#   frequencyPlot(copyNumbersCalled)
+# }
+#
 # @author "IS"
 #
 #*/#########################################################################
@@ -324,6 +347,12 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 #   \item{x}{A @see "QDNAseqReadCounts" object.}
 #   \item{y}{missing}
 #   \item{...}{...}
+# }
+#
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   isobarPlot(readCounts)
 # }
 #
 # @author "IS"
@@ -428,6 +457,14 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
 #   \item{y}{missing}
 #   \item{...}{Further arguments to @see "graphics::plot" and
 #     @see "graphics::text".}
+# }
+#
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+#   readCountsFiltered <- estimateCorrection(readCountsFiltered)
+#   noisePlot(readCountsFiltered)
 # }
 #
 # @author "IS"

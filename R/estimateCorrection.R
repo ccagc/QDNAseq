@@ -35,6 +35,13 @@
 #   \code{fit} added.
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+#   readCountsFiltered <- estimateCorrection(readCountsFiltered)
+# }
+#
 # @author "IS"
 #
 # \seealso{

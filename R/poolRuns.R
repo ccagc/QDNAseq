@@ -25,6 +25,14 @@
 #   Returns a @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers" object.
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   # Note: the following command will "pool" data from a single run, which 
+#   # does not really make sense:
+#   pooledReadCounts <- poolRuns(readCounts, "LGG150")
+# }
+#
 # @author "IS"
 #
 #*/#########################################################################

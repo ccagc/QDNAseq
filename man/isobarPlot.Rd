@@ -28,5 +28,11 @@ isobarPlot(x, y, ...)
   \item{...}{...}
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  isobarPlot(readCounts)
+}
+
 \author{Ilari Scheinin}
 

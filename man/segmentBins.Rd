@@ -46,6 +46,17 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
     added.
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  readCountsFiltered <- applyFilters(readCounts)
+  readCountsFiltered <- estimateCorrection(readCountsFiltered)
+  copyNumbers <- correctBins(readCountsFiltered)
+  copyNumbersNormalized <- normalizeBins(copyNumbers)
+  copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+  copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+}
+
 \author{Ilari Scheinin}
 
 \seealso{

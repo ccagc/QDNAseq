@@ -48,6 +48,12 @@ applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
   Returns a \code{\link{QDNAseqReadCounts}} object with updated filtering.
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  readCountsFiltered <- applyFilters(readCounts)
+}
+
 \author{Ilari Scheinin}
 
 

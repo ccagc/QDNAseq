@@ -1,6 +1,10 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.1 [2014-03-11]
+o Added runnable examples to manual pages.
+
+
 Version: 0.99.0 [2014-03-11]
 o Added parameter scale to plot() to specify whether output should be scale
   according to chromosome sizes (default is TRUE).

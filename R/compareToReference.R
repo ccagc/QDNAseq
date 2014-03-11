@@ -30,6 +30,19 @@
 #   by the signal of their reference samples.
 # }
 #
+# \examples{
+#   data(LGG150)
+#   readCounts <- LGG150
+#   readCountsFiltered <- applyFilters(readCounts)
+#   readCountsFiltered <- estimateCorrection(readCountsFiltered)
+#   copyNumbers <- correctBins(readCountsFiltered)
+#   copyNumbersNormalized <- normalizeBins(copyNumbers)
+#   copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+#   # Note: the following command will compare the sample to itself, which
+#   # does not really make sense:
+#   tumorVsNormal <- compareToReference(copyNumbersSmooth, c(1))
+# }
+#
 # @author "IS"
 #
 #*/#########################################################################

@@ -47,6 +47,13 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
   \code{fit} added.
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  readCountsFiltered <- applyFilters(readCounts)
+  readCountsFiltered <- estimateCorrection(readCountsFiltered)
+}
+
 \author{Ilari Scheinin}
 
 \seealso{

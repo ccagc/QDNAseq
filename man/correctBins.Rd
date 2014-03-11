@@ -45,6 +45,14 @@ correctBins(object, fit=NULL, method="ratio", adjustIncompletes=TRUE, ...)
   \code{copynumber}.
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  readCountsFiltered <- applyFilters(readCounts)
+  readCountsFiltered <- estimateCorrection(readCountsFiltered)
+  copyNumbers <- correctBins(readCountsFiltered)
+}
+
 \author{Ilari Scheinin}
 
 \seealso{

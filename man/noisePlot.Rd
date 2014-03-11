@@ -29,5 +29,13 @@ noisePlot(x, y, ...)
     \code{\link[graphics]{text}}.}
 }
 
+\examples{
+  data(LGG150)
+  readCounts <- LGG150
+  readCountsFiltered <- applyFilters(readCounts)
+  readCountsFiltered <- estimateCorrection(readCountsFiltered)
+  noisePlot(readCountsFiltered)
+}
+
 \author{Ilari Scheinin}
 
