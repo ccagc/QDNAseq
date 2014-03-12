@@ -19,23 +19,25 @@ noisePlot(x, y, ...)
 }
 
 \description{
- Plot noise as a function of sequence depth.
+    Plot noise as a function of sequence depth.
 }
 
 \arguments{
-  \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
-  \item{y}{missing}
-  \item{...}{Further arguments to \code{\link[graphics]{plot}} and
-    \code{\link[graphics]{text}}.}
+    \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
+    \item{y}{missing}
+    \item{...}{Further arguments to \code{\link[graphics]{plot}} and
+        \code{\link[graphics]{text}}.}
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  readCountsFiltered <- applyFilters(readCounts)
-  readCountsFiltered <- estimateCorrection(readCountsFiltered)
-  noisePlot(readCountsFiltered)
+data(LGG150)
+readCounts <- LGG150
+readCountsFiltered <- applyFilters(readCounts)
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+noisePlot(readCountsFiltered)
 }
 
 \author{Ilari Scheinin}
 
+
+\keyword{hplot}

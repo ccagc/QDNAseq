@@ -20,47 +20,50 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
 }
 
 \description{
- Segments normalized copy number data.
+    Segments normalized copy number data.
 }
 
 \arguments{
-  \item{object}{An object of class QDNAseqCopyNumbers.}
-  \item{smoothBy}{An optional integer value to perform smoothing before
-    segmentation by taking the mean of every smoothBy bins, and then segment
-    those means. Default is to perform no smoothing.}
-  \item{alpha}{Significance levels for the test to accept change-points.}
-  \item{undo.splits}{A character string specifying how change-points are to be
-    undone, if at all.  Default is "none".  Other choices are
-    "prune", which uses a sum of squares criterion, and "sdundo",
-    which undoes splits that are not at least this many SDs
-    apart.}
-  \item{undo.SD}{The number of SDs between means to keep a split if
-    undo.splits="sdundo".}
-  \item{force}{Whether to force execution when it causes removal of
-    downstream calling results.}
-  \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
+    \item{object}{An object of class QDNAseqCopyNumbers.}
+    \item{smoothBy}{An optional integer value to perform smoothing before
+        segmentation by taking the mean of every smoothBy bins, and then
+        segment those means. Default is to perform no smoothing.}
+    \item{alpha}{Significance levels for the test to accept change-points.}
+    \item{undo.splits}{A character string specifying how change-points are to
+        be undone, if at all.    Default is "none".    Other choices are
+        "prune", which uses a sum of squares criterion, and "sdundo", which
+        undoes splits that are not at least this many SDs apart.}
+    \item{undo.SD}{The number of SDs between means to keep a split if
+        undo.splits="sdundo".}
+    \item{force}{Whether to force execution when it causes removal of
+        downstream calling results.}
+    \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 
 \value{
-  Returns an object of class QDNAseqCopyNumbers with segmentation results
-    added.
+    Returns an object of class QDNAseqCopyNumbers with segmentation results
+        added.
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  readCountsFiltered <- applyFilters(readCounts)
-  readCountsFiltered <- estimateCorrection(readCountsFiltered)
-  copyNumbers <- correctBins(readCountsFiltered)
-  copyNumbersNormalized <- normalizeBins(copyNumbers)
-  copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
-  copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+data(LGG150)
+readCounts <- LGG150
+readCountsFiltered <- applyFilters(readCounts)
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+copyNumbers <- correctBins(readCountsFiltered)
+copyNumbersNormalized <- normalizeBins(copyNumbers)
+copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
 }
 
 \author{Ilari Scheinin}
 
 \seealso{
-  Internally, \code{\link[DNAcopy]{segment}} of the \pkg{DNAcopy} package,
-  which implements the CBS method, is used to segment the data.
+    Internally, \code{\link[DNAcopy]{segment}} of the \pkg{DNAcopy} package,
+    which implements the CBS method, is used to segment the data.
 }
 
+
+
+\keyword{manip}
+\keyword{smooth}

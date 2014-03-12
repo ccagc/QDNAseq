@@ -1,29 +1,35 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IMPORTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-import("methods")
-import("Biobase")
-import("CGHbase")
-import("CGHcall")
+importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
+    Versioned, VersionedBiobase, Versions)
+importClassesFrom(CGHbase, cghCall, cghRaw, cghSeg)
+importClassesFrom(methods, character, logical, matrix, missing, numeric)
 
-importFrom("DNAcopy", "CNA")
-importFrom("DNAcopy", "segment")
-importFrom("DNAcopy", "smooth.CNA")
+importMethodsFrom(Biobase, AnnotatedDataFrame, assayData, classVersion, fData,
+    "fData<-", featureData, featureNames, pData, "pData<-", phenoData,
+    sampleNames, "sampleNames<-", varMetadata)
+importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
+    copynumber, "copynumber<-", frequencyPlot, plot, probamp, "probamp<-",
+    probdloss, "probdloss<-", probgain, "probgain<-", probloss, "probloss<-",
+    probnorm, "probnorm<-", segmented, "segmented<-")
+importMethodsFrom(matrixStats, colMedians, madDiff)
+importMethodsFrom(methods, coerce, initialize, show)
+importMethodsFrom(Rsamtools, scanBam, ScanBamParam)
 
-importFrom("matrixStats", "binCounts")
-importFrom("matrixStats", "colMedians")
-importFrom("matrixStats", "madDiff")
-importFrom("matrixStats", "sdDiff")
-
-importFrom("R.cache", "getCachePath")
-importFrom("R.cache", "loadCache")
-importFrom("R.cache", "saveCache")
-
-importFrom("R.utils", "downloadFile")
-
-importFrom("Rsamtools", "scanBam")
-importFrom("Rsamtools", "ScanBamParam")
-importFrom("Rsamtools", "scanBamFlag")
+importFrom(Biobase, assayDataElement, "assayDataElement<-",
+    assayDataElementNames, assayDataElementReplace, assayDataNew)
+importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
+importFrom(DNAcopy, CNA, segment, smooth.CNA)
+importFrom(graphics, abline, axis, axTicks, box, contour, mtext, par, rect,
+    segments)
+importFrom(matrixStats, binCounts)
+importFrom(methods, callNextMethod, new)
+importFrom(R.cache, getCachePath, loadCache, saveCache)
+importFrom(R.utils, downloadFile)
+importFrom(Rsamtools, scanBamFlag)
+importFrom(stats, lm, loess, predict)
+importFrom(utils, packageVersion, read.table, write.table)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS

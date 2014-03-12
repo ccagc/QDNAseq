@@ -2,7 +2,7 @@
 
 \documentclass{article}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{
-	hyperref}
+  hyperref}
 
 \begin{document}
 
@@ -59,7 +59,8 @@ section on generating the bin annotations.
 
 \subsection{Processing bam files}
 
-Next step is to load the sequencing data from bam files. This can be done for example with one of the commands below.
+Next step is to load the sequencing data from bam files. This can be done for
+example with one of the commands below.
 
 <<eval=FALSE>>=
 readCounts <- binReadCounts(bins)
@@ -90,22 +91,23 @@ readCounts <- LGG150
 readCounts
 @
 
-Plot a raw copy number profile (read counts across the genome), and highlight bins that will be removed with default filtering (Figure~\ref{fig:rawprofile}).
+Plot a raw copy number profile (read counts across the genome), and highlight
+bins that will be removed with default filtering (Figure~\ref{fig:rawprofile}).
 
 <<label=rawprofile>>=
 plot(readCounts, logTransform=FALSE, ylim=c(-50, 200))
 highlightFilters(readCounts, logTransform=FALSE,
-	residual=TRUE, blacklist=TRUE)
+  residual=TRUE, blacklist=TRUE)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<rawprofile>>
 @
-	\caption{Read counts per bins. Highlighted with red are bins that will be
-		filtered out.}
-	\label{fig:rawprofile}
+  \caption{Read counts per bins. Highlighted with red are bins that will be
+    filtered out.}
+  \label{fig:rawprofile}
 \end{figure}
 
 Apply filters and plot median read counts as a function of GC content and
@@ -115,20 +117,20 @@ expected for the entire genome.
 
 <<>>=
 readCountsFiltered <- applyFilters(readCounts,
-	residual=TRUE, blacklist=TRUE)
+  residual=TRUE, blacklist=TRUE)
 @
 <<label=isobar>>=
 isobarPlot(readCountsFiltered)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<isobar>>
 @
-	\caption{Median read counts per bin shown as a function of GC content and
-		mappability.}
-	\label{fig:isobar}
+  \caption{Median read counts per bin shown as a function of GC content and
+    mappability.}
+  \label{fig:isobar}
 \end{figure}
 
 Estimate the correction for GC content and mappability, and make a plot for the
@@ -146,12 +148,12 @@ noisePlot(readCountsFiltered)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<noise>>
 @
-	\caption{The relationship between sequence depth and noise.}
-	\label{fig:noise}
+  \caption{The relationship between sequence depth and noise.}
+  \label{fig:noise}
 \end{figure}
 
 Next, we apply the correction for GC content and mappability. This will return
@@ -169,37 +171,40 @@ plot(copyNumbersSmooth)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<profile>>
 @
-	\caption{Copy number profile after correcting for GC content and mappability.}
-	\label{fig:profile}
+  \caption{Copy number profile after correcting for GC content and mappability.}
+  \label{fig:profile}
 \end{figure}
 
 Data is now ready to be analyzed with a downstream package of choice.
 
 \subsection{Downstream analyses}
 
-Segmentation with the CBS algorithm from DNAcopy and calling copy number aberrations with CGHcall have been implemented for convenience.
+Segmentation with the CBS algorithm from DNAcopy and calling copy number
+aberrations with CGHcall have been implemented for convenience.
 
 <<>>=
 copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
 @
 <<label=segments>>=
 plot(copyNumbersSegmented)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<segments>>
 @
-	\caption{A plot}
-	\label{fig:segments}
+  \caption{A plot}
+  \label{fig:segments}
 \end{figure}
 
-Tune segmentation parameters and iterate until satisfied. Next, call aberrations, and plot the final results.
+Tune segmentation parameters and iterate until satisfied. Next, call
+aberrations, and plot the final results.
 
 <<>>=
 copyNumbersCalled <- callBins(copyNumbersSegmented)
@@ -209,15 +214,16 @@ plot(copyNumbersCalled)
 @
 
 \begin{figure}[h]
-	\centering
+  \centering
 <<fig=TRUE, echo=FALSE, results=hide>>=
 <<calls>>
 @
-	\caption{A plot}
-	\label{fig:calls}
+  \caption{A plot}
+  \label{fig:calls}
 \end{figure}
 
-Finally, for other downstream analyses, such as running CGHregions, it might be useful to convert to a cghCall object.
+Finally, for other downstream analyses, such as running CGHregions, it might be
+useful to convert to a cghCall object.
 
 <<>>=
 cgh <- makeCgh(copyNumbersCalled)
@@ -240,7 +246,12 @@ it before segmentation or calling.
 
 \section{Generating bin annotations}
 
-This section describes how bin annotations have been created for the hg19 build of the human reference genome, and can be applied for other genome builds and species. The first step is to create the bins based on chromosome sizes, and calculate their GC content and proportion of characterized nucletodies (non-N bases in the reference sequence). For this, the corresponding \pkg{BSgenome} package is needed.
+This section describes how bin annotations have been created for the hg19 build
+of the human reference genome, and can be applied for other genome builds and
+species. The first step is to create the bins based on chromosome sizes, and
+calculate their GC content and proportion of characterized nucletodies (non-N
+bases in the reference sequence). For this, the corresponding \pkg{BSgenome}
+package is needed.
 
 <<eval=FALSE>>=
 # load required packages for human reference genome build hg19
@@ -285,14 +296,14 @@ the \code{BED} format, like files
 \href{http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}{
 ENCODE's download section of the UCSC Genome Browser} for hg19.
 
-<<eval=FALSE>>=	
+<<eval=FALSE>>=
 # calculate overlap with ENCODE blacklisted regions
 bins$blacklist <- calculateBlacklist(bins,
   bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
 @
 
-1000G TBA...
+A section on how to obtain the 1000 Genomes data to be added...
 
 <<eval=FALSE>>=
 # load data for the 1000 Genomes (or similar) data set, and generate residuals
@@ -334,7 +345,8 @@ bins <- AnnotatedDataFrame(bins,
   row.names=colnames(bins)))
 @
 
-For the pre-generated annotations, some additional descriptive metadata has also been added.
+For the pre-generated annotations, some additional descriptive metadata has
+also been added.
 
 <<eval=FALSE>>=
 attr(bins, "QDNAseq") <- list(

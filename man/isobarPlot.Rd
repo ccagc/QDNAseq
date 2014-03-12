@@ -19,20 +19,22 @@ isobarPlot(x, y, ...)
 }
 
 \description{
- Plot median read counts as a function of GC content and mappability.
+    Plot median read counts as a function of GC content and mappability.
 }
 
 \arguments{
-  \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
-  \item{y}{missing}
-  \item{...}{...}
+    \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
+    \item{y}{missing}
+    \item{...}{...}
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  isobarPlot(readCounts)
+data(LGG150)
+readCounts <- LGG150
+isobarPlot(readCounts)
 }
 
 \author{Ilari Scheinin}
 
+
+\keyword{hplot}

@@ -19,7 +19,7 @@
 \title{A parent class for containers of QDNAseq data}
 
 \description{
-  A parent class for containers of QDNAseq data
+    A parent class for containers of QDNAseq data
 }
 
 \author{Ilari Scheinin}

@@ -19,28 +19,30 @@ frequencyPlot(x, y, ...)
 }
 
 \description{
- Plot copy number aberration frequencies.
+    Plot copy number aberration frequencies.
 }
 
 \arguments{
-  \item{x}{A \code{\link{QDNAseqCopyNumbers}} object with \code{calls} data.}
-  \item{y}{missing}
-  \item{...}{...}
+    \item{x}{A \code{\link{QDNAseqCopyNumbers}} object with \code{calls} data.}
+    \item{y}{missing}
+    \item{...}{...}
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  readCountsFiltered <- applyFilters(readCounts)
-  readCountsFiltered <- estimateCorrection(readCountsFiltered)
-  copyNumbers <- correctBins(readCountsFiltered)
-  copyNumbersNormalized <- normalizeBins(copyNumbers)
-  copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
-  copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
-  copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
-  copyNumbersCalled <- callBins(copyNumbersSegmented)
-  frequencyPlot(copyNumbersCalled)
+data(LGG150)
+readCounts <- LGG150
+readCountsFiltered <- applyFilters(readCounts)
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+copyNumbers <- correctBins(readCountsFiltered)
+copyNumbersNormalized <- normalizeBins(copyNumbers)
+copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
+copyNumbersCalled <- callBins(copyNumbersSegmented)
+frequencyPlot(copyNumbersCalled)
 }
 
 \author{Ilari Scheinin}
 
+
+\keyword{hplot}

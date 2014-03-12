@@ -19,36 +19,38 @@ callBins(object, ...)
 }
 
 \description{
- Call aberrations from segmented copy number data.
+    Call aberrations from segmented copy number data.
 }
 
 \arguments{
-  \item{object}{An object of class QDNAseqCopyNumbers}
-  \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
+    \item{object}{An object of class QDNAseqCopyNumbers}
+    \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
 \value{
-  Returns an object of class QDNAseqCopyNumbers with segmentation results
-    added.
+    Returns an object of class \code{\link{QDNAseqCopyNumbers}} with segmentation
+    results added.
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  readCountsFiltered <- applyFilters(readCounts)
-  readCountsFiltered <- estimateCorrection(readCountsFiltered)
-  copyNumbers <- correctBins(readCountsFiltered)
-  copyNumbersNormalized <- normalizeBins(copyNumbers)
-  copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
-  copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
-  copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
-  copyNumbersCalled <- callBins(copyNumbersSegmented)
+data(LGG150)
+readCounts <- LGG150
+readCountsFiltered <- applyFilters(readCounts)
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+copyNumbers <- correctBins(readCountsFiltered)
+copyNumbersNormalized <- normalizeBins(copyNumbers)
+copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
+copyNumbersCalled <- callBins(copyNumbersSegmented)
 }
 
 \author{Ilari Scheinin}
 
 \seealso{
-  Internally, \code{\link[CGHcall]{CGHcall}} and \code{\link[CGHcall]{ExpandCGHcall}} of
+    Internally, \code{\link[CGHcall]{CGHcall}} and \code{\link[CGHcall]{ExpandCGHcall}} of
     the \pkg{DNAcopy} package are used.
 }
 
+
+\keyword{manip}

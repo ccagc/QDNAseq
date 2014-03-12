@@ -1,6 +1,13 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.2 [2014-03-12]
+o Added biocViews.
+o Added more examples to manual pages.
+o Updated NAMESPACE imports.
+o Changed coding style of intendation from two to four spaces.
+
+
 Version: 0.99.1 [2014-03-11]
 o Added runnable examples to manual pages.
 

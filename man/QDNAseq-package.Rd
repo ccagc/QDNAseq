@@ -15,20 +15,20 @@
 
 
 \description{
-  Quantitative DNA sequencing for chromosomal aberrations.
+    Quantitative DNA sequencing for chromosomal aberrations.
 }
 
 \section{Details}{
-  A package to detect chromosomal aberrations from whole-genome sequencing
-  data. \code{\link{QDNAseqReadCounts}} and \code{\link{QDNAseqCopyNumbers}} classes are
-  used as the main data structures.
+    A package to detect chromosomal aberrations from whole-genome sequencing
+    data. \code{\link{QDNAseqReadCounts}} and \code{\link{QDNAseqCopyNumbers}} classes are
+    used as the main data structures.
 }
 
 \section{How to cite this package}{
-  Whenever using this package, please cite
-  \preformatted{
+    Whenever using this package, please cite
+    \preformatted{
 Ilari Scheinin (2014). QDNAseq: Quantitative DNA sequencing for chromosomal
-aberrations. R package version 0.99.1.
+aberrations. R package version 0.99.2.
 }
 \emph{}
 
@@ -37,6 +37,6 @@ aberrations. R package version 0.99.1.
 \author{Ilari Scheinin}
 
 \section{License}{
-  The releases of this package is licensed under GPL.
+    The releases of this package is licensed under GPL.
 }
 \keyword{package}

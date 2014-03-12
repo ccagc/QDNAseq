@@ -42,6 +42,20 @@ createBins(bsgenome, binSize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
   of non-N nucleotides).
 }
 
+\examples{
+\dontrun{# NOTE: These take a very long time to run.
+library(BSgenome.Hsapiens.UCSC.hg19)
+bins <- createBins(BSgenome.Hsapiens.UCSC.hg19, 15)
+bins$mappability <- calculateMappability(bins,
+    bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
+    bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+ bins$blacklist <- calculateBlacklist(bins,
+    bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
+    '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+bins$residual <- iterateResiduals(readCountsG1K)
+}
+}
+
 \author{Ilari Scheinin}
 
 \seealso{

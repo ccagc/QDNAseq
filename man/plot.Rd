@@ -19,23 +19,25 @@ plot(x, y, ...)
 }
 
 \description{
- Plot copy number profile.
+    Plot copy number profile.
 }
 
 \arguments{
-  \item{x}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.}
-  \item{y}{missing}
-  \item{...}{...}
+    \item{x}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.}
+    \item{y}{missing}
+    \item{...}{...}
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  readCountsFiltered <- applyFilters(readCounts)
-  readCountsFiltered <- estimateCorrection(readCountsFiltered)
-  copyNumbers <- correctBins(readCountsFiltered)
-  plot(copyNumbers)
+data(LGG150)
+readCounts <- LGG150
+readCountsFiltered <- applyFilters(readCounts)
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+copyNumbers <- correctBins(readCountsFiltered)
+plot(copyNumbers)
 }
 
 \author{Ilari Scheinin}
 
+
+\keyword{hplot}

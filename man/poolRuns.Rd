@@ -19,30 +19,32 @@ poolRuns(object, samples, force=FALSE)
 }
 
 \description{
- Pools binned read counts across samples.
+    Pools binned read counts across samples.
 }
 
 \arguments{
-  \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
-    object.}
-  \item{samples}{A character vector of new sample names. Samples with
-    identical names will be pooled together. Must be the same length as there
-    are samples in \code{object}.}
-  \item{force}{Whether to force the operation even when downstream data will
-    be lost.}
+    \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
+        object.}
+    \item{samples}{A character vector of new sample names. Samples with
+        identical names will be pooled together. Must be the same length as
+        there are samples in \code{object}.}
+    \item{force}{Whether to force the operation even when downstream data will
+        be lost.}
 }
 
 \value{
-  Returns a \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.
+    Returns a \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.
 }
 
 \examples{
-  data(LGG150)
-  readCounts <- LGG150
-  # Note: the following command will "pool" data from a single run, which
-  # does not really make sense:
-  pooledReadCounts <- poolRuns(readCounts, "LGG150")
+data(LGG150)
+readCounts <- LGG150
+# Note: the following command will "pool" data from a single run, which
+# does not really make sense:
+pooledReadCounts <- poolRuns(readCounts, "LGG150")
 }
 
 \author{Ilari Scheinin}
 
+
+\keyword{manip}

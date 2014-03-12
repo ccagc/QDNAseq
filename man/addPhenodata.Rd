@@ -10,32 +10,40 @@
 \alias{addPhenodata}
 
 
-\title{Gets bin annotation data for a particular bin size}
+\title{Adds phenotype data from a file to a QDNAseqReadCounts or a
+    QDNAseqCopyNumbers object}
 
 \usage{
 addPhenodata(object, phenofile)
 }
 
 \description{
- Gets bin annotation data for a particular bin size.
+    Adds phenotype data from a file to a QDNAseqReadCounts or a
+    QDNAseqCopyNumbers object.
 }
 
 \arguments{
-  \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
-  object.}
-  \item{phenofile}{A file name with phenotypic data for samples in
-  \code{object}.}
+    \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
+        object.}
+    \item{phenofile}{A file name with phenotypic data for samples in
+        \code{object}.}
 }
 
 \value{
-  Returns a named \code{\link[base]{list}} with element 'phenodata' ...
+    Returns a \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object
+    with phenotype data added.
 }
 
+\examples{
+data(LGG150)
+readCounts <- LGG150
+\dontrun{
+readCounts <- addPhenodata(readCounts, "phenodata.txt")
+}
+}
 \author{Ilari Scheinin}
 
-\seealso{
-  ...
-}
 
 
 \keyword{IO}
+\keyword{file}
