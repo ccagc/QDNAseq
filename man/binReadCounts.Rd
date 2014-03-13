@@ -21,7 +21,7 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
 }
 
 \description{
-   Calculate binned read counts from a set of BAM files.
+    Calculate binned read counts from a set of BAM files.
 }
 
 \arguments{

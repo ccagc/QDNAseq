@@ -19,7 +19,7 @@ compareToReference(object, references, force=FALSE)
 }
 
 \description{
-   Divide binned read counts with those of reference samples.
+    Divide binned read counts with those of reference samples.
 }
 
 \arguments{

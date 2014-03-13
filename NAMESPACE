@@ -21,8 +21,8 @@ importFrom(Biobase, assayDataElement, "assayDataElement<-",
     assayDataElementNames, assayDataElementReplace, assayDataNew)
 importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
 importFrom(DNAcopy, CNA, segment, smooth.CNA)
-importFrom(graphics, abline, axis, axTicks, box, contour, mtext, par, rect,
-    segments)
+importFrom(graphics, abline, axis, axTicks, box, contour, image, mtext, par,
+    points, rect, segments, text)
 importFrom(matrixStats, binCounts)
 importFrom(methods, callNextMethod, new)
 importFrom(R.cache, getCachePath, loadCache, saveCache)

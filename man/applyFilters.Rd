@@ -20,7 +20,7 @@ applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
 }
 
 \description{
-   Adjusts the filtering on which bins are used.
+    Adjusts the filtering on which bins are used.
 }
 
 \arguments{

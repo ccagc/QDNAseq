@@ -6,7 +6,7 @@
 # @synopsis
 #
 # \description{
-#    @get "title".
+#     @get "title".
 # }
 #
 # \arguments{
