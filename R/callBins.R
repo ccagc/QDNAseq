@@ -1,0 +1,73 @@
+#########################################################################/**
+# @RdocFunction callBins
+#
+# @alias callBins,QDNAseqCopyNumbers-method
+#
+# @title "Call aberrations from segmented copy number data"
+#
+# @synopsis
+#
+# \description{
+#     @get "title".
+# }
+#
+# \arguments{
+#     \item{object}{An object of class QDNAseqCopyNumbers}
+#     \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
+# }
+#
+# \value{
+#     Returns an object of class @see "QDNAseqCopyNumbers" with segmentation
+#     results added.
+# }
+#
+# \examples{
+# data(LGG150)
+# readCounts <- LGG150
+# readCountsFiltered <- applyFilters(readCounts)
+# readCountsFiltered <- estimateCorrection(readCountsFiltered)
+# copyNumbers <- correctBins(readCountsFiltered)
+# copyNumbersNormalized <- normalizeBins(copyNumbers)
+# copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+# copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+# copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
+# copyNumbersCalled <- callBins(copyNumbersSegmented)
+# }
+#
+# @author "IS"
+#
+# \seealso{
+#     Internally, @see "CGHcall::CGHcall" and @see "CGHcall::ExpandCGHcall" of
+#     the \pkg{DNAcopy} package are used.
+# }
+#
+# @keyword manip
+#*/#########################################################################
+setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
+    definition=function(object, ...) {
+    ## Mark van de Wiel confirms that CGHcall::CGHcall() assumes (=requires)
+    ## CNs on the *log* scale. /IS (private email 'Log and non-positives'
+    ## on 2013-12-18 between IS and HB).
+    seg <- makeCgh(object)
+    listcall <- CGHcall(seg, ...)
+    cgh <- ExpandCGHcall(listcall, seg)
+    calls(object) <- calls(cgh)
+    if ('probdloss' %in% assayDataElementNames(cgh)) {
+        probdloss(object) <- probdloss(cgh)
+    } else {
+        if ('probdloss' %in% assayDataElementNames(object))
+            probdloss(object) <- NULL
+    }
+    probloss(object) <- probloss(cgh)
+    probnorm(object) <- probnorm(cgh)
+    probgain(object) <- probgain(cgh)
+    if ('probamp' %in% assayDataElementNames(cgh)) {
+        probamp(object) <- probamp(cgh)
+    } else {
+        if ('probamp' %in% assayDataElementNames(object))
+            probamp(object) <- NULL
+    }
+    object
+})
+
+# EOF

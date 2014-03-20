@@ -1,0 +1,128 @@
+Package: QDNAseq
+================
+
+Version: 0.99.3 [2014-03-13]
+o Fix imports.
+o Change coding style of intendation for one leftover file.
+
+
+Version: 0.99.2 [2014-03-12]
+o Added biocViews.
+o Added more examples to manual pages.
+o Updated NAMESPACE imports.
+o Changed coding style of intendation from two to four spaces.
+
+
+Version: 0.99.1 [2014-03-11]
+o Added runnable examples to manual pages.
+
+
+Version: 0.99.0 [2014-03-11]
+o Added parameter scale to plot() to specify whether output should be scale
+  according to chromosome sizes (default is TRUE).
+o Version number bumped to 0.99.0 for Bioconductor.
+
+
+Version: 0.8.0 [2014-03-07]
+o Added more information to the manual pages.
+
+
+Version: 0.7.7 [2014-02-24]
+o Added the value of expected standard deviation (based on sequence depth)
+  to copy number profile plots, and an option to choose which labels to to show
+  along the x-axis of noisePlot(): average number of reads per bin, its
+  reciprocal, or total number of reads.
+
+
+Version: 0.7.6 [2014-02-20]
+o Added a new function for calculating standard deviations using a trimmed
+  (default 0.1%) first-order estimator.
+
+
+Version: 0.7.5 [2014-02-06]
+o Introduced smoothOutlierBins() and normalizeSegmentedBins() as separate
+  functions instead of them being parts of normalizeBins() and segmentBins().
+o Renamed readCountPlot() to isobarPlot() and added an option to plot loess
+  fits and residuals in addition to median read counts.
+o Standard deviation in the top-right corner of profile plots is now calculated
+  without taking a log2-tranformation.
+o DOCUMENTATION: Updates to the manual pages and vignette.
+
+
+Version: 0.7.0 [2014-01-28]
+o QDNAseqCopyNumbers now stores all signals on the original non-log scale.
+o Now using classes QDNAseqReadCounts and QDNAseqCopyNumbers which both
+  inherits from QDNAseqSignals.
+
+
+Version: 0.6.3 [2014-01-25]
+o Added support for coercing an QDNAseqReadCounts object to an
+  CGHcall::cghRaw object via as(x, "cghRaw") and similar for coercing
+  to cghSeg and cghCall.
+o Added argument 'filter' to makeCgh() to control whether to drop
+  "filtered" bins from the created object or not.
+o ROBUSTNESS: Now makeCgh() gives a more informative error message when
+  it fails to create a CGHcall::cgh* object.
+o DOCUMENTATION: Added more information to the help for QDNAseqReadCounts,
+  binReadCounts(), correctBins() and normalizeBins().
+
+
+Version: 0.6.2 [2014-01-21]
+o Added argument 'offset=2^-10' to compareToReference().  Previously,
+  the default behavior corresponded to offset=1.
+o DOCUMENTATION: Added more on help for makeCgh().
+
+
+Version: 0.6.1 [2014-01-13]
+o Now normalizeBins(..., logTransform=FALSE) scales the signals toward
+  the target (mean, median or mode) rather than shifts them, which is the
+  case when logTransform=TRUE.
+o Added support for method="mean" of normalizeBins().
+o Now normalizeBins() passes '...' to DNAcopy::smooth.CNA().
+o DOCUMENTATION: Added help details on arguments of binReadCounts()
+  and normalizeBins().
+
+
+Version: 0.6.0 [2013-11-22]
+o Improved correction for GC content and mappability.
+o Revamped caching of intermediate files.
+
+
+Version: 0.5.8 [2013-11-16]
+o Now it is possible to disable verbose message, i.e.
+  options('QDNAseq::verbose'=FALSE).
+
+
+Version: 0.5.7 [2013-11-04]
+o ...
+
+
+Version: 0.5.6 [2013-10-31]
+o Added a NEWS file (this file).
+o Cleaned up and updated package dependencies.
+
+
+Version: 0.5.0 [2013-10-18]
+o ...
+
+
+Version: 0.4.2 [2013-08-30]
+o ...
+
+
+Version: 0.4.0 [2013-08-19]
+o ...
+
+
+Version: 0.3.2 [2013-08-05]
+o ...
+
+
+Version: 0.2.0 [2013-06-23]
+o ...
+
+
+Version: 0.1.0 [2013-05-06]
+o Added package to repository.
+
+
