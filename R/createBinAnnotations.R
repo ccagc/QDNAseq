@@ -96,8 +96,7 @@ createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
 calculateMappability <- function(bins, bigWigFile,
     bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
     vmsg("Calculating mappabilities per bin from file\n    ", bigWigFile,
-        "\n    ",
-        appendLF=FALSE)
+        "\n    ", appendLF=FALSE)
     binbed <- tempfile(fileext=".bed")
     mapbed <- tempfile(fileext=".bed")
     bins <- bins[,c("chromosome", "start", "end")]
