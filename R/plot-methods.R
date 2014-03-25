@@ -127,6 +127,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         cn <- copynumber[, i]
         if ("segmented" %in% assayDataElementNames(x)) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
+            if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
+                segmented <- unlog2adhoc(segmented)
             if (logTransform)
                 segmented <- log2adhoc(segmented)
             segment <- CGHbase:::.makeSegments(segmented, chrom)
@@ -276,12 +278,18 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     function(x, y, main="Frequency Plot", losscol="red", gaincol="blue",
     misscol=NA, ... ) {
-    condition <- binsToUse(x)
+
     all.chrom <- chromosomes(x)
-    all.chrom.lengths <- aggregate(bpend(x),
-        by=list(chromosome=all.chrom), FUN=max)
-    chrom.lengths <- all.chrom.lengths$x
-    names(chrom.lengths) <- all.chrom.lengths$chromosome
+    if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
+        condition <- rep(TRUE, times=nrow(x))
+        chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+    } else {
+        condition <- binsToUse(x)
+        all.chrom.lengths <- aggregate(bpend(x),
+            by=list(chromosome=all.chrom), FUN=max)
+        chrom.lengths <- all.chrom.lengths$x
+        names(chrom.lengths) <- all.chrom.lengths$chromosome
+    }
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
     chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
@@ -327,6 +335,8 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
         str <- paste(str, round(probe / 1000), " kbp", sep="")
     }
     mtext(str, side=3, line=0, adj=0, cex=par("cex"))
+    ### number of samples
+    mtext(paste(ncol(x), "samples"), side=3, line=0, adj=1, cex=par("cex"))
 })
 
 

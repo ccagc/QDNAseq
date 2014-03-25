@@ -21,9 +21,10 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
-#     \item{cache}{Whether to read and write intermediate cache files, which can
-#         speed up subsequent analyses of the same files. Defaults to
-#         getOption("QDNAseq::cache", FALSE).}
+#     \item{cache}{Whether to read and write intermediate cache files, which
+#         speeds up subsequent analyses of the same files. Requires packages
+#         R.cache and digest (both available on CRAN) to be installed. Defaults
+#         to getOption("QDNAseq::cache", FALSE).}
 #     \item{force}{When using the cache, whether to force reading input data
 #         from the BAM files even when an intermediate cache file is present.}
 #     \item{isPaired}{A logical(1) indicating whether unpaired (FALSE), paired
@@ -151,11 +152,13 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
     ## purge outdated files from the cache
     QDNAseqCacheKeyVersion <- "0.6.0"
-    cachePath <- normalizePath(getCachePath(dirs=c("QDNAseq",
-        QDNAseqCacheKeyVersion)))
-    oldCaches <- setdiff(list.files(dirname(cachePath), full.names=TRUE),
-        cachePath)
-    sapply(oldCaches, FUN=unlink, recursive=TRUE)
+    if (cache) {
+        cachePath <- normalizePath(R.cache::getCachePath(dirs=c("QDNAseq",
+            QDNAseqCacheKeyVersion)))
+        oldCaches <- setdiff(list.files(dirname(cachePath), full.names=TRUE),
+            cachePath)
+        sapply(oldCaches, FUN=unlink, recursive=TRUE)
+    }
 
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
@@ -176,7 +179,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     readCountCacheDir <- c('QDNAseq', QDNAseqCacheKeyVersion, 'readCounts')
     readCountCacheSuffix <- paste('.', fullname, '.', binSize, 'kbp', sep='')
     if (!force) {
-        readCounts <- loadCache(key=readCountCacheKey, sources=bamfile,
+        readCounts <- R.cache::loadCache(key=readCountCacheKey, sources=bamfile,
             suffix=readCountCacheSuffix, dirs=readCountCacheDir)
         if (!is.null(readCounts)) {
             vmsg('Loaded binned read counts from cache for ', basename(bamfile),
@@ -184,7 +187,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             if (is.null(attr(readCounts, 'QDNAseqVersion'))) {
                 attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
                 vmsg(', re-caching with version number ...', appendLF=FALSE)
-                saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
+                R.cache::saveCache(readCounts, key=readCountCacheKey,
+                    sources=bamfile,
                     suffix=readCountCacheSuffix, dirs=readCountCacheDir,
                     compress=TRUE)
             }
@@ -209,7 +213,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     readCacheSuffix <- paste('.', fullname, sep='')
     hits <- NULL
     if (!force)
-        hits <- loadCache(key=readCacheKey, sources=bamfile,
+        hits <- R.cache::loadCache(key=readCacheKey, sources=bamfile,
             suffix=readCacheSuffix, dirs=readCacheDir)
 
     if (!is.null(hits)) {
@@ -218,7 +222,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         if (is.null(attr(hits, 'QDNAseqVersion'))) {
             attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
             vmsg(' re-caching with version number ...', appendLF=FALSE)
-            saveCache(hits, key=readCacheKey, sources=bamfile,
+            R.cache::saveCache(hits, key=readCacheKey, sources=bamfile,
                 suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
         }
     } else {
@@ -261,7 +265,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         if (cache) {
             attr(hits, 'QDNAseqVersion') <- packageVersion('QDNAseq')
             vmsg(' saving in cache ...', appendLF=FALSE)
-            saveCache(hits, key=readCacheKey, sources=bamfile,
+            R.cache::saveCache(hits, key=readCacheKey, sources=bamfile,
                 suffix=readCacheSuffix, dirs=readCacheDir, compress=TRUE)
         }
     }
@@ -297,7 +301,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (cache) {
         attr(readCounts, 'QDNAseqVersion') <- packageVersion('QDNAseq')
         vmsg(' saving in cache ...', appendLF=FALSE)
-        saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
+        R.cache::saveCache(readCounts, key=readCountCacheKey, sources=bamfile,
             suffix=readCountCacheSuffix, dirs=readCountCacheDir, compress=TRUE)
     }
 
