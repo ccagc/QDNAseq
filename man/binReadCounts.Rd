@@ -36,9 +36,10 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
         file names with extension ext removed.}
     \item{phenofile}{An optional character(1) specifying a file name for
         phenotype data.}
-    \item{cache}{Whether to read and write intermediate cache files, which can
-        speed up subsequent analyses of the same files. Defaults to
-        getOption("QDNAseq::cache", FALSE).}
+    \item{cache}{Whether to read and write intermediate cache files, which
+        speeds up subsequent analyses of the same files. Requires packages
+        R.cache and digest (both available on CRAN) to be installed. Defaults
+        to getOption("QDNAseq::cache", FALSE).}
     \item{force}{When using the cache, whether to force reading input data
         from the BAM files even when an intermediate cache file is present.}
     \item{isPaired}{A logical(1) indicating whether unpaired (FALSE), paired

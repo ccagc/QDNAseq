@@ -1,6 +1,11 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.4 [2014-03-25]
+o Make R.cache an optional instead of required package, as it is only needed
+  when binReadCounts() is run with with caching turned on.
+
+
 Version: 0.99.3 [2014-03-13]
 o Fix imports.
 o Change coding style of intendation for one leftover file.

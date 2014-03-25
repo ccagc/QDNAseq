@@ -21,7 +21,7 @@
 # \details{
 #     This function recursively searches for the interval containing the
 #     most segmented data, decreasing the interval length in each
-#     recursion.    The recursive search makes the post-segmentation
+#     recursion. The recursive search makes the post-segmentation
 #     normalization robust against local maxima. This function is
 #     particularly useful for profiles for which, after segmentation,
 #     the 0-level does not coincide with many segments. It is more or

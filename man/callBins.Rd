@@ -27,8 +27,16 @@ callBins(object, ...)
     \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
+\details{
+    Chromosomal aberrations are called with \pkg{CGHcall}. It has been
+    developed for the analysis of series of cancer samples, and uses a model
+    that contains both gains and losses. If used on a single sample, or
+    especially only on a subset of chromosomes, or especially on a single
+    non-cancer sample, it may fail.
+}
+
 \value{
-    Returns an object of class \code{\link{QDNAseqCopyNumbers}} with segmentation
+    Returns an object of class \code{\link{QDNAseqCopyNumbers}} with calling
     results added.
 }
 
@@ -49,7 +57,7 @@ copyNumbersCalled <- callBins(copyNumbersSegmented)
 
 \seealso{
     Internally, \code{\link[CGHcall]{CGHcall}} and \code{\link[CGHcall]{ExpandCGHcall}} of
-    the \pkg{DNAcopy} package are used.
+    the \pkg{CGHcall} package are used.
 }
 
 
