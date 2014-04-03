@@ -25,18 +25,15 @@
 }
 
 \section{How to cite this package}{
-    Whenever using this package, please cite
-    \preformatted{
-Ilari Scheinin (2014). QDNAseq: Quantitative DNA sequencing for chromosomal
-aberrations. R package version 0.99.4.
-}
-\emph{}
-
+    Whenever using this package, please cite:
+    Scheinin I, Sie D, Bengtsson H, van de Wiel MA, Olshen AB, van Thuijl HF, van Essen HF, Eijk PP, Rustenburg F, Meijer GA, Reijneveld JC, Wesseling P, Pinkel D, Albertson DG and Ylstra B
+(2014). "DNA copy number analysis of fresh and formalin-fixed specimens by whole-genome sequencing: improved correction of systematic biases and exclusion of problematic regions."
+_Submitted_.
 }
 
 \author{Ilari Scheinin}
 
 \section{License}{
-    The releases of this package is licensed under GPL.
+    This package is licensed under GPL.
 }
 \keyword{package}

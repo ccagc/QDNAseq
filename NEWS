@@ -1,6 +1,11 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.5 [2014-04-03]
+o Update createBins() to use package GenomeInfoDb.
+o Add CITATION file and update DESCRIPTION with GitHub URLs.
+
+
 Version: 0.99.4 [2014-03-25]
 o Make R.cache an optional instead of required package, as it is only needed
   when binReadCounts() is run with with caching turned on.

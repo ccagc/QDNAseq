@@ -18,8 +18,6 @@
 #     \item{binSize}{A @numeric scalar specifying the width of the bins
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
-#     \item{ignoreUnderscored}{Whether to ignore sequences with underscores
-#         in their names.}
 #     \item{ignoreMitochondria}{Wheter to ignore the mitochondria.}
 # }
 #
@@ -51,11 +49,10 @@
 #     @see "downloadBinAnnotations".
 # }
 #*/#########################################################################
-createBins <- function(bsgenome, binSize, ignoreUnderscored=TRUE,
-    ignoreMitochondria=TRUE) {
-    chrs <- GenomicRanges::seqnames(bsgenome)
-    if (ignoreUnderscored)
-        chrs <- chrs[-grep("_", chrs)]
+createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
+    info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
+    style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
+    chrs <- info[, style]
     if (ignoreMitochondria)
         chrs <- chrs[-grep("^(chr)?M(T)?$", chrs)]
     lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]

@@ -1,3 +1,2 @@
 ^Makefile$
-^incl
-^NAMESPACE,.*.txt$
+^README.md$
