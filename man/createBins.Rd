@@ -17,7 +17,7 @@
 \title{Builds bin annotation data for a particular bin size}
 
 \usage{
-createBins(bsgenome, binSize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
+createBins(bsgenome, binSize, ignoreMitochondria=TRUE)
 }
 
 \description{
@@ -29,8 +29,6 @@ createBins(bsgenome, binSize, ignoreUnderscored=TRUE, ignoreMitochondria=TRUE)
     \item{binSize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
         to 15 kbp bins.}
-    \item{ignoreUnderscored}{Whether to ignore sequences with underscores
-        in their names.}
     \item{ignoreMitochondria}{Wheter to ignore the mitochondria.}
 }
 
