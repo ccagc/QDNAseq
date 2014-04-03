@@ -12,13 +12,13 @@
 # }
 #
 # \section{How to cite this package}{
-#     Whenever using this package, please cite
-#     @howtocite "QDNAseq"
+#     Whenever using this package, please cite:
+#     @eval "format(citation('QDNAseq'), style='text')"
 # }
 #
 # @author
 #
 # \section{License}{
-#     The releases of this package is licensed under GPL.
+#     This package is licensed under GPL.
 # }
 #*/#########################################################################
