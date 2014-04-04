@@ -28,8 +28,9 @@
 #     \item{bases}{A @numeric specifying the minimum percentage of characterized
 #         bases (not Ns) in the reference genome sequence. NA (default) or
 #         @FALSE will not filted based on uncharacterized bases.}
-#     \item{filterAllosomes}{A @logical specifying whether to filter out the sex
-#         chromosomes. Default is @TRUE.}
+#     \item{chromosomes}{A @character vector specifying which chromosomes
+#         to filter out. Defaults to the sex chromosomes,
+#         i.e. \code{c("X", "Y")}.}
 # }
 #
 # \value{
@@ -48,16 +49,14 @@
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
-    bases=NA, filterAllosomes=TRUE) {
+    bases=NA, chromosomes=c("X", "Y")) {
 
     condition <- rep(TRUE, times=nrow(object))
     msg <- c('total bins'=sum(condition))
-    if (filterAllosomes) {
-        condition <- fData(object)$chromosome %in% as.character(1:22)
-        msg <- c(msg, 'autosomal bins'=sum(condition))
-    }
+    condition <- !fData(object)$chromosome %in% chromosomes
+    msg <- c(msg, 'of which in selected chromosomes'=sum(condition))
     condition <- condition & !is.na(fData(object)$gc)
-    msg <- c(msg, 'bins with reference sequence'=sum(condition))
+    msg <- c(msg, 'of which with reference sequence'=sum(condition))
 
     if (!is.na(residual)) {
         if (is.numeric(residual)) {
