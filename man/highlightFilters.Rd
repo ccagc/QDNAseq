@@ -16,7 +16,7 @@
 
 \usage{
 highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, bases=NA,
-  type="union", logTransform=TRUE, ...)
+  type="union", ...)
 }
 
 \description{
@@ -44,8 +44,6 @@ highlightFilters(object, col="red", residual=NA, blacklist=NA, mappability=NA, b
     \item{type}{When specifying multiple filters (\code{residual},
         \code{blacklist}, \code{mappability}, \code{bases}), whether to
         highlight their \code{union} (default) or \code{intersection}.}
-    \item{logTransform}{Whether the plotted data was log-transformed or not,
-        should be the same value that was specified for \code{\link{plot}}().}
     \item{...}{Further arguments to \code{\link[graphics]{points}}.}
 }
 
