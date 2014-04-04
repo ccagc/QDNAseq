@@ -233,6 +233,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             str <- paste(str, ", ", nrow(segment), " segments", sep="")
         mtext(str, side=3, line=0, adj=0, cex=par("cex"))
     }
+    options("QDNAseq::plotLogTransform"=logTransform)
+    options("QDNAseq::plotScale"=scale)
 })
 
 

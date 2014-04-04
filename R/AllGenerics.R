@@ -1,5 +1,5 @@
 setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
-    mappability=NA, bases=NA, filterAllosomes=TRUE)
+    mappability=NA, bases=NA, chromosomes=c("X", "Y"))
     standardGeneric("applyFilters"))
 setGeneric("callBins", function(object, ...)
     standardGeneric("callBins"))
@@ -12,8 +12,7 @@ setGeneric("estimateCorrection", function(object, span=0.65, family="symmetric",
     adjustIncompletes=TRUE, maxIter=1, cutoff=4.0, ...)
     standardGeneric("estimateCorrection"))
 setGeneric("highlightFilters", function(object, col="red", residual=NA,
-    blacklist=NA, mappability=NA, bases=NA, type="union",
-    logTransform=TRUE, ...)
+    blacklist=NA, mappability=NA, bases=NA, type="union", ...)
     standardGeneric("highlightFilters"))
 setGeneric("isobarPlot", function(x, y, ...)
     standardGeneric("isobarPlot"))

@@ -32,8 +32,6 @@
 #     \item{type}{When specifying multiple filters (\code{residual},
 #         \code{blacklist}, \code{mappability}, \code{bases}), whether to
 #         highlight their \code{union} (default) or \code{intersection}.}
-#     \item{logTransform}{Whether the plotted data was log-transformed or not,
-#         should be the same value that was specified for @see "plot".}
 #     \item{...}{Further arguments to @see "graphics::points".}
 # }
 #
@@ -51,9 +49,7 @@
 
 setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
     definition=function(object, col="red", residual=NA, blacklist=NA,
-    mappability=NA, bases=NA, type=c("union", "intersection"),
-    logTransform=TRUE,
-    ...) {
+    mappability=NA, bases=NA, type=c("union", "intersection"), ...) {
 
     condition <- rep(TRUE, times=nrow(object))
     type <- match.arg(type)
@@ -106,16 +102,25 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
         fData(object)$chromosome %in% chrs
 
     all.chrom <- chromosomes(object)
-    all.chrom.lengths <- aggregate(bpend(object),
-        by=list(chromosome=all.chrom), FUN=max)
-    chrom.lengths <- all.chrom.lengths$x
-    names(chrom.lengths) <- all.chrom.lengths$chromosome
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
-    chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
-    pos <- as.numeric(bpstart(object)[condition])
-    for (j in uni.chrom)
-        pos[chrom > j] <- pos[chrom > j] + chrom.lengths[as.character(j)]
+    if (!getOption("QDNAseq::plotScale")) {
+        index <- 1:nrow(object)
+        indexPos <- rep(NA_integer_, times=nrow(object))
+        indexPos[binsToUse(object)] <- 1:sum(binsToUse(object))
+        f <- approxfun(index, indexPos)
+        pos <- f(index[condition])
+    } else {
+        all.chrom.lengths <- aggregate(bpend(object),
+            by=list(chromosome=all.chrom), FUN=max)
+        chrom.lengths <- all.chrom.lengths$x
+        names(chrom.lengths) <- all.chrom.lengths$chromosome
+
+        pos <- as.numeric(bpstart(object)[condition])
+        chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
+        for (j in uni.chrom)
+            pos[chrom > j] <- pos[chrom > j] + chrom.lengths[as.character(j)]
+    }
     if (class(object) == "QDNAseqReadCounts") {
         copynumber <- assayDataElement(object, "counts")[condition, ,
             drop=FALSE]
@@ -123,7 +128,7 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
         copynumber <- assayDataElement(object, "copynumber")[condition, ,
             drop=FALSE]
     }
-    if (logTransform)
+    if (getOption("QDNAseq::plotLogTransform"))
         copynumber <- log2adhoc(copynumber)
     if (ncol(object) > 1L)
         vmsg("Multiple samples present in input, only using first sample: ",

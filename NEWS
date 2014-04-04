@@ -1,6 +1,14 @@
 Package: QDNAseq
 ================
 
+Version: 0.99.6 [2014-04-04]
+o Fix bug in highlightFilters() when plot() run with scale=FALSE. Also removes
+  requirement for parameter logTransform, as values for both are passed using
+  options().
+o Make applyFilters() more flexible by replacing parameter filterAllosomes with
+  chromosomes.
+
+
 Version: 0.99.5 [2014-04-03]
 o Update createBins() to use package GenomeInfoDb.
 o Add CITATION file and update DESCRIPTION with GitHub URLs.
