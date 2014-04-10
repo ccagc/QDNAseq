@@ -303,15 +303,18 @@ bins$blacklist <- calculateBlacklist(bins,
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
 @
 
-A section on how to obtain the 1000 Genomes data to be added...
+To calculate median residuals of the LOESS fit from a control dataset, the
+following command can be used. For the pre-generated annotations, the control
+set used is 38 samples from the 1000 Genomes project. See the next section on
+how those were downloaded.
 
 <<eval=FALSE>>=
 # load data for the 1000 Genomes (or similar) data set, and generate residuals
-tg <- binReadCounts(bins,
-  path='/path/to/1000Genomes/bam/files')
-tg <- applyFilters(tg, residual=FALSE, blacklist=FALSE,
+ctrl <- binReadCounts(bins,
+  path='/path/to/control-set/bam/files')
+ctrl <- applyFilters(ctrl, residual=FALSE, blacklist=FALSE,
   mappability=FALSE, bases=FALSE)
-bins$residual <- iterateResiduals(tg)
+bins$residual <- iterateResiduals(ctrl)
 @
 
 The column \code{use} specifies whether each bin should be used for subsequent
@@ -361,6 +364,52 @@ attr(bins, "QDNAseq") <- list(
   md5=digest::digest(bins@data),
   sessionInfo=sessionInfo())
 @
+
+\section{Downloading 1000 Genomes Samples}
+
+This section defines the criteria that were used to download samples from the
+1000 Genomes project for the pre-generated bin annotations.
+
+<<eval=FALSE>>=
+# download table of samples
+server <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/"
+g1k <- read.table(paste0(server, "sequence.index"),
+  header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
+
+# keep cases that are Illumina, low coverage, single-read, and not withdrawn
+g1k <- g1k[g1k$INSTRUMENT_PLATFORM == 'ILLUMINA', ]
+g1k <- g1k[g1k$ANALYSIS_GROUP == 'low coverage', ]
+g1k <- g1k[g1k$LIBRARY_LAYOUT == 'SINGLE', ]
+g1k <- g1k[g1k$WITHDRAWN == 0, ]
+
+# keep cases with read lengths of at least 50 bp
+g1k <- g1k[!g1k$BASE_COUNT %in% c("not available", ""), ]
+g1k$BASE_COUNT <- as.numeric(g1k$BASE_COUNT)
+g1k$READ_COUNT <- as.integer(g1k$READ_COUNT)
+g1k$readLength <- g1k$BASE_COUNT / g1k$READ_COUNT
+g1k <- g1k[g1k$readLength > 50, ]
+
+# keep samples with a minimum of one million reads
+readCountPerSample <- aggregate(g1k$READ_COUNT,
+  by=list(sample=g1k$SAMPLE_NAME), sum)
+g1k <- g1k[g1k$SAMPLE_NAME %in%
+  readCountPerSample$sample[readCountPerSample$x >= 1e6], ]
+
+g1k$fileName <- basename(g1k$FASTQ_FILE)
+
+# download fastq files
+for (i in rownames(g1k)) {
+  sourceFile <- paste0(server, g1k[i, "FASTQ_FILE"])
+  destFile <- g1k[i, "fileName"]
+  if (!file.exists(destFile))
+    download.file(sourceFile, destFile)
+}
+@
+
+Next, reads were trimmed to 50 bp, and the multiple files for each sample (as
+defined by column SAMPLE\_NAME) were combined by concatenating the FASTQ
+together. Finally, they were aligned with BWA allowing two mismatches and
+end-trimming of bases with qualities below 40 (options -n 2 -q 40).
 
 \section{Session Information}
 
