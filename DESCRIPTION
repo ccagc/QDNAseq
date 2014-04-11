@@ -1,0 +1,18 @@
+Package: QDNAseq
+Version: 1.0.0
+Date: 2014-04-10
+Title: Quantitative DNA sequencing for chromosomal aberrations
+Author: Ilari Scheinin
+Maintainer: "Ilari Scheinin" <ilari.scheinin@gmail.com>
+Depends: R (>= 2.15.0)
+Imports: graphics, methods, stats, utils, matrixStats (>= 0.8.14),
+        R.utils (>= 1.28.4), Biobase (>= 2.18.0), CGHbase (>= 1.18.0),
+        CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0), Rsamtools (>= 1.10.0)
+Suggests: R.cache (>= 0.9.0), digest, snowfall, BSgenome, GenomeInfoDb,
+        GenomicRanges
+Description: Quantitative DNA sequencing for chromosomal aberrations.
+biocViews: CopyNumberVariation, DNASeq, Genetics, GenomeAnnotation,
+        Preprocessing, QualityControl, Sequencing
+License: GPL
+URL: https://github.com/ccagc/QDNAseq
+BugReports: https://github.com/ccagc/QDNAseq/issues
