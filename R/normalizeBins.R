@@ -82,7 +82,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
     # Filter
     condition <- binsToUse(object)
 
-    vmsg("Applying ", method, " normalization ...")
+    vmsg("Applying ", method, " normalization ...", appendLF=FALSE)
     if (method == "mean") {
         values <- colMeans(copynumber[condition, , drop=FALSE], na.rm=TRUE)
     } else if (method == "median") {
@@ -93,6 +93,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
             d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
         })
     }
+    vmsg()
     if (0 %in% values) {
         vmsg("These samples cannot be normalized (", method, "=0):\n",
             paste(sampleNames(object)[values == 0], collapse=", "))
