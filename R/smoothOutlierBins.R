@@ -84,9 +84,11 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     # Filter
     condition <- binsToUse(object)
 
-    vmsg("Smoothing outliers ...")
-    CNA.object <- CNA(copynumber, chrom=fData[,"chromosome"],
-        maploc=fData[,"start"], data.type="logratio", presorted=TRUE)
+    vmsg("Smoothing outliers ...", appendLF=FALSE)
+    CNA.object <- CNA(copynumber[condition, , drop=FALSE],
+        chrom=fData[condition, "chromosome"],
+        maploc=fData[condition, "start"],
+        data.type="logratio", presorted=TRUE)
     CNA.object <- smooth.CNA(CNA.object, ...)
     CNA.object <- CNA.object[, -(1:2), drop=FALSE]
     copynumber <- as.matrix(CNA.object)
@@ -100,7 +102,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     # Expand to full set of bins
     copynumber2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
         dimnames=list(featureNames(object), sampleNames(object)))
-    copynumber2[rownames(copynumber), ] <- copynumber
+    copynumber2[condition, ] <- copynumber
 
     # Not needed anymore
     copynumber <- NULL
@@ -111,6 +113,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     # Not needed anymore
     copynumber2 <- NULL
 
+    vmsg()
     object
 })
 
