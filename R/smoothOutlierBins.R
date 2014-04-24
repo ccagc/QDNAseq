@@ -84,7 +84,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     # Filter
     condition <- binsToUse(object)
 
-    vmsg("Smoothing outliers ...")
+    vmsg("Smoothing outliers ...", appendLF=FALSE)
     CNA.object <- CNA(copynumber[condition, , drop=FALSE],
         chrom=fData[condition, "chromosome"],
         maploc=fData[condition, "start"],
@@ -113,6 +113,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     # Not needed anymore
     copynumber2 <- NULL
 
+    vmsg()
     object
 })
 

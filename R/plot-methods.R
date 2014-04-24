@@ -123,7 +123,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if (logTransform)
         copynumber <- log2adhoc(copynumber)
     for (i in seq_len(ncol(x))) {
-        vmsg("Plotting sample ", main[i])
+        vmsg("Plotting sample ", main[i], " (", i, " of ", ncol(x), ") ...",
+          appendLF=FALSE)
         cn <- copynumber[, i]
         if ("segmented" %in% assayDataElementNames(x)) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
@@ -232,6 +233,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if ("segmented" %in% assayDataElementNames(x))
             str <- paste(str, ", ", nrow(segment), " segments", sep="")
         mtext(str, side=3, line=0, adj=0, cex=par("cex"))
+        vmsg()
     }
     options("QDNAseq::plotLogTransform"=logTransform)
     options("QDNAseq::plotScale"=scale)
