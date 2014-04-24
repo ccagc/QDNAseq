@@ -95,7 +95,8 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
             loessFit[, i] <- 1
             next
         }
-        vmsg("    Calculating fit for sample ", sampleNames(object)[i], "...")
+        vmsg("    Calculating fit for sample ", sampleNames(object)[i],
+          " (", i, " of ", ncol(counts), ") ...", appendLF=FALSE)
         noProb <- FALSE
         try({
             corvals <- counts[, i]
@@ -142,6 +143,7 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         }, silent=TRUE)
         if (!noProb)
             loessFit[, i] <- 1
+        vmsg()
     }
     object$loess.span <- used.span
     object$loess.family <- used.family
