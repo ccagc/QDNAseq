@@ -35,7 +35,10 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     logTransform=TRUE, scale=TRUE, sdFUN="sdDiffTrim",
     delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
     pointcol="black", segcol="chocolate", misscol=NA,
-    ylab=NULL, ylim=NULL, yaxp=NULL, ... ) {
+    xlab="chromosomes", ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
+    showDataPoints=TRUE, showSD=TRUE,
+    ... ) {
+
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
     } else {
@@ -177,15 +180,17 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
                 yaxp=yaxp, tck=-0.015, las=1)
         }
-        mtext(text="chromosomes", side=1, line=2, cex=par("cex"))
+        mtext(text=xlab, side=1, line=2, cex=par("cex"))
         mtext(text=ylab[i], side=2, line=2, cex=par("cex"))
         abline(h=baseLine)
         abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
-        ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-        axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1, cex.axis=1,
-            cex.lab=1, tck=-0.015)
-        axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1, cex.axis=1,
-            cex.lab=1, tck=-0.015, line=-0.4)
+        if (!is.na(xaxt) && xaxt != "n") {
+            ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
+            axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
+                cex.axis=1, cex.lab=1, tck=-0.015)
+            axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
+                cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
+        }
         if ("segmented" %in% assayDataElementNames(x)) {
             for (jjj in seq_len(nrow(segment))) {
                 segments(pos[segment[jjj,2]], segment[jjj,1],
@@ -213,26 +218,30 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         }
         par(xpd=FALSE)
         ### estimate for standard deviation
-        if (is.numeric(x$expected.variance[i])) {
-            sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
-                list(e=sprintf("%.3g", sqrt(x$expected.variance)),
-                symbol=symbol, sd=sprintf("%.3g", noise[i])))
-        } else {
-            sdexp <- substitute(symbol==sd,
-                list(symbol=symbol, sd=sprintf("%.3g", noise[i])))
+        if (showSD) {
+            if (is.numeric(x$expected.variance[i])) {
+                sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
+                    list(e=sprintf("%.3g", sqrt(x$expected.variance)),
+                    symbol=symbol, sd=sprintf("%.3g", noise[i])))
+            } else {
+                sdexp <- substitute(symbol==sd,
+                    list(symbol=symbol, sd=sprintf("%.3g", noise[i])))
+            }
+            mtext(sdexp, side=3, line=0, adj=1, cex=par("cex"))
         }
-        mtext(sdexp, side=3, line=0, adj=1, cex=par("cex"))
         ### number of data points
-        str <- paste(round(sum(condition) / 1000), "k x ", sep="")
-        probe <- median(bpend(x)-bpstart(x)+1)
-        if (probe < 1000) {
-            str <- paste(str, probe, " bp", sep="")
-        } else {
-            str <- paste(str, round(probe / 1000), " kbp", sep="")
+        if (showDataPoints) {
+            str <- paste(round(sum(condition) / 1000), "k x ", sep="")
+            probe <- median(bpend(x)-bpstart(x)+1)
+            if (probe < 1000) {
+                str <- paste(str, probe, " bp", sep="")
+            } else {
+                str <- paste(str, round(probe / 1000), " kbp", sep="")
+            }
+            if ("segmented" %in% assayDataElementNames(x))
+                str <- paste(str, ", ", nrow(segment), " segments", sep="")
+            mtext(str, side=3, line=0, adj=0, cex=par("cex"))
         }
-        if ("segmented" %in% assayDataElementNames(x))
-            str <- paste(str, ", ", nrow(segment), " segments", sep="")
-        mtext(str, side=3, line=0, adj=0, cex=par("cex"))
         vmsg()
     }
     options("QDNAseq::plotLogTransform"=logTransform)
