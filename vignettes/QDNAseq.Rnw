@@ -94,17 +94,21 @@ readCounts
 Plot a raw copy number profile (read counts across the genome), and highlight
 bins that will be removed with default filtering (Figure~\ref{fig:rawprofile}).
 
+<<echo=FALSE>>=
+png("rawprofile.png")
+@
 <<label=rawprofile>>=
 plot(readCounts, logTransform=FALSE, ylim=c(-50, 200))
 highlightFilters(readCounts, logTransform=FALSE,
   residual=TRUE, blacklist=TRUE)
 @
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<rawprofile>>
-@
+  \includegraphics{rawprofile}
   \caption{Read counts per bins. Highlighted with red are bins that will be
     filtered out.}
   \label{fig:rawprofile}
@@ -119,15 +123,19 @@ expected for the entire genome.
 readCountsFiltered <- applyFilters(readCounts,
   residual=TRUE, blacklist=TRUE)
 @
+<<echo=FALSE>>=
+png("isobar.png")
+@
 <<label=isobar>>=
 isobarPlot(readCountsFiltered)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
 @
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<isobar>>
-@
+  \includegraphics{isobar}
   \caption{Median read counts per bin shown as a function of GC content and
     mappability.}
   \label{fig:isobar}
@@ -143,15 +151,19 @@ than good-quality samples.
 <<>>=
 readCountsFiltered <- estimateCorrection(readCountsFiltered)
 @
+<<echo=FALSE>>=
+png("noise.png")
+@
 <<label=noise>>=
 noisePlot(readCountsFiltered)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
 @
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<noise>>
-@
+  \includegraphics{noise}
   \caption{The relationship between sequence depth and noise.}
   \label{fig:noise}
 \end{figure}
@@ -166,20 +178,31 @@ copyNumbers
 copyNumbersNormalized <- normalizeBins(copyNumbers)
 copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
 @
+<<echo=FALSE>>=
+png("profile.png")
+@
 <<label=profile>>=
 plot(copyNumbersSmooth)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
 @
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<profile>>
-@
+  \includegraphics{profile}
   \caption{Copy number profile after correcting for GC content and mappability.}
   \label{fig:profile}
 \end{figure}
 
-Data is now ready to be analyzed with a downstream package of choice.
+Data is now ready to be analyzed with a downstream package of choice. For
+analysis with an external program or for visualizations in IGV, the data can be
+exported to a file.
+
+<<eval=FALSE>>=
+exportBins(copyNumbersSmooth, file="LGG150.txt")
+exportBins(copyNumbersSmooth, file="LGG150.igv", format="igv")
+@
 
 \subsection{Downstream analyses}
 
@@ -190,15 +213,19 @@ aberrations with CGHcall have been implemented for convenience.
 copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
 copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
 @
+<<echo=FALSE>>=
+png("segments.png")
+@
 <<label=segments>>=
 plot(copyNumbersSegmented)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
 @
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<segments>>
-@
+  \includegraphics{segments}
   \caption{A plot}
   \label{fig:segments}
 \end{figure}
@@ -209,15 +236,19 @@ aberrations, and plot the final results.
 <<>>=
 copyNumbersCalled <- callBins(copyNumbersSegmented)
 @
+<<echo=FALSE>>=
+png("calls.png")
+@
 <<label=calls>>=
 plot(copyNumbersCalled)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
 @
 
 \begin{figure}[h]
   \centering
-<<fig=TRUE, echo=FALSE, results=hide>>=
-<<calls>>
-@
+  \includegraphics{calls}
   \caption{A plot}
   \label{fig:calls}
 \end{figure}

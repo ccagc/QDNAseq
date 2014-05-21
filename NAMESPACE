@@ -12,7 +12,7 @@ importMethodsFrom(Biobase, AnnotatedDataFrame, assayData, classVersion, fData,
 importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
     copynumber, "copynumber<-", frequencyPlot, plot, probamp, "probamp<-",
     probdloss, "probdloss<-", probgain, "probgain<-", probloss, "probloss<-",
-    probnorm, "probnorm<-", segmented, "segmented<-")
+    probnorm, "probnorm<-", segmented, "segmented<-", "regions", "regions<-")
 importMethodsFrom(matrixStats, colMedians, madDiff)
 importMethodsFrom(methods, coerce, initialize, show)
 importMethodsFrom(Rsamtools, scanBam, ScanBamParam)
@@ -43,6 +43,7 @@ export("compareToReference")
 export("correctBins")
 export("downloadBinAnnotations")
 export("estimateCorrection")
+export("exportBins")
 export("frequencyPlot")
 export("highlightFilters")
 export("isobarPlot")
