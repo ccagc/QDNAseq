@@ -195,7 +195,14 @@ dev.off()
   \label{fig:profile}
 \end{figure}
 
-Data is now ready to be analyzed with a downstream package of choice.
+Data is now ready to be analyzed with a downstream package of choice. For
+analysis with an external program or for visualizations in IGV, the data can be
+exported to a file.
+
+<<eval=FALSE>>=
+exportBins(copyNumbersSmooth, file="LGG150.txt")
+exportBins(copyNumbersSmooth, file="LGG150.igv", format="igv")
+@
 
 \subsection{Downstream analyses}
 
