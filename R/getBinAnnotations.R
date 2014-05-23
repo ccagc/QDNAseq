@@ -28,8 +28,9 @@
 # }
 #
 # \details{
-#     Currently getBinAnnotations and downloadBinAnnotations are synonyms, but
-#     the latter will be deprecated and removed in future versions.
+#     The current function name is getBinAnnotations, for which
+#     downloadBinAnnotations is an old and deprecated alias that will be
+#     removed in future versions.
 # }
 #
 # \value{
@@ -81,6 +82,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
 }
 
 downloadBinAnnotations <- function(...) {
+    .Deprecated("getBinAnnotations")
     getBinAnnotations(...)
 }
 
