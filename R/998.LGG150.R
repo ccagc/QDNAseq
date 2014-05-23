@@ -14,7 +14,7 @@
 
 
 # library(QDNAseq)
-# bins <- downloadBinAnnotations(15)
+# bins <- getBinAnnotations(15)
 # LGG150 <- binReadCounts(bins, bamfiles="LGG150.bam", cache=TRUE)
 # LGG150 <- LGG150[Biobase::fData(LGG150)$chromosome %in%
 #     c("7", "8", "9", "10"),]

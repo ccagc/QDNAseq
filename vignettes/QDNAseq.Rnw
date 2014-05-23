@@ -36,7 +36,7 @@ They can be downloaded for example with:
 
 \begin{Schunk}
 \begin{Sinput}
-> bins <- downloadBinAnnotations(binSize=15)
+> bins <- getBinAnnotations(binSize=15)
 Downloading bin annotations for genome hg19, bin size 15kbp,
 and experiment type SR50 ...
 > bins
