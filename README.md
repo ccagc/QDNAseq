@@ -25,12 +25,8 @@ because the two repositories use the [Bioconductor Git-SVN bridge][bridge]
 to mirror changes to the Bioconductor SVN repository, and the bridge can only
 use branch *master* of each GitHub repository.
 
-In addition, a [Bitbucket][bitbucket] repository is used to host pre-generated
-bin annotations.
-
 [bioc-devel]: http://bioconductor.org/packages/devel/bioc/html/QDNAseq.html
 [bioc-release]: http://bioconductor.org/packages/release/bioc/html/QDNAseq.html
-[bitbucket]: https://bitbucket.org/ccagc/qdnaseq
 [bridge]: http://bioconductor.org/developers/how-to/git-svn/
 [github]: https://github.com/ccagc/QDNAseq
 [github-release]: https://github.com/ccagc/QDNAseq-release

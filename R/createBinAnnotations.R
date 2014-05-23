@@ -46,7 +46,7 @@
 # @author "IS"
 #
 # \seealso{
-#     @see "downloadBinAnnotations".
+#     @see "getBinAnnotations".
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {

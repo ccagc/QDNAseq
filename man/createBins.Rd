@@ -57,6 +57,6 @@ bins$residual <- iterateResiduals(readCountsG1K)
 \author{Ilari Scheinin}
 
 \seealso{
-    \code{\link{downloadBinAnnotations}}().
+    \code{\link{getBinAnnotations}}().
 }
 
