@@ -92,7 +92,7 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
 
 \examples{
 \dontrun{# read all files from the current directory with names ending in .bam
-bins <- downloadBinAnnotations(15)
+bins <- getBinAnnotations(15)
 readCounts <- binReadCounts(bins)
 }
 }
