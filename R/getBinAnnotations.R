@@ -1,5 +1,7 @@
 #########################################################################/**
-# @RdocFunction downloadBinAnnotations
+# @RdocFunction getBinAnnotations
+#
+# @alias downloadBinAnnotations
 #
 # @title "Gets bin annotation data for a particular bin size"
 #
@@ -19,6 +21,15 @@
 #        or "PE1000".}
 #     \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
 #        regardless of it already exists in the cache or not.}
+#     \item{path}{A @character string specifying the path for the bin
+#         annotation files. Defaults to downloading from the Internet, but can
+#         also be a local path. Can also be defined by setting the 
+#         \code{QDNAseq::binAnnotationPath} option.}
+# }
+#
+# \details{
+#     Currently getBinAnnotations and downloadBinAnnotations are synonyms, but
+#     the latter will be deprecated and removed in future versions.
 # }
 #
 # \value{
@@ -27,7 +38,7 @@
 #
 # \examples{
 # \dontrun{
-# bins <- downloadBinAnnoattions(15)
+# bins <- getBinAnnotations(15)
 # }
 # }
 #
@@ -39,25 +50,38 @@
 #
 # @keyword IO
 #*/#########################################################################
-downloadBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    force=FALSE) {
-    vmsg('Downloading bin annotations for genome ', genome,
-        ', bin size ', binSize, 'kbp, and experiment type ', type, ' ...',
-        appendLF=FALSE)
+getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
+    force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
+    "http://qdnaseq.s3.amazonaws.com")) {
+
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
-    urlPath <- 'http://cdn.bitbucket.org/ccagc/qdnaseq/downloads'
-    remotefile <- file.path(urlPath, filename, fsep='/')
-    localfile <- tempfile()
-    tryCatch({
-        result <- downloadFile(remotefile, localfile)
-    }, error=function(e) {
-        vmsg(' not found.')
-        stop(e)
-    })
-    bins <- readRDS(localfile)
-    file.remove(localfile)
+    if (substring(path, 1, 7) == "http://") {
+        vmsg('Downloading bin annotations for genome ', genome,
+            ', bin size ', binSize, 'kbp, and experiment type ', type, ' ...',
+            appendLF=FALSE)
+        remotefile <- file.path(path, filename, fsep='/')
+        localfile <- tempfile()
+        tryCatch({
+            result <- downloadFile(remotefile, localfile)
+        }, error=function(e) {
+            vmsg(' not found.')
+            stop(e)
+        })
+        bins <- readRDS(localfile)
+        file.remove(localfile)
+    } else {
+        vmsg('Loading bin annotations for genome ', genome,
+            ', bin size ', binSize, 'kbp, and experiment type ', type, ' ...',
+            appendLF=FALSE)
+        localfile <- file.path(path, filename)
+        bins <- readRDS(localfile)
+    }
     vmsg()
     bins
+}
+
+downloadBinAnnotations <- function(...) {
+    getBinAnnotations(...)
 }
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),

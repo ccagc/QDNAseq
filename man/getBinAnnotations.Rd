@@ -1,19 +1,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do not modify this file since it was automatically generated from:
 % 
-%  downloadBinAnnotations.R
+%  getBinAnnotations.R
 % 
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{downloadBinAnnotations}
-\alias{downloadBinAnnotations}
+\name{getBinAnnotations}
+\alias{getBinAnnotations}
 
+
+\alias{downloadBinAnnotations}
 
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
-downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE)
+getBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE,
+  path=getOption("QDNAseq::binAnnotationPath", "http://qdnaseq.s3.amazonaws.com"))
+downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE,
+  path=getOption("QDNAseq::binAnnotationPath", "http://qdnaseq.s3.amazonaws.com"))
 }
 
 \description{
@@ -30,6 +35,15 @@ downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE)
        or "PE1000".}
     \item{force}{If \code{\link[base:logical]{TRUE}}, the bin anonnation data is retrieved/calculated
        regardless of it already exists in the cache or not.}
+    \item{path}{A \code{\link[base]{character}} string specifying the path for the bin
+        annotation files. Defaults to downloading from the Internet, but can
+        also be a local path. Can also be defined by setting the
+        \code{QDNAseq::binAnnotationPath} option.}
+}
+
+\details{
+    Currently getBinAnnotations and downloadBinAnnotations are synonyms, but
+    the latter will be deprecated and removed in future versions.
 }
 
 \value{
@@ -38,7 +52,7 @@ downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE)
 
 \examples{
 \dontrun{
-bins <- downloadBinAnnoattions(15)
+bins <- getBinAnnotations(15)
 }
 }
 
