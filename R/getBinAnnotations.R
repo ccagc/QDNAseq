@@ -80,12 +80,8 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     bins
 }
 
-downloadBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
-    "http://qdnaseq.s3.amazonaws.com")) {
-
-    getBinAnnotations(binSize=binSize, genome=genome, type=type,
-        force=force, path=path)
+downloadBinAnnotations <- function(...) {
+    getBinAnnotations(...)
 }
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),
