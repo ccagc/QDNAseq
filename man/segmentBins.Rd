@@ -28,13 +28,14 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
     \item{smoothBy}{An optional integer value to perform smoothing before
         segmentation by taking the mean of every smoothBy bins, and then
         segment those means. Default is to perform no smoothing.}
-    \item{alpha}{Significance levels for the test to accept change-points.}
+    \item{alpha}{Significance levels for the test to accept change-points.
+        Default is 1e-10.}
     \item{undo.splits}{A character string specifying how change-points are to
-        be undone, if at all.    Default is "none".    Other choices are
-        "prune", which uses a sum of squares criterion, and "sdundo", which
-        undoes splits that are not at least this many SDs apart.}
+        be undone, if at all. Default is "sdundo", which undoes splits that
+        are not at least this many SDs apart. Other choices are
+        "prune", which uses a sum of squares criterion, and "none".}
     \item{undo.SD}{The number of SDs between means to keep a split if
-        undo.splits="sdundo".}
+        undo.splits="sdundo". Default is 1.0.}
     \item{force}{Whether to force execution when it causes removal of
         downstream calling results.}
     \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}

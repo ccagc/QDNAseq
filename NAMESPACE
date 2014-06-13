@@ -13,7 +13,7 @@ importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
     copynumber, "copynumber<-", frequencyPlot, plot, probamp, "probamp<-",
     probdloss, "probdloss<-", probgain, "probgain<-", probloss, "probloss<-",
     probnorm, "probnorm<-", segmented, "segmented<-", "regions", "regions<-")
-importMethodsFrom(matrixStats, colMedians, madDiff)
+importMethodsFrom(matrixStats, colMedians)
 importMethodsFrom(methods, coerce, initialize, show)
 importMethodsFrom(Rsamtools, scanBam, ScanBamParam)
 
@@ -23,7 +23,7 @@ importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
 importFrom(DNAcopy, CNA, segment, smooth.CNA)
 importFrom(graphics, abline, axis, axTicks, box, contour, image, mtext, par,
     points, rect, segments, text)
-importFrom(matrixStats, binCounts)
+importFrom(matrixStats, binCounts, madDiff)
 importFrom(methods, callNextMethod, new)
 importFrom(R.utils, downloadFile)
 importFrom(Rsamtools, scanBamFlag)
