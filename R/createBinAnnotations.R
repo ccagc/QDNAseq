@@ -172,6 +172,88 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
     }
     vmsg()
     blacklist
+ }
+
+###############################################################################
+# 
+# Calculates percentage overlap with regions <- cbind(chromosome, start, end)
+# More generic, eg when bed files are not readily available.
+# 
+###############################################################################
+calculateBlacklistByRegions <- function(bins, regions) {
+    vmsg("Calculating percent overlap per bin with regions\n")
+    
+    combined <- as.data.frame(regions)
+    
+    colnames(combined) <- c("chromosome", "start", "end")
+    # Remove chr if present
+    combined$chromosome <- sub("^chr", "", combined$chromosome)
+    
+    # Remove chromosome not pressent in bin
+    combined <- combined[combined$chromosome %in% unique(bins$chromosome), ]
+    
+    # Convert XY to number integer
+    combined$chromosome[combined$chromosome=="X"] <- "23"
+    combined$chromosome[combined$chromosome=="Y"] <- "24"
+    combined$chromosome <- as.integer(combined$chromosome)
+    combined <- combined[!is.na(combined$chromosome), ]
+    
+    bins$chromosome[bins$chromosome=="X"] <- "23"
+    bins$chromosome[bins$chromosome=="Y"] <- "24"
+    bins$chromosome <- as.integer(bins$chromosome)
+    
+    # Assume 1 based coordinate system
+    # TODO Check wether necessary
+    combined$start <- combined$start + 1
+    combined <- combined[order(combined$chromosome, combined$start), ]
+  
+    # Determine binsize
+    binSize <- diff(bins$start[1:2])
+    
+    # Calculate index, residual, 
+    combined$si <- combined$start %/% binSize + 1 # add 1 because it serves as idx
+    combined$sm <- binSize - combined$start %% binSize
+    combined$ei <- combined$end %/% binSize + 1 # add 1 because it serves as idx
+    combined$em <- combined$end %% binSize
+    combined$seDiff <- combined$end - combined$start 
+    combined$idDiff <- combined$ei - combined$si 
+    
+    # Calculate continuous IDX
+    c(0, cumsum(rle(bins$chromosome)$lengths)) -> chrI
+    combined$sI <- combined$si + chrI[ as.integer(combined$chromosome) ]
+    combined$eI <- combined$ei + chrI[ as.integer(combined$chromosome) ]
+    
+    # Sum partial overlaps of segments
+    sel1 <- combined$idDiff >= 1
+    # Partial overlapping starts
+    aggregate(c(combined$sm[sel1]), list(c(combined$sI[sel1])), max) -> res1
+    # Partial overlapping ends
+    aggregate(c(combined$em[sel1]), list(c(combined$eI[sel1])), max) -> res2
+    
+    # Sum complete overlaps eg segment smaller than bin
+    sel3 <- combined$idDiff == 0
+    aggregate(combined$seDiff[sel3], list(combined$sI[sel3]), max) -> res3
+    
+    # Sum complete overlaps of segments eg segment larger than bin
+    sel4 <- combined$idDiff > 1
+    unlist(sapply(which(sel4), function(x) {
+      s <- combined$sI[x] + 1
+      e <- combined$eI[x] - 1
+      s:e
+    })) -> res4
+    
+    res <- rbind(res1, res2, res3, cbind(Group.1 = res4, x = rep(binSize, length(res4))))
+    
+    aggregate(res$x, list(res$Group.1), max) -> res
+    
+    res$x / binSize * 100 -> res$pct
+    res$pct[res$pct > 100] <- 100
+    
+    vmsg()
+    blacklist <- rep(0, nrow(bins))
+    blacklist[res$Group.1] <- res$x
+
+    blacklist
 }
 
 iterateResiduals <- function(object, adjustIncompletes=TRUE,
