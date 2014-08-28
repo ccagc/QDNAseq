@@ -334,6 +334,34 @@ bins$blacklist <- calculateBlacklist(bins,
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
 @
 
+If there are genomic regions that are not provided as bed files, one can
+generate a matrix containing chromosomal coordinates of the regions to be
+excluded from the analysis as follows. This example downloads a CSV file 
+from the Database of Genomic Variants.
+
+<<eval=FALSE>>=
+
+# Use GRanges to calculate overlap
+
+# Download the CSV file:
+read.delim("http://dgv.tcag.ca/dgv/docs/GRCh37_hg19_variants_2013-07-23.txt", stringsAsFactors=FALSE) -> dgv
+
+# Select CNV's obtained from similar data
+grepl("Illumina G", dgv$platform) -> sel1
+grepl("Illumina IIx", dgv$platform) -> sel2
+grepl("Illumina HiSeq", dgv$platform) -> sel3
+
+ngsSel <- sel1 | sel2 | sel3
+
+dgvNgs <- dgv[ngsSel,]
+
+data.frame(chromosome = as.character(dgvNgs$chr), start = as.integer(dgvNgs$start), end = as.integer(dgvNgs$end)) -> coords
+
+dgvBlackList <- calculateBlacklistByRegions(bins, coords)
+
+@
+
+
 To calculate median residuals of the LOESS fit from a control dataset, the
 following command can be used. For the pre-generated annotations, the control
 set used is 38 samples from the 1000 Genomes project. See the next section on
