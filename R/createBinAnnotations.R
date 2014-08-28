@@ -303,4 +303,29 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     residual
 }
 
+
+toConlin <- function(coords) {
+  
+  if (ncol(coords) == 2) {
+    coords[,3] <- coords[,2]
+  }
+  coords <- as.data.frame(coords)
+  colnames(coords) <- c("chromosome", "start", "end")
+  
+  coords$chromosome <- sub("^chr", "", coords$chromosome)
+  
+  coords$chromosome[coords$chromosome == "X"] <- 23
+  coords$chromosome[coords$chromosome == "Y"] <- 24
+  
+  #chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+  tmp <- aggregate(coords$end, list(chr = coords$chromosome), max)
+  chrom.lengths <- tmp$x[order(as.numeric(tmp$chr))]
+  
+  chrOffset <- c(0, cumsum(chrom.lengths))
+  
+  coords$start <- coords$start + chrOffset[ as.numeric(coords$chromosome) ]
+  coords$end <- coords$end + chrOffset[ as.numeric(coords$chromosome) ]
+  
+  return(coords)
+}
 # EOF
