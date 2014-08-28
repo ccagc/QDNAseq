@@ -181,7 +181,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
 # 
 ###############################################################################
 calculateBlacklistByRegions <- function(bins, regions) {
-    vmsg("Calculating percent overlap per bin with regions\n")
+    vmsg("Calculating percent overlap per bin with regions")
     
     combined <- as.data.frame(regions)
     
@@ -204,7 +204,9 @@ calculateBlacklistByRegions <- function(bins, regions) {
     
     # Assume 1 based coordinate system
     # TODO Check wether necessary
-    combined$start <- combined$start + 1
+    
+    tmp <- combined$start + 1
+    combined$start <- tmp
     combined <- combined[order(combined$chromosome, combined$start), ]
   
     # Determine binsize
@@ -223,36 +225,42 @@ calculateBlacklistByRegions <- function(bins, regions) {
     combined$sI <- combined$si + chrI[ as.integer(combined$chromosome) ]
     combined$eI <- combined$ei + chrI[ as.integer(combined$chromosome) ]
     
-    # Sum partial overlaps of segments
+    vmsg("Processing partial overlaps")
+    # Partial overlaps of segments
     sel1 <- combined$idDiff >= 1
-    # Partial overlapping starts
-    aggregate(c(combined$sm[sel1]), list(c(combined$sI[sel1])), max) -> res1
-    # Partial overlapping ends
-    aggregate(c(combined$em[sel1]), list(c(combined$eI[sel1])), max) -> res2
-    
     # Sum complete overlaps eg segment smaller than bin
-    sel3 <- combined$idDiff == 0
-    aggregate(combined$seDiff[sel3], list(combined$sI[sel3]), max) -> res3
+    sel2 <- combined$idDiff == 0
     
+    aggregate(c(
+      combined$sm[sel1], 
+      combined$em[sel1],
+      combined$seDiff[sel2]
+      ), 
+      list(c(
+        combined$sI[sel1], 
+        combined$eI[sel1],
+        combined$sI[sel2]
+        )
+      ), max) -> res12
+    
+    vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
-    sel4 <- combined$idDiff > 1
-    unlist(sapply(which(sel4), function(x) {
+    sel3 <- combined$idDiff > 1
+    unlist(sapply(which(sel3), function(x) {
       s <- combined$sI[x] + 1
       e <- combined$eI[x] - 1
       s:e
-    })) -> res4
+    })) -> res3
     
-    res <- rbind(res1, res2, res3, cbind(Group.1 = res4, x = rep(binSize, length(res4))))
+    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, length(res3))))
     
     aggregate(res$x, list(res$Group.1), max) -> res
     
     res$x / binSize * 100 -> res$pct
-    res$pct[res$pct > 100] <- 100
     
-    vmsg()
     blacklist <- rep(0, nrow(bins))
-    blacklist[res$Group.1] <- res$x
-
+    blacklist[ as.numeric(res$Group.1) ] <- res$pct
+    
     blacklist
 }
 
