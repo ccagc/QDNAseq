@@ -152,4 +152,28 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
     return(invisible(num))
 })
 
+# Generic highlight function
+
+highlight <- function(obj, filter, element="copynumber", ...) {
+  
+  if ( ncol(obj) != 1 ) {
+    vmsg("More than one sample given, please specifiy 1 sample only,... exiting")
+    return()
+  }
+  chroms <- as.factor(chromosomes(obj)) 
+  chrom.unique <- unique(chroms)
+  
+  chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+  
+  chrCum <- c(0, cumsum(chrom.lengths[ as.integer(as.vector(chrom.unique))]))  
+  
+  fd <- fData(obj)
+  
+  conlin <- fd$start + chrCum[as.integer(chroms)]
+  
+  cn <- log2(assayDataElement(obj, element))
+  points(conlin[filter], cn[filter], ...) 
+}
+
+
 # EOF
