@@ -104,15 +104,10 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         pos <- as.numeric(bpstart(x)[condition])
         pos2 <- as.numeric(bpend(x)[condition])
         chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
-        chrom.ends <- integer()
-        cumul <- 0
-        for (i in uni.chrom) {
-            pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
-            pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
-            cumul <- cumul + chrom.lengths[as.character(i)]
-            chrom.ends <- c(chrom.ends, cumul)
-        }
-        names(chrom.ends) <- names(chrom.lengths)
+        
+        chrCum <- c(0, cumsum(chrom.lengths))
+        pos <- pos + chrCum[ as.integer(chrom) ]
+        pos2 <- pos2 + chrCum[ as.integer(chrom) ]
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
         copynumber <- unlog2adhoc(copynumber)
@@ -183,10 +178,10 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         mtext(text=xlab, side=1, line=2, cex=par("cex"))
         mtext(text=ylab[i], side=2, line=2, cex=par("cex"))
         abline(h=baseLine)
-        abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
+        abline(v=chrCum, lty="dashed", col="grey", lwd=2)
         if (!is.na(xaxt) && xaxt != "n") {
-            ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-            axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
+              ax <- chrCum[-length(chrCum)] + chrom.lengths / 2
+              axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015)
             axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
