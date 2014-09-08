@@ -585,13 +585,27 @@ toConlin <- function (coords)
 }
 
 # Zoom interactively into current plot.
-plotZoom <- function(obj, ...) {
+plotZoom <- function(obj, scale=T, ...) {
   locator(2) -> sel
-  sort(rev(sel$x)[1:2]) -> pRange
+  print(sel)
+  round(sort(rev(sel$x)[1:2]),0) -> pRange
   fData(obj) -> fd
-  toConlin(fd[,1:3]) -> conlin
-  zoom <- conlin$start > pRange[1] & conlin$end < pRange[2]
-  plot(obj[zoom,ncol(obj)], ...) # Selecting last plotted sample in object.
+  zoom <- NULL
+  
+  if (scale) {
+    toConlin(fd[,1:3]) -> conlin
+    zoom <- conlin$start > pRange[1] & conlin$end < pRange[2] 
+  } else {
+    idx <- (1:nrow(obj))[fData(obj)$use]
+    
+    # Correct for filtered points
+    pRange[1] <- idx[pRange[1]]
+    pRange[2] <- idx[pRange[2]]
+    
+    zoom <- pRange[1]:pRange[2]
+  } 
+  plot(obj[zoom,ncol(obj)], scale=scale, ...) # Selecting last plotted sample in object.
+  return(obj[zoom,ncol(obj)])
 }
 
 # EOF
