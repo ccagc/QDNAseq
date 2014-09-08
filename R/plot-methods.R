@@ -86,28 +86,37 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if (length(ylab) == 1)
         ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
-    chrom <- all.chrom[condition]
+    chrom <- factor(all.chrom, levels=unique(all.chrom))
+    rle.chrom <- rle(all.chrom)
     uni.chrom <- unique(chrom)
+    starts <- NULL
+    ends <- NULL
     if (!scale) {
         pos <- pos2 <- 1:sum(condition)
-        chrom.ends <- aggregate(pos,
-            by=list(chromosome=chrom), FUN=max)$x
+        xrange <- range(pos)
+        rle.chrom <- rle(as.vector(chrom[condition]))
+        starts <- cumsum(c(1, rle.chrom$lengths[-length(rle.chrom$lengths)] + 1))
+        ends <- cumsum(rle.chrom$lengths)
+        chrCum <- c(0, cumsum(rle.chrom$lengths))
+        uni.chrom <- unique(chrom[condition])
     } else {
-        if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
-            chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
-        } else {
-            all.chrom.lengths <- aggregate(bpend(x),
-                by=list(chromosome=all.chrom), FUN=max)
-            chrom.lengths <- all.chrom.lengths$x
-            names(chrom.lengths) <- all.chrom.lengths$chromosome
-        }
-        pos <- as.numeric(bpstart(x)[condition])
-        pos2 <- as.numeric(bpend(x)[condition])
-        chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
         
+        endI <- cumsum(rle.chrom$lengths)
+        ends <- bpend(x)[ endI ]
+        startI <- c(1, cumsum(rle.chrom$lengths[-length(rle.chrom$lengths)] ) + 1 )
+        starts <- bpstart(x)[ startI ] - 1
+        chrom.lengths <- ends - starts
+            
+        conlin <- toConlin(cbind(chrom, bpstart(x), bpend(x)))
+        pos <- conlin$start[condition]
+        pos2 <- conlin$end[condition]
+        # exclude empty chromosomes (like X and Y)
+        
+        mask <- sapply(1:length(startI), function(i) { sum(condition[startI[i]:endI[i]]) != 0})
+        mask <- chrom %in% uni.chrom[mask]
+        
+        xrange <- range(conlin$start[mask], conlin$end[mask])
         chrCum <- c(0, cumsum(chrom.lengths))
-        pos <- pos + chrCum[ as.integer(chrom) ]
-        pos2 <- pos2 + chrCum[ as.integer(chrom) ]
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
         copynumber <- unlog2adhoc(copynumber)
@@ -145,7 +154,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 gains <- gains + probamp(x)[condition, i]
             par(mar=c(5, 4, 4, 4) + 0.2)
             plot(NA, main=main[i], xlab=NA, ylab=NA, las=1,
-                xlim=c(0, max(pos2)), ylim=ylim, xaxs="i", xaxt="n",
+                xlim=xrange, ylim=ylim, xaxs="i", xaxt="n",
                 yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs="i")
             lim <- par("usr")
             lim[3:4] <- c(0, 1)
@@ -177,17 +186,18 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         } else {
             plot(pos, cn, cex=pointcex, col=pointcol, main=main[i],
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
-                yaxp=yaxp, tck=-0.015, las=1, pch=pointpch)
+                yaxp=yaxp, tck=-0.015, las=1, pch=pointpch, xlim=xrange)
         }
         mtext(text=xlab, side=1, line=2, cex=par("cex"))
         mtext(text=ylab[i], side=2, line=2, cex=par("cex"))
         abline(h=baseLine)
         abline(v=chrCum, lty="dashed", col="grey", lwd=2)
         if (!is.na(xaxt) && xaxt != "n") {
-              ax <- chrCum[-length(chrCum)] + chrom.lengths / 2
+              ax <- starts + (ends - starts) / 2
+              #ax <- chrCum[-length(chrCum)] + chrom.lengths / 2
               axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015)
-            axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
+              axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
         }
         if (doSegments) {
