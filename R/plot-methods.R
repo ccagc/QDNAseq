@@ -575,4 +575,15 @@ toConlin <- function (coords)
   coords$end <- coords$end + chrOffset[ as.integer(coords$chromosome) ]
   return(coords)
 }
+
+# Zoom interactively into current plot.
+plotZoom <- function(obj, ...) {
+  locator(2) -> sel
+  sort(rev(sel$x)[1:2]) -> pRange
+  fData(obj) -> fd
+  toConlin(fd[,1:3]) -> conlin
+  zoom <- conlin$start > pRange[1] & conlin$end < pRange[2]
+  plot(obj[zoom,ncol(obj)], ...) # Selecting last plotted sample in object.
+}
+
 # EOF
