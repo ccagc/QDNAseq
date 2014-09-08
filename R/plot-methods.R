@@ -100,18 +100,17 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         chrCum <- c(0, cumsum(rle.chrom$lengths))
         uni.chrom <- unique(chrom[condition])
     } else {
+        conlin <- toConlin(cbind(chrom, bpstart(x), bpend(x)))
         
         endI <- cumsum(rle.chrom$lengths)
-        ends <- bpend(x)[ endI ]
+        ends <- conlin$end[ endI ]
         startI <- c(1, cumsum(rle.chrom$lengths[-length(rle.chrom$lengths)] ) + 1 )
-        starts <- bpstart(x)[ startI ] - 1
+        starts <- conlin$start[ startI ] - 1
         chrom.lengths <- ends - starts
-            
-        conlin <- toConlin(cbind(chrom, bpstart(x), bpend(x)))
         pos <- conlin$start[condition]
         pos2 <- conlin$end[condition]
+
         # exclude empty chromosomes (like X and Y)
-        
         mask <- sapply(1:length(startI), function(i) { sum(condition[startI[i]:endI[i]]) != 0})
         mask <- chrom %in% uni.chrom[mask]
         
@@ -194,7 +193,6 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         abline(v=chrCum, lty="dashed", col="grey", lwd=2)
         if (!is.na(xaxt) && xaxt != "n") {
               ax <- starts + (ends - starts) / 2
-              #ax <- chrCum[-length(chrCum)] + chrom.lengths / 2
               axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015)
               axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
