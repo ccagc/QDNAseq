@@ -555,4 +555,24 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     abline(0, 1)
 })
 
+# Auxilary functions
+
+# Convert chromosome based coordinates to genome based coordinates (continuous linear)
+toConlin <- function (coords) 
+{
+  if (ncol(coords) == 2) {
+    coords[, 3] <- coords[, 2]
+  }
+  coords <- as.data.frame(coords, stringsAsFactors=F)  
+  colnames(coords) <- c("chromosome", "start", "end")
+  chrU <- unique(coords$chromosome) 
+  chrF <- factor(coords$chromosome, levels=chrU)
+  coords$chromosome <- chrF
+  rle(as.vector(chrF)) -> chrRle
+  chrom.lengths <- coords$end[cumsum(chrRle$lengths)]
+  chrOffset <- c(0, cumsum(chrom.lengths))
+  coords$start <- coords$start + chrOffset[ as.integer(coords$chromosome) ]
+  coords$end <- coords$end + chrOffset[ as.integer(coords$chromosome) ]
+  return(coords)
+}
 # EOF
