@@ -45,7 +45,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         condition <- rep(TRUE, times=nrow(x))
     }
     baseLine <- NA
-    if ("calls" %in% assayDataElementNames(x)) {
+    if ("calls" %in% assayDataElementNames(x) & doCalls) {
         if (is.null(ylim))
             if (logTransform) {
                 ylim <- c(-5, 5)
