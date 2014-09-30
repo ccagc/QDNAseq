@@ -228,7 +228,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if (showSD) {
             if (is.numeric(x$expected.variance[i])) {
                 sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
-                    list(e=sprintf("%.3g", sqrt(x$expected.variance)),
+                    list(e=sprintf("%.3g", sqrt(x$expected.variance[i])),
                     symbol=symbol, sd=sprintf("%.3g", noise[i])))
             } else {
                 sdexp <- substitute(symbol==sd,
