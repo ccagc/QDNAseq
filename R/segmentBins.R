@@ -82,6 +82,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             smoothBy, " bins:")
     }
 
+    transformFun <- match(transformFun)
     copynumber <- copynumber(object)
     copynumber[!condition, ] <- NA_real_
     copynumber <- transformFun(copynumber)
@@ -129,7 +130,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         vmsg()
     }
     segmented[is.na(copynumber)] <- NA_real_
-    segmented <- transformFun(segmented, inv=T)
+    segmented <- transformFun(segmented, inv=TRUE)
     segmented(object) <- segmented
     object
 })
