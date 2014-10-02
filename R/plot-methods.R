@@ -36,8 +36,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
     pointcol="black", segcol="chocolate", misscol=NA,
     xlab="chromosomes", ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=T,
-    doCalls=T, ... ) {
+    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
+    doCalls=TRUE, ... ) {
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
