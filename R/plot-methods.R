@@ -115,7 +115,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         names(chrom.ends) <- names(chrom.lengths)
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
-        copynumber <- unlog2adhoc(copynumber)
+        copynumber <- log2adhoc(copynumber, inv=TRUE)
     if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
         symbol <- quote(hat(sigma)[Delta])
     } else {
