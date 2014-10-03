@@ -96,7 +96,7 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
             next
         }
         vmsg("    Calculating fit for sample ", sampleNames(object)[i],
-          " (", i, " of ", ncol(counts), ") ...", appendLF=FALSE)
+            " (", i, " of ", ncol(counts), ") ...", appendLF=FALSE)
         noProb <- FALSE
         try({
             corvals <- counts[, i]

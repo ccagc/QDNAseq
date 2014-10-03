@@ -57,7 +57,8 @@
 #*/#########################################################################
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
-    undo.splits="sdundo", undo.SD=1.0, force=FALSE, ...) {
+    undo.splits="sdundo", undo.SD=1.0, force=FALSE, transformFun=log2adhoc,... 
+    ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -82,9 +83,10 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             smoothBy, " bins:")
     }
 
+    transformFun <- match(transformFun)
     copynumber <- copynumber(object)
     copynumber[!condition, ] <- NA_real_
-    copynumber <- log2adhoc(copynumber)
+    copynumber <- transformFun(copynumber)
     segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
         dimnames=dimnames(copynumber))
 
@@ -129,7 +131,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         vmsg()
     }
     segmented[is.na(copynumber)] <- NA_real_
-    segmented <- unlog2adhoc(segmented)
+    segmented <- transformFun(segmented, inv=TRUE)
     segmented(object) <- segmented
     object
 })

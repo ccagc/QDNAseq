@@ -2,7 +2,7 @@
 
 \documentclass{article}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{
-  hyperref}
+hyperref}
 
 \begin{document}
 
@@ -43,10 +43,10 @@ and experiment type SR50 ...
 QDNAseq bin annotations for Hsapiens, build hg19.
 Created by Ilari Scheinin with QDNAseq 0.7.5, 2014-02-06 12:48:04.
 An object of class 'AnnotatedDataFrame'
-  rowNames: 1:1-15000 1:15001-30000 ... Y:59370001-59373566 (206391
-    total)
-  varLabels: chromosome start ... use (9 total)
-  varMetadata: labelDescription
+rowNames: 1:1-15000 1:15001-30000 ... Y:59370001-59373566 (206391
+total)
+varLabels: chromosome start ... use (9 total)
+varMetadata: labelDescription
 \end{Sinput}
 \end{Schunk}
 
@@ -100,18 +100,18 @@ png("rawprofile.png")
 <<label=rawprofile>>=
 plot(readCounts, logTransform=FALSE, ylim=c(-50, 200))
 highlightFilters(readCounts, logTransform=FALSE,
-  residual=TRUE, blacklist=TRUE)
+    residual=TRUE, blacklist=TRUE)
 @
 <<echo=FALSE, results=hide>>=
 dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{rawprofile}
-  \caption{Read counts per bins. Highlighted with red are bins that will be
-    filtered out.}
-  \label{fig:rawprofile}
+\centering
+\includegraphics{rawprofile}
+\caption{Read counts per bins. Highlighted with red are bins that will be
+filtered out.}
+\label{fig:rawprofile}
 \end{figure}
 
 Apply filters and plot median read counts as a function of GC content and
@@ -121,7 +121,7 @@ expected for the entire genome.
 
 <<>>=
 readCountsFiltered <- applyFilters(readCounts,
-  residual=TRUE, blacklist=TRUE)
+    residual=TRUE, blacklist=TRUE)
 @
 <<echo=FALSE>>=
 png("isobar.png")
@@ -134,11 +134,11 @@ dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{isobar}
-  \caption{Median read counts per bin shown as a function of GC content and
-    mappability.}
-  \label{fig:isobar}
+\centering
+\includegraphics{isobar}
+\caption{Median read counts per bin shown as a function of GC content and
+mappability.}
+\label{fig:isobar}
 \end{figure}
 
 Estimate the correction for GC content and mappability, and make a plot for the
@@ -162,10 +162,10 @@ dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{noise}
-  \caption{The relationship between sequence depth and noise.}
-  \label{fig:noise}
+\centering
+\includegraphics{noise}
+\caption{The relationship between sequence depth and noise.}
+\label{fig:noise}
 \end{figure}
 
 Next, we apply the correction for GC content and mappability. This will return
@@ -189,10 +189,10 @@ dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{profile}
-  \caption{Copy number profile after correcting for GC content and mappability.}
-  \label{fig:profile}
+\centering
+\includegraphics{profile}
+\caption{Copy number profile after correcting for GC content and mappability.}
+\label{fig:profile}
 \end{figure}
 
 Data is now ready to be analyzed with a downstream package of choice. For
@@ -224,10 +224,10 @@ dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{segments}
-  \caption{A plot}
-  \label{fig:segments}
+\centering
+\includegraphics{segments}
+\caption{A plot}
+\label{fig:segments}
 \end{figure}
 
 Tune segmentation parameters and iterate until satisfied. Next, call
@@ -247,10 +247,10 @@ dev.off()
 @
 
 \begin{figure}[h]
-  \centering
-  \includegraphics{calls}
-  \caption{A plot}
-  \label{fig:calls}
+\centering
+\includegraphics{calls}
+\caption{A plot}
+\label{fig:calls}
 \end{figure}
 
 Finally, for other downstream analyses, such as running CGHregions, it might be
@@ -314,8 +314,8 @@ utilities section}.
 <<eval=FALSE>>=
 # calculate mappabilites per bin from ENCODE mapability tracks
 bins$mappability <- calculateMappability(bins,
-  bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
-  bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+    bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
+    bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
 @
 
 If there are genomic regions that should excluded from analyses, such as
@@ -330,9 +330,37 @@ ENCODE's download section of the UCSC Genome Browser} for hg19.
 <<eval=FALSE>>=
 # calculate overlap with ENCODE blacklisted regions
 bins$blacklist <- calculateBlacklist(bins,
-  bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
-  '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+    bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
+        '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
 @
+
+If there are genomic regions that are not provided as bed files, one can
+generate a matrix containing chromosomal coordinates of the regions to be
+excluded from the analysis as follows. This example downloads a CSV file 
+from the Database of Genomic Variants.
+
+<<eval=FALSE>>=
+
+# Download the CSV file:
+read.delim("http://dgv.tcag.ca/dgv/docs/GRCh37_hg19_variants_2013-07-23.txt", 
+    stringsAsFactors=FALSE) -> dgv
+
+# Select CNV's obtained from similar data
+grepl("Illumina G", dgv$platform) -> sel1
+grepl("Illumina IIx", dgv$platform) -> sel2
+grepl("Illumina HiSeq", dgv$platform) -> sel3
+
+ngsSel <- sel1 | sel2 | sel3
+
+dgvNgs <- dgv[ngsSel,]
+
+data.frame(chromosome = as.character(dgvNgs$chr), 
+    start = as.integer(dgvNgs$start), end = as.integer(dgvNgs$end)) -> coords
+
+dgvBlackList <- calculateBlacklistByRegions(bins, coords)
+
+@
+
 
 To calculate median residuals of the LOESS fit from a control dataset, the
 following command can be used. For the pre-generated annotations, the control
@@ -342,9 +370,9 @@ how those were downloaded.
 <<eval=FALSE>>=
 # load data for the 1000 Genomes (or similar) data set, and generate residuals
 ctrl <- binReadCounts(bins,
-  path='/path/to/control-set/bam/files')
+    path='/path/to/control-set/bam/files')
 ctrl <- applyFilters(ctrl, residual=FALSE, blacklist=FALSE,
-  mappability=FALSE, bases=FALSE)
+    mappability=FALSE, bases=FALSE)
 bins$residual <- iterateResiduals(ctrl)
 @
 
@@ -366,17 +394,17 @@ Optionally, the resulting \code{data.frame} can be converted to an
 <<eval=FALSE>>=
 # convert to AnnotatedDataFrame and add metadata
 bins <- AnnotatedDataFrame(bins,
-  varMetadata=data.frame(labelDescription=c(
-  'Chromosome name',
-  'Base pair start position',
-  'Base pair end position',
-  'Percentage of non-N nucleotides (of full bin size)',
-  'Percentage of C and G nucleotides (of non-N nucleotides)',
-  'Average mappability of 50mers with a maximum of 2 mismatches',
-  'Percent overlap with ENCODE blacklisted regions',
-  'Median loess residual from 1000 Genomes (50mers)',
-  'Whether the bin should be used in subsequent analysis steps'),
-  row.names=colnames(bins)))
+    varMetadata=data.frame(labelDescription=c(
+        'Chromosome name',
+        'Base pair start position',
+        'Base pair end position',
+        'Percentage of non-N nucleotides (of full bin size)',
+        'Percentage of C and G nucleotides (of non-N nucleotides)',
+        'Average mappability of 50mers with a maximum of 2 mismatches',
+        'Percent overlap with ENCODE blacklisted regions',
+        'Median loess residual from 1000 Genomes (50mers)',
+        'Whether the bin should be used in subsequent analysis steps'),
+        row.names=colnames(bins)))
 @
 
 For the pre-generated annotations, some additional descriptive metadata has
@@ -384,16 +412,16 @@ also been added.
 
 <<eval=FALSE>>=
 attr(bins, "QDNAseq") <- list(
-  author="Ilari Scheinin",
-  date=Sys.time(),
-  organism="Hsapiens",
-  build="hg19",
-  version=packageVersion("QDNAseq"),
-  url=paste0(
-  "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.hg19.",
-  binsize, "kbp.SR50.rds"),
-  md5=digest::digest(bins@data),
-  sessionInfo=sessionInfo())
+    author="Ilari Scheinin",
+    date=Sys.time(),
+    organism="Hsapiens",
+    build="hg19",
+    version=packageVersion("QDNAseq"),
+    url=paste0(
+        "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.hg19.",
+        binsize, "kbp.SR50.rds"),
+    md5=digest::digest(bins@data),
+    sessionInfo=sessionInfo())
 @
 
 \section{Downloading 1000 Genomes Samples}
@@ -405,7 +433,7 @@ This section defines the criteria that were used to download samples from the
 # download table of samples
 server <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/"
 g1k <- read.table(paste0(server, "sequence.index"),
-  header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
+    header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
 
 # keep cases that are Illumina, low coverage, single-read, and not withdrawn
 g1k <- g1k[g1k$INSTRUMENT_PLATFORM == 'ILLUMINA', ]
@@ -422,18 +450,18 @@ g1k <- g1k[g1k$readLength > 50, ]
 
 # keep samples with a minimum of one million reads
 readCountPerSample <- aggregate(g1k$READ_COUNT,
-  by=list(sample=g1k$SAMPLE_NAME), sum)
+    by=list(sample=g1k$SAMPLE_NAME), sum)
 g1k <- g1k[g1k$SAMPLE_NAME %in%
-  readCountPerSample$sample[readCountPerSample$x >= 1e6], ]
+        readCountPerSample$sample[readCountPerSample$x >= 1e6], ]
 
 g1k$fileName <- basename(g1k$FASTQ_FILE)
 
 # download fastq files
 for (i in rownames(g1k)) {
-  sourceFile <- paste0(server, g1k[i, "FASTQ_FILE"])
-  destFile <- g1k[i, "fileName"]
-  if (!file.exists(destFile))
-    download.file(sourceFile, destFile)
+    sourceFile <- paste0(server, g1k[i, "FASTQ_FILE"])
+    destFile <- g1k[i, "fileName"]
+    if (!file.exists(destFile))
+        download.file(sourceFile, destFile)
 }
 @
 

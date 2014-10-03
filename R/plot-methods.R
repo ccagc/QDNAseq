@@ -36,8 +36,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
     pointcol="black", segcol="chocolate", misscol=NA,
     xlab="chromosomes", ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE,
-    ... ) {
+    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
+    doCalls=TRUE, ... ) {
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -45,7 +45,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         condition <- rep(TRUE, times=nrow(x))
     }
     baseLine <- NA
-    if ("calls" %in% assayDataElementNames(x)) {
+    if ("calls" %in% assayDataElementNames(x) & doCalls) {
         if (is.null(ylim))
             if (logTransform) {
                 ylim <- c(-5, 5)
@@ -86,36 +86,39 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if (length(ylab) == 1)
         ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
-    chrom <- all.chrom[condition]
+    chrom <- factor(all.chrom, levels=unique(all.chrom))
+    rle.chrom <- rle(all.chrom)
     uni.chrom <- unique(chrom)
+    starts <- NULL
+    ends <- NULL
     if (!scale) {
         pos <- pos2 <- 1:sum(condition)
-        chrom.ends <- aggregate(pos,
-            by=list(chromosome=chrom), FUN=max)$x
+        xrange <- range(pos)
+        rle.chrom <- rle(as.vector(chrom[condition]))
+        starts <- cumsum(c(1, rle.chrom$lengths[-length(rle.chrom$lengths)] + 1))
+        ends <- cumsum(rle.chrom$lengths)
+        chrCum <- c(0, cumsum(rle.chrom$lengths))
+        uni.chrom <- unique(chrom[condition])
     } else {
-        if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
-            chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
-        } else {
-            all.chrom.lengths <- aggregate(bpend(x),
-                by=list(chromosome=all.chrom), FUN=max)
-            chrom.lengths <- all.chrom.lengths$x
-            names(chrom.lengths) <- all.chrom.lengths$chromosome
-        }
-        pos <- as.numeric(bpstart(x)[condition])
-        pos2 <- as.numeric(bpend(x)[condition])
-        chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
-        chrom.ends <- integer()
-        cumul <- 0
-        for (i in uni.chrom) {
-            pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
-            pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
-            cumul <- cumul + chrom.lengths[as.character(i)]
-            chrom.ends <- c(chrom.ends, cumul)
-        }
-        names(chrom.ends) <- names(chrom.lengths)
+        conlin <- toConlin(cbind(chrom, bpstart(x), bpend(x)))
+        
+        endI <- cumsum(rle.chrom$lengths)
+        ends <- conlin$end[ endI ]
+        startI <- c(1, cumsum(rle.chrom$lengths[-length(rle.chrom$lengths)] ) + 1 )
+        starts <- conlin$start[ startI ] - 1
+        chrom.lengths <- ends - starts
+        pos <- conlin$start[condition]
+        pos2 <- conlin$end[condition]
+
+        # exclude empty chromosomes (like X and Y)
+        mask <- sapply(1:length(startI), function(i) { sum(condition[startI[i]:endI[i]]) != 0})
+        mask <- chrom %in% uni.chrom[mask]
+        
+        xrange <- range(conlin$start[mask], conlin$end[mask])
+        chrCum <- c(0, cumsum(chrom.lengths))
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
-        copynumber <- unlog2adhoc(copynumber)
+        copynumber <- log2adhoc(copynumber, inv=TRUE)
     if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
         symbol <- quote(hat(sigma)[Delta])
     } else {
@@ -129,7 +132,11 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         vmsg("Plotting sample ", main[i], " (", i, " of ", ncol(x), ") ...",
           appendLF=FALSE)
         cn <- copynumber[, i]
-        if ("segmented" %in% assayDataElementNames(x)) {
+        
+        doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
+        doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments 
+        
+        if (doSegments) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
             if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
                 segmented <- unlog2adhoc(segmented)
@@ -137,7 +144,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 segmented <- log2adhoc(segmented)
             segment <- CGHbase:::.makeSegments(segmented, chrom)
         }
-        if ("calls" %in% assayDataElementNames(x)) {
+        if (doCalls) {
             losses <- probloss(x)[condition, i]
             gains <- probgain(x)[condition, i]
             if (!is.null(probdloss(x)))
@@ -146,7 +153,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 gains <- gains + probamp(x)[condition, i]
             par(mar=c(5, 4, 4, 4) + 0.2)
             plot(NA, main=main[i], xlab=NA, ylab=NA, las=1,
-                xlim=c(0, max(pos2)), ylim=ylim, xaxs="i", xaxt="n",
+                xlim=xrange, ylim=ylim, xaxs="i", xaxt="n",
                 yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs="i")
             lim <- par("usr")
             lim[3:4] <- c(0, 1)
@@ -176,22 +183,22 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             par(usr=lim)
             points(pos, cn, cex=.1, col=pointcol)
         } else {
-            plot(pos, cn, cex=.1, col=pointcol, main=main[i],
+            plot(pos, cn, cex=pointcex, col=pointcol, main=main[i],
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
-                yaxp=yaxp, tck=-0.015, las=1)
+                yaxp=yaxp, tck=-0.015, las=1, pch=pointpch, xlim=xrange)
         }
         mtext(text=xlab, side=1, line=2, cex=par("cex"))
         mtext(text=ylab[i], side=2, line=2, cex=par("cex"))
         abline(h=baseLine)
-        abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
+        abline(v=chrCum, lty="dashed", col="grey", lwd=2)
         if (!is.na(xaxt) && xaxt != "n") {
-            ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-            axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
+              ax <- starts + (ends - starts) / 2
+              axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015)
-            axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
+              axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
         }
-        if ("segmented" %in% assayDataElementNames(x)) {
+        if (doSegments) {
             for (jjj in seq_len(nrow(segment))) {
                 segments(pos[segment[jjj,2]], segment[jjj,1],
                     pos[segment[jjj,3]], segment[jjj,1], col=segcol, lwd=3)
@@ -206,7 +213,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
         points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)
         points(pos, dels, pch=25, col=pointcol, bg=pointcol, cex=0.5)
-        if ("segmented" %in% assayDataElementNames(x)) {
+        if (doSegments) {
             amps <- assayDataElement(x, "segmented")[condition, i]
             amps[amps <= ylim[2]] <- NA_real_
             amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
@@ -221,7 +228,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if (showSD) {
             if (is.numeric(x$expected.variance[i])) {
                 sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
-                    list(e=sprintf("%.3g", sqrt(x$expected.variance)),
+                    list(e=sprintf("%.3g", sqrt(x$expected.variance[i])),
                     symbol=symbol, sd=sprintf("%.3g", noise[i])))
             } else {
                 sdexp <- substitute(symbol==sd,
@@ -238,7 +245,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             } else {
                 str <- paste(str, round(probe / 1000), " kbp", sep="")
             }
-            if ("segmented" %in% assayDataElementNames(x))
+            if (doSegments)
                 str <- paste(str, ", ", nrow(segment), " segments", sep="")
             mtext(str, side=3, line=0, adj=0, cex=par("cex"))
         }
@@ -555,5 +562,50 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         labels=sampleNames(x), pos=4, cex=0.5, ...)
     abline(0, 1)
 })
+
+# Auxilary functions
+
+# Convert chromosome based coordinates to genome based coordinates (continuous linear)
+toConlin <- function (coords) 
+{
+  if (ncol(coords) == 2) {
+    coords[, 3] <- coords[, 2]
+  }
+  coords <- as.data.frame(coords, stringsAsFactors=F)  
+  colnames(coords) <- c("chromosome", "start", "end")
+  chrU <- unique(coords$chromosome) 
+  chrF <- factor(coords$chromosome, levels=chrU)
+  coords$chromosome <- chrF
+  rle(as.vector(chrF)) -> chrRle
+  chrom.lengths <- coords$end[cumsum(chrRle$lengths)]
+  chrOffset <- c(0, cumsum(chrom.lengths))
+  coords$start <- coords$start + chrOffset[ as.integer(coords$chromosome) ]
+  coords$end <- coords$end + chrOffset[ as.integer(coords$chromosome) ]
+  return(coords)
+}
+
+# Zoom interactively into current plot.
+plotZoom <- function(obj, scale=T, ...) {
+  locator(2) -> sel
+  print(sel)
+  round(sort(rev(sel$x)[1:2]),0) -> pRange
+  fData(obj) -> fd
+  zoom <- NULL
+  
+  if (scale) {
+    toConlin(fd[,1:3]) -> conlin
+    zoom <- conlin$start > pRange[1] & conlin$end < pRange[2] 
+  } else {
+    idx <- (1:nrow(obj))[fData(obj)$use]
+    
+    # Correct for filtered points
+    pRange[1] <- idx[pRange[1]]
+    pRange[2] <- idx[pRange[2]]
+    
+    zoom <- pRange[1]:pRange[2]
+  } 
+  plot(obj[zoom,ncol(obj)], scale=scale, ...) # Selecting last plotted sample in object.
+  return(obj[zoom,ncol(obj)])
+}
 
 # EOF
