@@ -50,7 +50,7 @@
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
-    info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
+    info <- GenomeInfoDb::genomeStyles(BSgenome::organism(bsgenome))
     style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
     chrs <- info[, style]
     if (ignoreMitochondria)
@@ -60,10 +60,10 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
     bases <- gc <- numeric()
     vmsg("Creating bins of ", binSize, " kbp for genome ",
         substitute(bsgenome))
-
+    
     # Bin size in units of base pairs
     binWidth <- binSize*1000L
-
+    
     for (chr in chrs) {
         vmsg("    Processing ", chr, " ...", appendLF=FALSE)
         chr.size <- lengths[chr]
@@ -138,7 +138,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
     stopifnot(nrow(combined) >= 2L);
     for (i in 2:nrow(combined)) {
         if (combined[i, "chromosome"] != prev$chromosome ||
-            combined[i, "start"] > (prev$end + 1)) {
+                combined[i, "start"] > (prev$end + 1)) {
             joined <- rbind(joined, prev)
             prev <- combined[i,]
         } else {
@@ -154,12 +154,12 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
         start <- as.integer(x["start"])
         end <- as.integer(x["end"])
         overlaps <- joined[joined$chromosome == chr &
-                           joined$start      <= end &
-                           joined$end        >= start, ]
+                joined$start      <= end &
+                joined$end        >= start, ]
         bases <- 0
         for (i in rownames(overlaps))
             bases <- bases + min(end, overlaps[i, "end"]) -
-                max(start, overlaps[i, "start"]) + 1
+            max(start, overlaps[i, "start"]) + 1
         bases / (end - start + 1) * 100
     }
     if (ncpus > 1L) {
@@ -172,7 +172,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
     }
     vmsg()
     blacklist
- }
+}
 
 ###############################################################################
 # 
@@ -208,14 +208,16 @@ calculateBlacklistByRegions <- function(bins, regions) {
     tmp <- combined$start + 1
     combined$start <- tmp
     combined <- combined[order(combined$chromosome, combined$start), ]
-  
+    
     # Determine binsize
     binSize <- diff(bins$start[1:2])
     
     # Calculate index, residual, 
-    combined$si <- combined$start %/% binSize + 1 # add 1 because it serves as idx
+    # add 1 because it serves as idx
+    combined$si <- combined$start %/% binSize + 1 
     combined$sm <- binSize - combined$start %% binSize
-    combined$ei <- combined$end %/% binSize + 1 # add 1 because it serves as idx
+    # add 1 because it serves as idx
+    combined$ei <- combined$end %/% binSize + 1 
     combined$em <- combined$end %% binSize
     combined$seDiff <- combined$end - combined$start 
     combined$idDiff <- combined$ei - combined$si 
@@ -232,24 +234,24 @@ calculateBlacklistByRegions <- function(bins, regions) {
     sel2 <- combined$idDiff == 0
     
     aggregate(c(
-      combined$sm[sel1], 
-      combined$em[sel1],
-      combined$seDiff[sel2]
-      ), 
-      list(c(
-        combined$sI[sel1], 
-        combined$eI[sel1],
-        combined$sI[sel2]
+        combined$sm[sel1], 
+        combined$em[sel1],
+        combined$seDiff[sel2]
+    ), 
+        list(c(
+            combined$sI[sel1], 
+            combined$eI[sel1],
+            combined$sI[sel2]
         )
-      ), max) -> res12
+        ), max) -> res12
     
     vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
     sel3 <- combined$idDiff > 1
     unlist(sapply(which(sel3), function(x) {
-      s <- combined$sI[x] + 1
-      e <- combined$eI[x] - 1
-      s:e
+        s <- combined$sI[x] + 1
+        e <- combined$eI[x] - 1
+        s:e
     })) -> res3
     
     res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, length(res3))))
@@ -284,7 +286,7 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
     if (is.numeric(cutoff))
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
-            abs(residual) <= cutoffValue
+        abs(residual) <= cutoffValue
     num <- sum(binsToUse(object))
     iter <- 2
     while (previous != num && iter <= maxIter) {
