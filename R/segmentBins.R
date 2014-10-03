@@ -57,7 +57,8 @@
 #*/#########################################################################
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
-    undo.splits="sdundo", undo.SD=1.0, force=FALSE, transformFun=log2adhoc,... ) {
+    undo.splits="sdundo", undo.SD=1.0, force=FALSE, transformFun=log2adhoc,... 
+    ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
