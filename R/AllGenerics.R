@@ -28,7 +28,8 @@ setGeneric("poolRuns", function(object, samples, force=FALSE)
     standardGeneric("poolRuns"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
     alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-    force=FALSE, ...) standardGeneric("segmentBins"))
+    force=FALSE, transformFun=QDNAseq:::log2adhoc, ...)
+    standardGeneric("segmentBins"))
 setGeneric("smoothOutlierBins", function(object,
     logTransform=TRUE, force=FALSE, ...)
     standardGeneric("smoothOutlierBins"))

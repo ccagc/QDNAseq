@@ -97,7 +97,7 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
 
     # Log transform?
     if (logTransform)
-        copynumber <- unlog2adhoc(copynumber)
+        copynumber <- log2adhoc(copynumber, inv=TRUE)
 
     # Expand to full set of bins
     copynumber2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),

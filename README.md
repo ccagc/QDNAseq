@@ -5,12 +5,12 @@ This repository contains source code for the R/Bioconductor package QDNAseq.
 #### Citing QDNAseq
 
 To cite QDNAseq, please use:
-Scheinin I, Sie D, Bengtsson H, van de Wiel MA, Olshen AB, van Thuijl
-HF, van Essen HF, Eijk PP, Rustenburg F, Meijer GA, Reijneveld JC,
-Wesseling P, Pinkel D, Albertson DG and Ylstra B (2014) **DNA copy
-number analysis of fresh and formalin-fixed specimens by whole-genome
-sequencing: improved correction of systematic biases and exclusion of
-problematic regions.** *Submitted.*
+Scheinin I, Sie D, Bengtsson H, van de Wiel MA, Olshen AB, van Thuijl HF, van
+Essen HF, Eijk PP, Rustenburg F, Meijer GA, Reijneveld JC, Wesseling P, Pinkel
+D, Albertson DG and Ylstra B (2014) **DNA copy number analysis of fresh and
+formalin-fixed specimens by shallow whole-genome sequencing with identification
+and exclusion of problematic regions in the genome assembly.** *Genome
+Research* doi:10.1101/gr.175141.114
 
 #### Repositories, Branches, and Versions
 

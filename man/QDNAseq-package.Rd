@@ -27,8 +27,8 @@
 \section{How to cite this package}{
     Whenever using this package, please cite:
     Scheinin I, Sie D, Bengtsson H, van de Wiel MA, Olshen AB, van Thuijl HF, van Essen HF, Eijk PP, Rustenburg F, Meijer GA, Reijneveld JC, Wesseling P, Pinkel D, Albertson DG and Ylstra B
-(2014). "DNA copy number analysis of fresh and formalin-fixed specimens by whole-genome sequencing: improved correction of systematic biases and exclusion of problematic regions."
-_Submitted_.
+(2014). "DNA copy number analysis of fresh and formalin-fixed specimens by shallow whole-genome sequencing with identification and exclusion of problematic regions in the genome assembly."
+_Genome Research_. doi:10.1101/gr.175141.114.
 }
 
 \author{Ilari Scheinin}
