@@ -45,7 +45,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         condition <- rep(TRUE, times=nrow(x))
     }
     baseLine <- NA
-    if ("calls" %in% assayDataElementNames(x) & doCalls) {
+    doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
+    doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments 
+    if (doCalls) {
         if (is.null(ylim))
             if (logTransform) {
                 ylim <- c(-5, 5)
@@ -129,10 +131,6 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         vmsg("Plotting sample ", main[i], " (", i, " of ", ncol(x), ") ...",
           appendLF=FALSE)
         cn <- copynumber[, i]
-        
-        doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
-        doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments 
-        
         if (doSegments) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
             if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
