@@ -398,6 +398,8 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         if (is.null(main))
             main <- paste(sampleNames(x), "median read counts")
     } else if (what == "fit") {
+        if (! "fit" %in% assayDataElementNames(x))
+            x <- estimateCorrection(x)
         signal <- assayDataElement(x, "fit")
         if (is.null(main))
             main <- paste(sampleNames(x), "loess fit")
@@ -407,6 +409,8 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
             counts <- counts / fData(x)$bases * 100L
             counts[fData(x)$bases == 0] <- 0L
         }
+        if (! "fit" %in% assayDataElementNames(x))
+            x <- estimateCorrection(x)
         fit <- assayDataElement(x, "fit")
         signal <- counts / fit
         signal[fit <= 0] <- 0
