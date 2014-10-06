@@ -26,6 +26,10 @@
 #         undo.splits="sdundo". Default is 1.0.}
 #     \item{force}{Whether to force execution when it causes removal of
 #         downstream calling results.}
+#     \item{transformFun}{A function to transform the data with. This can be
+#         the default QDNAseq:::log2adhoc for log2(x + .Machine$double.xmin),
+#         QDNAseq:::sqrtadhoc for sqrt(x * 3/8), which stabilizes the variance,
+#         "none" for no transformation, or any function.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -57,7 +61,8 @@
 #*/#########################################################################
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
-    undo.splits="sdundo", undo.SD=1.0, force=FALSE, transformFun=log2adhoc,... ) {
+    undo.splits="sdundo", undo.SD=1.0, force=FALSE,
+    transformFun=QDNAseq:::log2adhoc, ... ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -82,10 +87,12 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             smoothBy, " bins:")
     }
 
-    transformFun <- match(transformFun)
     copynumber <- copynumber(object)
     copynumber[!condition, ] <- NA_real_
-    copynumber <- transformFun(copynumber)
+    if (!is.character(transformFun) || transformFun != "none") {
+        transformFun <- match.fun(transformFun)
+        copynumber <- transformFun(copynumber)
+    }
     segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
         dimnames=dimnames(copynumber))
 
@@ -130,7 +137,8 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         vmsg()
     }
     segmented[is.na(copynumber)] <- NA_real_
-    segmented <- transformFun(segmented, inv=TRUE)
+    if (!is.character(transformFun) || transformFun != "none")
+        segmented <- transformFun(segmented, inv=TRUE)
     segmented(object) <- segmented
     object
 })

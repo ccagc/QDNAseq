@@ -134,7 +134,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if (doSegments) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
             if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
-                segmented <- unlog2adhoc(segmented)
+                segmented <- log2adhoc(segmented, inv=TRUE)
             if (logTransform)
                 segmented <- log2adhoc(segmented)
             segment <- CGHbase:::.makeSegments(segmented, chrom)
