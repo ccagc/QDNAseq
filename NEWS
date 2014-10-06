@@ -1,3 +1,14 @@
+Changes in version 1.1.6 (2014-10-06)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o added another transformation option to segmentBins() besides log2:
+      sqrt(x + 3/8), which stabilizes the variance.
+
+    o plot() can now skip plotting of segments and calls by specifying
+      doSegments=FALSE and doCalls=FALSE.
+
 Changes in version 1.1.5 (2014-06-13)
 -------------------------------------
 

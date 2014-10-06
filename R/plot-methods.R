@@ -36,8 +36,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
     pointcol="black", segcol="chocolate", misscol=NA,
     xlab="chromosomes", ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE,
-    ... ) {
+    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
+    doCalls=TRUE, ... ) {
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -45,7 +45,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         condition <- rep(TRUE, times=nrow(x))
     }
     baseLine <- NA
-    if ("calls" %in% assayDataElementNames(x)) {
+    doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
+    doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments 
+    if (doCalls) {
         if (is.null(ylim))
             if (logTransform) {
                 ylim <- c(-5, 5)
@@ -115,7 +117,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         names(chrom.ends) <- names(chrom.lengths)
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
-        copynumber <- unlog2adhoc(copynumber)
+        copynumber <- log2adhoc(copynumber, inv=TRUE)
     if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
         symbol <- quote(hat(sigma)[Delta])
     } else {
@@ -129,15 +131,15 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         vmsg("Plotting sample ", main[i], " (", i, " of ", ncol(x), ") ...",
           appendLF=FALSE)
         cn <- copynumber[, i]
-        if ("segmented" %in% assayDataElementNames(x)) {
+        if (doSegments) {
             segmented <- assayDataElement(x, "segmented")[condition, i]
             if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
-                segmented <- unlog2adhoc(segmented)
+                segmented <- log2adhoc(segmented, inv=TRUE)
             if (logTransform)
                 segmented <- log2adhoc(segmented)
             segment <- CGHbase:::.makeSegments(segmented, chrom)
         }
-        if ("calls" %in% assayDataElementNames(x)) {
+        if (doCalls) {
             losses <- probloss(x)[condition, i]
             gains <- probgain(x)[condition, i]
             if (!is.null(probdloss(x)))
@@ -176,9 +178,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             par(usr=lim)
             points(pos, cn, cex=.1, col=pointcol)
         } else {
-            plot(pos, cn, cex=.1, col=pointcol, main=main[i],
+            plot(pos, cn, cex=pointcex, col=pointcol, main=main[i],
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
-                yaxp=yaxp, tck=-0.015, las=1)
+                yaxp=yaxp, tck=-0.015, las=1, pch=pointpch)
         }
         mtext(text=xlab, side=1, line=2, cex=par("cex"))
         mtext(text=ylab[i], side=2, line=2, cex=par("cex"))
@@ -191,7 +193,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
         }
-        if ("segmented" %in% assayDataElementNames(x)) {
+        if (doSegments) {
             for (jjj in seq_len(nrow(segment))) {
                 segments(pos[segment[jjj,2]], segment[jjj,1],
                     pos[segment[jjj,3]], segment[jjj,1], col=segcol, lwd=3)
@@ -206,7 +208,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
         points(pos, amps, pch=24, col=pointcol, bg=pointcol, cex=0.5)
         points(pos, dels, pch=25, col=pointcol, bg=pointcol, cex=0.5)
-        if ("segmented" %in% assayDataElementNames(x)) {
+        if (doSegments) {
             amps <- assayDataElement(x, "segmented")[condition, i]
             amps[amps <= ylim[2]] <- NA_real_
             amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
@@ -221,7 +223,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if (showSD) {
             if (is.numeric(x$expected.variance[i])) {
                 sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
-                    list(e=sprintf("%.3g", sqrt(x$expected.variance)),
+                    list(e=sprintf("%.3g", sqrt(x$expected.variance[i])),
                     symbol=symbol, sd=sprintf("%.3g", noise[i])))
             } else {
                 sdexp <- substitute(symbol==sd,
@@ -238,7 +240,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             } else {
                 str <- paste(str, round(probe / 1000), " kbp", sep="")
             }
-            if ("segmented" %in% assayDataElementNames(x))
+            if (doSegments)
                 str <- paste(str, ", ", nrow(segment), " segments", sep="")
             mtext(str, side=3, line=0, adj=0, cex=par("cex"))
         }
@@ -398,6 +400,8 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         if (is.null(main))
             main <- paste(sampleNames(x), "median read counts")
     } else if (what == "fit") {
+        if (! "fit" %in% assayDataElementNames(x))
+            x <- estimateCorrection(x)
         signal <- assayDataElement(x, "fit")
         if (is.null(main))
             main <- paste(sampleNames(x), "loess fit")
@@ -407,6 +411,8 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
             counts <- counts / fData(x)$bases * 100L
             counts[fData(x)$bases == 0] <- 0L
         }
+        if (! "fit" %in% assayDataElementNames(x))
+            x <- estimateCorrection(x)
         fit <- assayDataElement(x, "fit")
         signal <- counts / fit
         signal[fit <= 0] <- 0
