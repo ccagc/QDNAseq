@@ -29,6 +29,8 @@ importFrom(R.utils, downloadFile)
 importFrom(Rsamtools, scanBamFlag)
 importFrom(stats, lm, loess, predict)
 importFrom(utils, packageVersion, read.table, write.table)
+importFrom(Clonality, clonality.analysis, ave.adj.probes)
+#importFrom(CGHbase, .getCentromere)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS
@@ -68,5 +70,7 @@ export("bpend")
 
 exportClasses("QDNAseqCopyNumbers")
 exportClasses("QDNAseqReadCounts")
+
+export("clonalityTest")
 
 # EOF
