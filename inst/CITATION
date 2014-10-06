@@ -16,8 +16,8 @@ bibentry(bibtype="Article",
     person("Bauke", "Ylstra")),
     year=2014,
     title=paste("DNA copy number analysis of fresh and formalin-fixed",
-    "specimens by whole-genome sequencing: improved correction of systematic",
-    "biases and exclusion of problematic regions"),
-    journal="Submitted")
+    "specimens by shallow whole-genome sequencing with identification and",
+    "exclusion of problematic regions in the genome assembly"),
+    journal="Genome Research", note="doi:10.1101/gr.175141.114")
 
 # EOF
