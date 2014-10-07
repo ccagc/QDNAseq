@@ -1,54 +1,126 @@
 #########################################################################/**
-# @RdocFunction clonalityAnalysis 
+# @RdocFunction clonalityTest
 #
-# @alias clonalityAnalysis,QDNAseqCopyNumbers-method
+# @alias clonalityTest
 #
 # @title "Clonality testing using copy number data"
 #
-# @synopsis
-#
 # \description{
-#     @get "title".
+#       This functions will calculate the correlation score and the log 
+#       likelihood ratio (llr) for two given data sets. The combination of these 
+#       two measures is used to determine their clonal relationship. 
+# }
+#
+# \arguments{
+#       \item{obj}{A QDNAseq object containing segmented data}
+#       \item{sbjctLst}{Character vector containing identifiers for the 
+#           subjects, eg. patient numbers}
+#       \item{labels}{Character vector containing the labels for the samples,
+#           eg. biopsy number}
+#       \item{corData}{OPTIONAL use pre calculated corData from "correlation"
+#            function} 
+#       \item{llrData}{OPTIONAL use pre calculated llrData from "likelihood"
+#            function}
+#       \item{refdata}{OPTIONAL collection of clonaly unrelated data to be used
+#            as the negative reference set}
 # }
 #
 # \value{
-#     Returns an object of class QDNAseqCopyNumbers with segmentation results
-#         added.
+#     Returns a list containing data frames for the correlation and llr scores 
 # }
 #
-# \examples{
-# 
-# }
 # \references{
-#Ostrovnaya, I., Olshen, A. B., Seshan, V.E., Orlow, I., Albertson, D. G. and
-#Begg, C. B. (2010), A metastasis or a second independent cancer? Evaluating 
-#the clonal origin of tumors using array copy number data.
-#Statistics in Medicine, 29: 1608-1621
+# Ostrovnaya, I., Olshen, A. B., Seshan, V.E., Orlow, I., Albertson, D. G. and
+# Begg, C. B. (2010), A metastasis or a second independent cancer? Evaluating 
+# the clonal origin of tumors using array copy number data.
+# Statistics in Medicine, 29: 1608-1621
 #
-#Ostrovnaya, I. and Begg, C.  Testing Clonal Relatedness of Tumors Using Array
-#Comparative Genomic Hybridization: A Statistical Challenge 
-#Clin Cancer Res March 1, 2010 16:1358-1367
+# Ostrovnaya, I. and Begg, C.  Testing Clonal Relatedness of Tumors Using Array
+# Comparative Genomic Hybridization: A Statistical Challenge
+# Clin Cancer Res March 1, 2010 16:1358-1367
 #
-#Venkatraman, E. S. and Olshen, A. B. (2007). A faster circular binary
-#segmentation algorithm for the analysis of array CGH data.
-#Bioinformatics, 23:657 63.
+# Venkatraman, E. S. and Olshen, A. B. (2007). A faster circular binary
+# segmentation algorithm for the analysis of array CGH data.
+# Bioinformatics, 23:657 63.
 #
-#Olshen, A. B., Venkatraman, E. S., Lucito, R., Wigler, M. (2004). Circular
-#binary segmentation for the analysis of array-based DNA copy number data. 
-#Biostatistics 5: 557-572.
+# Olshen, A. B., Venkatraman, E. S., Lucito, R., Wigler, M. (2004). Circular
+# binary segmentation for the analysis of array-based DNA copy number data. 
+# Biostatistics 5: 557-572.
 #
-#}
-# @author "DS"
+# }
 #
 # \seealso{
 #     Internally, @see "Clonality::clonality.analysis" of the \pkg{Clonality}
 #     package is used.
 # }
 #
-# @keyword clonality
+# @author "DS"
+#
 #*/#########################################################################
-#setMethod("likelihoodRatio", signature=c(object="QDNAseqCopyNumbers"),
-#          definition=function(obj, patients, maxRow=15000, refdata=NULL, ...) {
+clonalityTest <- function(obj = NULL, corData = NULL, llrData = NULL, 
+    sbjctLst=NULL, labels=NULL, refdata=NULL, ...) {
+    # Do correlation
+    if (is.null(corData)) {
+        corData <- correlation(obj, labels=labels)
+    }
+    
+    # Do likelihoodRatio
+    if (is.null(llrData)) {
+        llrData <- likelihoodRatio(obj, patients=sbjctLst, refdata=refdata)
+    }
+    
+    # Combine table
+    patients <- sbjctLst
+    
+    # All combinations
+    allPairs <- apply(combn(1:length(patients), 2), 2, function(x) { 
+        paste(sprintf("%03d",x), collapse=":")
+    })
+    
+    sapply(unique(patients), function(x) {
+        cb <- combn(which(patients == x), 2)
+        cbStr <- apply(cb, 2, function(x) {
+            paste(sprintf("%03d", x), collapse=":")
+        } )
+    }) -> pairs
+    
+    # clonTab
+    pat <- rep(unique(patients), sapply(pairs, length))
+    res <- unlist(sapply(pairs, function(x) {
+        corData$dm[ allPairs %in% x  ] 
+    }), use.names=FALSE)
+    
+    clonTab <- data.frame(patient = pat, 
+        combination = unlist(pairs, use.names=FALSE), cor = res, 
+        llr2 = log(llrData$LR$LR2), llr2.p = llrData$LR$LR2pvalue, 
+        stringsAsFactors=FALSE)
+    
+    # refTab
+    # Correlation
+    refCor <- corData$dm[ !allPairs %in% unlist(pairs) ]
+    refCorName <- allPairs[ !allPairs %in% unlist(pairs) ]
+    
+    # LR2
+    # Reorder LLR2 data
+    refLlr2Name <- paste(llrData$refLR$Sample1, llrData$refLR$Sample2, sep=":")
+    refLlr2Name2 <- unlist(sapply(strsplit(refLlr2Name, "\\.|:"), function(x) {
+        paste(sprintf("%03d", sort(as.numeric(x[c(2,4)]))), collapse=":") 
+    }))
+    
+    refLR2ord <- order(unlist(refLlr2Name2))
+    refLlr2 <- log(llrData$refLR$LR2)
+    
+    refTab <- data.frame(name = refCorName, check = refLlr2Name[refLR2ord], 
+        cor = refCor, llr2 = refLlr2[refLR2ord], 
+        stringsAsFactors=FALSE)
+    
+    # Make sure data types are correct:
+    
+    # Return data
+    # TODO insert into object?
+    list(corData = corData, llrData = llrData, clonTab = clonTab, 
+        refTab = refTab)
+}
 
 likelihoodRatio <- function(obj, patients, maxRow=15000, refdata=NULL, ...) {
     # Prepare data
@@ -115,71 +187,6 @@ correlation <- function(obj, labels=NULL, groups=NULL,...) {
     
     # Distance matric and cluster object
     list(sn=sn, dm=dm, hc=hc)
-}
-
-clonalityTest <- function(obj = NULL, corData = NULL, llrData = NULL, 
-    sbjctLst=NULL, labels=NULL, refdata=NULL, ...) {
-    # Do correlation
-    if (is.null(corData)) {
-        corData <- correlation(obj, labels=labels)
-    }
-    
-    # Do likelihoodRatio
-    if (is.null(llrData)) {
-        llrData <- likelihoodRatio(obj, patients=sbjctLst, refdata=refdata)
-    }
-    
-    # Combine table
-    patients <- sbjctLst
-    
-    # All combinations
-    allPairs <- apply(combn(1:length(patients), 2), 2, function(x) { 
-        paste(sprintf("%03d",x), collapse=":")
-    })
-    
-    sapply(unique(patients), function(x) {
-        cb <- combn(which(patients == x), 2)
-        cbStr <- apply(cb, 2, function(x) {
-            paste(sprintf("%03d", x), collapse=":")
-        } )
-    }) -> pairs
-    
-    # clonTab
-    pat <- rep(unique(patients), sapply(pairs, length))
-    res <- unlist(sapply(pairs, function(x) {
-        corData$dm[ allPairs %in% x  ] 
-    }), use.names=F)
-    
-    clonTab <- data.frame(patient = pat, 
-        combination = unlist(pairs, use.names=F), cor = res, 
-        llr2 = log(llrData$LR$LR2), llr2.p = llrData$LR$LR2pvalue, 
-        stringsAsFactors=F)
-    
-    # refTab
-    # Correlation
-    refCor <- corData$dm[ !allPairs %in% unlist(pairs) ]
-    refCorName <- allPairs[ !allPairs %in% unlist(pairs) ]
-    
-    # LR2
-    # Reorder LLR2 data
-    refLlr2Name <- paste(llrData$refLR$Sample1, llrData$refLR$Sample2, sep=":")
-    refLlr2Name2 <- unlist(sapply(strsplit(refLlr2Name, "\\.|:"), function(x) {
-        paste(sprintf("%03d", sort(as.numeric(x[c(2,4)]))), collapse=":") 
-    }))
-    
-    refLR2ord <- order(unlist(refLlr2Name2))
-    refLlr2 <- log(llrData$refLR$LR2)
-    
-    refTab <- data.frame(name = refCorName, check = refLlr2Name[refLR2ord], 
-        cor = refCor, llr2 = refLlr2[refLR2ord], 
-        stringsAsFactors=FALSE)
-    
-    # Make sure data types are correct:
-    
-    # Return data
-    # TODO insert into object?
-    list(corData = corData, llrData = llrData, clonTab = clonTab, 
-        refTab = refTab)
 }
 
 # Plot correlation cluster
