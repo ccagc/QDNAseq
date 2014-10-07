@@ -18,6 +18,7 @@ bibentry(bibtype="Article",
     title=paste("DNA copy number analysis of fresh and formalin-fixed",
     "specimens by whole-genome sequencing: improved correction of systematic",
     "biases and exclusion of problematic regions"),
-    journal="Submitted")
+    journal="Genome Research",
+    url="http://www.ncbi.nlm.nih.gov/pubmed/25236618")
 
 # EOF
