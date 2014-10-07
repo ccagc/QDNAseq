@@ -22,5 +22,5 @@
     A parent class for containers of QDNAseq data
 }
 
-\author{Ilari Scheinin}
+\author{Ilari Scheinin, Daoud Sie}
 \keyword{classes}

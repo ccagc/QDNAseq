@@ -18,5 +18,5 @@
      LGG150, contained within a \code{\link{QDNAseqReadCounts}} object
  }
 
- \author{Ilari Scheinin}
+ \author{Ilari Scheinin, Daoud Sie}
 \keyword{datasets}

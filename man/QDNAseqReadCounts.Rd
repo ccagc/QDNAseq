@@ -37,5 +37,5 @@
 }
 
 
-\author{Ilari Scheinin}
+\author{Ilari Scheinin, Daoud Sie}
 \keyword{classes}

@@ -46,5 +46,5 @@
     The bin data (assay data) may contain missing values.
 }
 
-\author{Ilari Scheinin}
+\author{Ilari Scheinin, Daoud Sie}
 \keyword{classes}
