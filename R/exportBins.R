@@ -125,7 +125,8 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
     }  else if (format == "bed" ) {
-      out <- data.frame(chromosome=chromosome, start=as.character(start), end=as.character(end), feature=feature, 
+      out <- data.frame(chromosome=chromosome, start=format(start, scientific = FALSE), 
+                        end=format(end, scientific = FALSE), feature=feature, 
                         dat, strand="+", check.names=FALSE, stringsAsFactors=FALSE)
       write.table(out, file=file, col.names=FALSE, 
                   quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
