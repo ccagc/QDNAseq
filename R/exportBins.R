@@ -89,7 +89,7 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
         chromosome <- as.character(chromosomes(object))
         chromosome[chromosome == "23"] <- "X"
         chromosome[chromosome == "24"] <- "Y"
-        chromosome[chromosome == "25"] <- "M"
+        chromosome[chromosome == "25"] <- "MT"
         start <- bpstart(object)
         end <- bpend(object)
         if (inherits(object, c("cghRaw", "cghSeg", "cghCall"))) {
