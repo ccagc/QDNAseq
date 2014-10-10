@@ -14,9 +14,12 @@
 # \arguments{
 #     \item{object}{A @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers"
 #         object.}
-#     \item{file}{Filename.}
+#     \item{file}{Filename. For formats that support only one sample per file,
+#         such as BED, '\%s' can be used as a placeholder for sample name or
+#         '\%d' for sample number.}
 #     \item{format}{Format to export in. Currently supported ones are "tsv" (tab
-#         separated values) or "igv" (Integrative Genomics Viewer).}
+#         separated values), "igv" (Integrative Genomics Viewer), and "bed" (BED
+#         file format).}
 #     \item{type}{Type of data to export, options are "copynumber" (corrected or
 #         uncorrected read counts), "segments", or "calls".}
 #     \item{filter}{If @TRUE, bins are filtered, otherwise not.}
@@ -66,6 +69,7 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
             if (type != "copynumber")
                 warning("Ignoring argument 'type' and returning read counts.")
             dat <- assayDataElement(object, "counts")
+            type <- "read counts"
         } else {
             if (type == "copynumber") {
                 dat <- assayDataElement(object, "copynumber")
@@ -113,6 +117,8 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
     if (is.numeric(digits)) {
         dat <- round(dat, digits=digits)
     }
+    tmp <- options("scipen")
+    options(scipen=15)
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
             end=end, dat, check.names=FALSE, stringsAsFactors=FALSE)
@@ -125,11 +131,23 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
     }  else if (format == "bed" ) {
-      out <- data.frame(chromosome=chromosome, start=start, end=end, feature=feature, 
-                        dat, strand="+", check.names=FALSE, stringsAsFactors=FALSE)
-      write.table(out, file=file, col.names=FALSE, 
-                  quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
+        for (i in seq_along(sampleNames(object))) {
+            if (length(grep("%s", file) > 0L)) {
+                filename <- sprintf(file, sampleNames(object)[i])
+            } else {
+                filename <- sprintf(file, i)
+            }
+            out <- data.frame(chromosome=chromosome, start=start-1, end=end,
+                feature=feature, dat[, i, drop=FALSE], strand="+",
+                check.names=FALSE, stringsAsFactors=FALSE)
+            cat('track name="', sampleNames(object)[i], '" description="',
+                type, '"\n', file=filename, sep="")
+            suppressWarnings(write.table(out, file=filename, append=TRUE,
+                col.names=FALSE,
+                quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+        }
     }
+    options(scipen=tmp)
 }
 
 # EOF
