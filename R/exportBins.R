@@ -48,7 +48,7 @@
 # @keyword IO
 # @keyword file
 #*/#########################################################################
-exportBins <- function(object, file, format=c("tsv", "igv"),
+exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
     type=c("copynumber", "segments", "calls"),
     filter=TRUE, logTransform=TRUE, digits=3, ...) {
 
@@ -124,6 +124,12 @@ exportBins <- function(object, file, format=c("tsv", "igv"),
         cat('#type=COPY_NUMBER\n#track coords=1\n', file=file)
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+    }  else if (format == "bed" ) {
+      out <- data.frame(chromosome=chromosome, start=format(start, scientific = FALSE, trim=TRUE), 
+                        end=format(end, scientific = FALSE, trim=TRUE), feature=feature, 
+                        dat, strand="+", check.names=FALSE, stringsAsFactors=FALSE)
+      write.table(out, file=file, col.names=FALSE, 
+                  quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
     }
 }
 
