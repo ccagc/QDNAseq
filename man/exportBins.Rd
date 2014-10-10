@@ -15,7 +15,7 @@
 \title{Exports to a file}
 
 \usage{
-exportBins(object, file, format=c("tsv", "igv"), type=c("copynumber", "segments",
+exportBins(object, file, format=c("tsv", "igv", "bed"), type=c("copynumber", "segments",
   "calls"), filter=TRUE, logTransform=TRUE, digits=3, ...)
 }
 
@@ -26,9 +26,12 @@ exportBins(object, file, format=c("tsv", "igv"), type=c("copynumber", "segments"
 \arguments{
     \item{object}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}}
         object.}
-    \item{file}{Filename.}
+    \item{file}{Filename. For formats that support only one sample per file,
+        such as BED, '\%s' can be used as a placeholder for sample name or
+        '\%d' for sample number.}
     \item{format}{Format to export in. Currently supported ones are "tsv" (tab
-        separated values) or "igv" (Integrative Genomics Viewer).}
+        separated values), "igv" (Integrative Genomics Viewer), and "bed" (BED
+        file format).}
     \item{type}{Type of data to export, options are "copynumber" (corrected or
         uncorrected read counts), "segments", or "calls".}
     \item{filter}{If \code{\link[base:logical]{TRUE}}, bins are filtered, otherwise not.}

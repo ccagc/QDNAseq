@@ -202,6 +202,7 @@ exported to a file.
 <<eval=FALSE>>=
 exportBins(copyNumbersSmooth, file="LGG150.txt")
 exportBins(copyNumbersSmooth, file="LGG150.igv", format="igv")
+exportBins(copyNumbersSmooth, file="LGG150.bed", format="bed")
 @
 
 \subsection{Downstream analyses}
@@ -209,8 +210,13 @@ exportBins(copyNumbersSmooth, file="LGG150.igv", format="igv")
 Segmentation with the CBS algorithm from DNAcopy and calling copy number
 aberrations with CGHcall have been implemented for convenience.
 
+By default, segmentation uses a $\log_2$-transformation, but a sqrt(x + 3/8)
+can also be used as it stabilizes the variance of a Poisson distribution
+(Anscombe transform):
+
 <<>>=
-copyNumbersSegmented <- segmentBins(copyNumbersSmooth)
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth,
+  transformFun=QDNAseq:::sqrtadhoc)
 copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
 @
 <<echo=FALSE>>=
@@ -226,7 +232,7 @@ dev.off()
 \begin{figure}[h]
   \centering
   \includegraphics{segments}
-  \caption{A plot}
+  \caption{Copy number profile after segmenting.}
   \label{fig:segments}
 \end{figure}
 
@@ -249,7 +255,7 @@ dev.off()
 \begin{figure}[h]
   \centering
   \includegraphics{calls}
-  \caption{A plot}
+  \caption{Copy number profile after calling gains and losses.}
   \label{fig:calls}
 \end{figure}
 
