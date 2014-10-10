@@ -28,8 +28,9 @@
 #         downstream calling results.}
 #     \item{transformFun}{A function to transform the data with. This can be
 #         the default QDNAseq:::log2adhoc for log2(x + .Machine$double.xmin),
-#         QDNAseq:::sqrtadhoc for sqrt(x * 3/8), which stabilizes the variance,
-#         "none" for no transformation, or any function.}
+#         QDNAseq:::sqrtadhoc for the Anscombe transform of sqrt(x * 3/8), which
+#         stabilizes the variance, "none" for no transformation, or any
+#         R function.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
