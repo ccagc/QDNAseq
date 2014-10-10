@@ -1,30 +1,41 @@
-Changes in version 1.1.6 (2014-10-06)
+Changes in version 1.2.0 (2014-10-14)
 -------------------------------------
+
+RELEASE
+
+    o Bioconductor 3.0
 
 IMPROVEMENTS
 
-    o added another transformation option to segmentBins() besides log2:
-      sqrt(x + 3/8), which stabilizes the variance.
+    o segmentBins() supports another transformation option besides log2:
+      sqrt(x + 3/8), which stabilizes the variance
 
-    o plot() can now skip plotting of segments and calls by specifying
-      doSegments=FALSE and doCalls=FALSE.
+    o plot() can skip plotting of segments and calls by specifying
+      doSegments=FALSE and doCalls=FALSE
 
-Changes in version 1.1.5 (2014-06-13)
+    o exportBins() also supports BED files
+
+BUG FIXES
+
+    o exportBins() saves base pair positions in fixed notation instead of
+      scientific
+
+Changes in version 1.0.5 (2014-06-13)
 -------------------------------------
 
 BUG FIXES
 
     o fix a bug caused by package matrixStats changing madDiff() from an S4
-      to an S3 method in version 0.9.4, released on 2014-05-23.
+      to an S3 method in version 0.9.4, released on 2014-05-23
 
-Changes in version 1.1.4 (2014-05-23)
+Changes in version 1.0.4 (2014-05-23)
 -------------------------------------
 
 BUG FIXES
 
     o getBinAnnotations() fixed after being broken by a change in Bitbucket
 
-Changes in version 1.1.3 (2014-05-21)
+Changes in version 1.0.3 (2014-05-23)
 -------------------------------------
 
 IMPROVEMENTS
@@ -33,7 +44,7 @@ IMPROVEMENTS
 
     o switch graphics in the vignette to PNG
 
-Changes in version 1.1.2 (2014-04-24)
+Changes in version 1.0.2 (2014-05-15)
 -------------------------------------
 
 IMPROVEMENTS
@@ -45,19 +56,12 @@ IMPROVEMENTS
 
     o improve diagnostic messages
 
-Changes in version 1.1.1 (2014-04-17)
+Changes in version 1.0.1 (2014-04-17)
 -------------------------------------
 
 BUG FIXES
 
     o smoothOutlierBins() correctly ignores bins filtered out
-
-Changes in version 1.1.0 (2014-04-14)
--------------------------------------
-
-RELEASE
-
-    o start development branch for Bioconductor 3.0
 
 Changes in version 1.0.0 (2014-04-14)
 -------------------------------------
