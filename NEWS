@@ -1,10 +1,32 @@
+Changes in version 1.2.0 (2014-10-14)
+-------------------------------------
+
+RELEASE
+
+    o Bioconductor 3.0
+
+IMPROVEMENTS
+
+    o segmentBins() supports another transformation option besides log2:
+      sqrt(x + 3/8), which stabilizes the variance
+
+    o plot() can skip plotting of segments and calls by specifying
+      doSegments=FALSE and doCalls=FALSE
+
+    o exportBins() also supports BED files
+
+BUG FIXES
+
+    o exportBins() saves base pair positions in fixed notation instead of
+      scientific
+
 Changes in version 1.0.5 (2014-06-13)
 -------------------------------------
 
 BUG FIXES
 
     o fix a bug caused by package matrixStats changing madDiff() from an S4
-      to an S3 method in version 0.9.4, released on 2014-05-23.
+      to an S3 method in version 0.9.4, released on 2014-05-23
 
 Changes in version 1.0.4 (2014-05-23)
 -------------------------------------

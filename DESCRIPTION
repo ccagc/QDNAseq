@@ -1,6 +1,6 @@
 Package: QDNAseq
-Version: 1.0.5
-Date: 2014-06-13
+Version: 1.2.0
+Date: 2014-10-10
 Title: Quantitative DNA sequencing for chromosomal aberrations
 Author: Ilari Scheinin
 Maintainer: Ilari Scheinin <ilari.scheinin@gmail.com>

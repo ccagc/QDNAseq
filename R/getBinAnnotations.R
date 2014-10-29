@@ -28,8 +28,9 @@
 # }
 #
 # \details{
-#     Currently getBinAnnotations and downloadBinAnnotations are synonyms, but
-#     the latter will be deprecated and removed in future versions.
+#     The current function name is getBinAnnotations, for which
+#     downloadBinAnnotations is an old and deprecated alias that will be
+#     removed in future versions.
 # }
 #
 # \value{
@@ -84,6 +85,7 @@ downloadBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
     "http://qdnaseq.s3.amazonaws.com")) {
 
+    .Deprecated("getBinAnnotations")
     getBinAnnotations(binSize=binSize, genome=genome, type=type,
         force=force, path=path)
 }
