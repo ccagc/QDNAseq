@@ -16,7 +16,7 @@
 
 \usage{
 segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", undo.SD=1,
-  force=FALSE, transformFun=QDNAseq:::log2adhoc, ...)
+  force=FALSE, transformFun="log2", ...)
 }
 
 \description{
@@ -39,10 +39,11 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
     \item{force}{Whether to force execution when it causes removal of
         downstream calling results.}
     \item{transformFun}{A function to transform the data with. This can be
-        the default QDNAseq:::log2adhoc for log2(x + .Machine$double.xmin),
-        QDNAseq:::sqrtadhoc for the Anscombe transform of sqrt(x * 3/8), which
+        the default "log2" for log2(x + .Machine$double.xmin),
+        "sqrt" for the Anscombe transform of sqrt(x * 3/8) which
         stabilizes the variance, "none" for no transformation, or any
-        R function.}
+        R function that performs the desired transformation and also its
+        inverse when called with parameter \code{inv=TRUE}.}
     \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 
