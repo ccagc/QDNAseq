@@ -215,8 +215,7 @@ can also be used as it stabilizes the variance of a Poisson distribution
 (Anscombe transform):
 
 <<>>=
-copyNumbersSegmented <- segmentBins(copyNumbersSmooth,
-  transformFun=QDNAseq:::sqrtadhoc)
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth, transformFun="sqrt")
 copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
 @
 <<echo=FALSE>>=
