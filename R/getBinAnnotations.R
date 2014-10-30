@@ -1,8 +1,6 @@
 #########################################################################/**
 # @RdocFunction getBinAnnotations
 #
-# @alias downloadBinAnnotations
-#
 # @title "Gets bin annotation data for a particular bin size"
 #
 # @synopsis
@@ -28,9 +26,7 @@
 # }
 #
 # \details{
-#     The current function name is getBinAnnotations, for which
-#     downloadBinAnnotations is an old and deprecated alias that will be
-#     removed in future versions.
+#     Gets bin annotation data for a particular bin size
 # }
 #
 # \value{
@@ -81,13 +77,8 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     bins
 }
 
-downloadBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
-    "http://qdnaseq.s3.amazonaws.com")) {
-
-    .Deprecated("getBinAnnotations")
-    getBinAnnotations(binSize=binSize, genome=genome, type=type,
-        force=force, path=path)
+downloadBinAnnotations <- function(...) {
+    .Defunct("getBinAnnotations")
 }
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),

@@ -1,3 +1,15 @@
+Changes in version 1.2.1 (2014-11-01)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o add an asterisk in the noise measure to clarify it's not a regular
+      standard deviation or variance, but first scaled with the mean (so that
+      the mean is 1.0 and the relationship holds between variance and 1/N, where
+      N is the average number of reads per bins)
+
+    o clarify the use of log2/sqrt transformation in segmentBins()
+
 Changes in version 1.2.0 (2014-10-14)
 -------------------------------------
 

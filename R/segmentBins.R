@@ -27,10 +27,11 @@
 #     \item{force}{Whether to force execution when it causes removal of
 #         downstream calling results.}
 #     \item{transformFun}{A function to transform the data with. This can be
-#         the default QDNAseq:::log2adhoc for log2(x + .Machine$double.xmin),
-#         QDNAseq:::sqrtadhoc for the Anscombe transform of sqrt(x * 3/8), which
+#         the default "log2" for log2(x + .Machine$double.xmin),
+#         "sqrt" for the Anscombe transform of sqrt(x * 3/8) which
 #         stabilizes the variance, "none" for no transformation, or any
-#         R function.}
+#         R function that performs the desired transformation and also its
+#         inverse when called with parameter \code{inv=TRUE}.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -63,7 +64,7 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun=QDNAseq:::log2adhoc, ... ) {
+    transformFun="log2", ... ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -90,6 +91,14 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
 
     copynumber <- copynumber(object)
     copynumber[!condition, ] <- NA_real_
+    if (is.character(transformFun)) {
+        transformFun <- match.arg(transformFun, c("log2", "sqrt", "none"))
+        if (transformFun == "log2") {
+            transformFun <- QDNAseq:::log2adhoc
+        } else if (transformFun == "sqrt") {
+            transformFun <- QDNAseq:::sqrtadhoc
+        }
+    }
     if (!is.character(transformFun) || transformFun != "none") {
         transformFun <- match.fun(transformFun)
         copynumber <- transformFun(copynumber)
