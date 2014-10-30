@@ -118,7 +118,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
         copynumber <- log2adhoc(copynumber, inv=TRUE)
-    if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
+    if (is.character(sdFUN) && sdFUN == "sdDiffTrim") {
+        symbol <- quote(hat(sigma)[Delta^"*"])
+    } else if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
         symbol <- quote(hat(sigma)[Delta])
     } else {
         symbol <- quote(hat(sigma))
@@ -507,6 +509,14 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     definition=function(x, y, main="Noise Plot", adjustIncompletes=TRUE,
     fit=NULL, sdFUN="sdDiffTrim", xAxis=c("average reads per bin",
     "reciprocal of average reads per bin", "total reads"), ...) {
+
+    if (is.character(sdFUN) && sdFUN == "sdDiffTrim") {
+        symbol <- quote(hat(sigma)[Delta^"*"]^2)
+    } else if (is.character(sdFUN) && length(grep("Diff", sdFUN)) == 1) {
+        symbol <- quote(hat(sigma)[Delta]^2)
+    } else {
+        symbol <- quote(hat(sigma)^2)
+    }
     sdFUN <- match.fun(sdFUN)
     condition <- binsToUse(x)
     counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
@@ -555,8 +565,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     axis(side=1, lwd=0, line=-0.4, at=at, labels=labels)
     axis(side=2, lwd=0, line=-0.4)
     mtext(side=1, xlab, line=2, cex=par("cex"))
-    mtext(side=2, expression(hat(sigma)[Delta]^2),
-        line=2, las=1, cex=par("cex"))
+    mtext(side=2, symbol, line=2, las=1, cex=par("cex"))
     text(reciprocalOfAverageUsedReadsPerBin, noise^2,
         labels=sampleNames(x), pos=4, cex=0.5, ...)
     abline(0, 1)
