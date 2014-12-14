@@ -52,7 +52,7 @@
 #         read should be returned (TRUE) or not (FALSE), or whether mate read
 #         number
 #         should be ignored (NA, default).}
-#     \item{isNotPrimaryRead}{A logical(1) indicating whether alignments that
+#     \item{isSecondaryAlignment}{A logical(1) indicating whether alignments that
 #         are primary (FALSE), are not primary (TRUE) or whose primary status
 #         does not matter (NA, default) should be returned. A non-primary
 #         alignment ("secondary alignment" in the SAM specification) might
@@ -94,7 +94,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isUnmappedQuery=FALSE, hasUnmappedMate=NA,
     isMinusStrand=NA, isMateMinusStrand=NA,
     isFirstMateRead=NA, isSecondMateRead=NA,
-    isNotPrimaryRead=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE,
+    isSecondaryAlignment=NA, isNotPassingQualityControls=FALSE, isDuplicate=FALSE,
     minMapq=37) {
 
     if (is.null(bamfiles))
@@ -131,7 +131,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
             isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
             isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
-            isNotPrimaryRead=isNotPrimaryRead,
+            isSecondaryAlignment=isSecondaryAlignment,
             isNotPassingQualityControls=isNotPassingQualityControls,
             isDuplicate=isDuplicate,
             minMapq=37)
@@ -151,7 +151,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 .binReadCountsPerSample <- function(bins, bamfile, cache, force,
     isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
     isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
-    isNotPrimaryRead, isNotPassingQualityControls, isDuplicate, minMapq) {
+    isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq) {
 
     ## purge outdated files from the cache
     QDNAseqCacheKeyVersion <- "0.6.0"
@@ -176,7 +176,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
         isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
         isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
-        isNotPrimaryRead=isNotPrimaryRead,
+        isSecondaryAlignment=isSecondaryAlignment,
         isNotPassingQualityControls=isNotPassingQualityControls,
         isDuplicate=isDuplicate, minMapq=minMapq, binSize=binSize)
     readCountCacheDir <- c('QDNAseq', QDNAseqCacheKeyVersion, 'readCounts')
@@ -199,7 +199,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
         isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
         isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
-        isNotPrimaryRead=isNotPrimaryRead,
+        isSecondaryAlignment=isSecondaryAlignment,
         isNotPassingQualityControls=isNotPassingQualityControls,
         isDuplicate=isDuplicate, minMapq=minMapq)
     readCacheDir <- c('QDNAseq', QDNAseqCacheKeyVersion, 'reads')
@@ -219,7 +219,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             isMateMinusStrand=isMateMinusStrand,
             isFirstMateRead=isFirstMateRead,
             isSecondMateRead=isSecondMateRead,
-            isNotPrimaryRead=isNotPrimaryRead,
+            isSecondaryAlignment=isSecondaryAlignment,
             isNotPassingQualityControls=isNotPassingQualityControls,
             isDuplicate=isDuplicate)
         params <- ScanBamParam(flag=flag, what=c('rname', 'pos', 'mapq'))
