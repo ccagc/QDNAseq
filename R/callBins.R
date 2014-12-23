@@ -57,8 +57,20 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     ## CNs on the *log* scale. /IS (private email 'Log and non-positives'
     ## on 2013-12-18 between IS and HB).
     seg <- makeCgh(object)
-    listcall <- CGHcall(seg, ...)
-    cgh <- ExpandCGHcall(listcall, seg)
+    tryCatch({
+        listcall <- CGHcall(seg, ...)
+    }, error=function(e) {
+        stop("Command CGHcall() returned the following error message:\n",
+            e, "Please contact maintainer of package CGHcall: ",
+            maintainer("CGHcall"), call.=FALSE)
+    })
+    tryCatch({
+        cgh <- ExpandCGHcall(listcall, seg)
+    }, error=function(e) {
+        stop("Command ExpandCGHcall() returned the following error message:\n",
+            e, "Please contact maintainer of package CGHcall: ",
+            maintainer("CGHcall"), call.=FALSE)
+    })
     calls(object) <- calls(cgh)
     if ('probdloss' %in% assayDataElementNames(cgh)) {
         probdloss(object) <- probdloss(cgh)
