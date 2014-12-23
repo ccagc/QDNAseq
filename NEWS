@@ -1,3 +1,11 @@
+Changes in version 1.2.2 (2014-12-23)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o applyFilters() now ignores the residual filter for chromosomes for which
+      it does not exist (instead of always filtering out the entire chromosome)
+
 Changes in version 1.2.1 (2014-11-01)
 -------------------------------------
 
