@@ -59,11 +59,24 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     msg <- c(msg, 'of which with reference sequence'=sum(condition))
 
     if (!is.na(residual)) {
+        residuals <- fData(object)$residual
+        residualsMissing <- aggregate(residuals,
+            by=list(chromosome=fData(object)$chromosome),
+            function(x) all(is.na(x)))
+        chromosomesWithResidualsMissing <-
+            residualsMissing$chromosome[residualsMissing$x]
+        chromosomesToInclude <-
+            setdiff(chromosomesWithResidualsMissing, chromosomes)
+        if (length(chromosomesToInclude) > 0) {
+            message("Note: Residual filter missing for chromosomes: ",
+                paste(chromosomesToInclude, collapse=", "))
+            residuals[fData(object)$chromosome %in% chromosomesToInclude] <- 0
+        }
         if (is.numeric(residual)) {
-            condition <- condition & !is.na(fData(object)$residual) &
-                abs(fData(object)$residual) <= residual
+            condition <- condition & !is.na(residuals) &
+                abs(residuals) <= residual
         } else if (residual) {
-            condition <- condition & !is.na(fData(object)$residual)
+            condition <- condition & !is.na(residuals)
         }
     }
     if (!is.na(blacklist)) {

@@ -67,9 +67,9 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
         read should be returned (TRUE) or not (FALSE), or whether mate read
         number
         should be ignored (NA, default).}
-    \item{isSecondaryAlignment}{A logical(1) indicating whether alignments that
-        are primary (FALSE), are not primary (TRUE) or whose primary status
-        does not matter (NA, default) should be returned. A non-primary
+    \item{isSecondaryAlignment}{A logical(1) indicating whether alignments
+        that are primary (FALSE), are not primary (TRUE) or whose primary
+        status does not matter (NA, default) should be returned. A non-primary
         alignment ("secondary alignment" in the SAM specification) might
         result when a read aligns to multiple locations. One alignment is
         designated as primary and has this flag set to FALSE; the remainder,
