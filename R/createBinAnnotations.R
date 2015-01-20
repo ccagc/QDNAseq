@@ -50,12 +50,15 @@
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
-    info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
-    style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
-    chrs <- info[, style]
+    chrs <- GenomeInfoDb::seqnames(bsgenome)
+    try({
+        info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
+        style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
+        chrs <- info[, style]
+    }, silent=TRUE)
     if (ignoreMitochondria)
         chrs <- chrs[-grep("^(chr)?M(T)?$", chrs)]
-    lengths <- GenomicRanges::seqlengths(bsgenome)[chrs]
+    lengths <- GenomeInfoDb::seqlengths(bsgenome)[chrs]
     start <- end <- integer()
     bases <- gc <- numeric()
     vmsg("Creating bins of ", binSize, " kbp for genome ",
