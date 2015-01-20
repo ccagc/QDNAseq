@@ -8,8 +8,7 @@ Depends: R (>= 2.15.0)
 Imports: graphics, methods, stats, utils, matrixStats (>= 0.9.4),
         R.utils (>= 1.28.4), Biobase (>= 2.18.0), CGHbase (>= 1.18.0),
         CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0), Rsamtools (>= 1.19.17)
-Suggests: R.cache (>= 0.9.0), digest, snowfall, BSgenome, GenomeInfoDb,
-        GenomicRanges
+Suggests: R.cache (>= 0.9.0), digest, snowfall, BSgenome, GenomeInfoDb
 Description: Quantitative DNA sequencing for chromosomal aberrations.
         The genome is divided into non-overlapping fixed-sized bins, number of
         sequence reads in each counted, adjusted with a simultaneous
