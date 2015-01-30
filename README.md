@@ -25,6 +25,14 @@ because the two repositories use the [Bioconductor Git-SVN bridge][bridge]
 to mirror changes to the Bioconductor SVN repository, and the bridge can only
 use branch *master* of each GitHub repository.
 
+#### Software quality
+
+* R CMD check status:
+ - Bioconductor: <a href="http://master.bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/">Multipleplatform build/check report</a>
+ - Travis CI: <a href="https://travis-ci.org/ccagc/QDNAseq"><img src="https://travis-ci.org/ccagc/QDNAseq.svg?branch=master" alt="Build status"></a>
+* Test coverage status:
+ - Coveralls CI: <a href='https://coveralls.io/r/ccagc/QDNAseq?branch=devel'><img src='https://coveralls.io/repos/ccagc/QDNAseq/badge.png?branch=devel' alt='Coverage Status' /></a>
+
 [bioc-devel]: http://bioconductor.org/packages/devel/bioc/html/QDNAseq.html
 [bioc-release]: http://bioconductor.org/packages/release/bioc/html/QDNAseq.html
 [bridge]: http://bioconductor.org/developers/how-to/git-svn/
