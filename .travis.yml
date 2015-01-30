@@ -44,12 +44,8 @@ before_install:
     fi
 
 install:
-  - $RENV install_r R.methodss3 R.oo R.utils R.cache R.filesets R.devices R.rsp
-  - $RENV install_r matrixStats
-  - $RENV install_r aroma.core aroma.cn
-  - $RENV install_ bioc aroma.light
-  - $RENV install_ bioc DNAcopy Biobase Biostrings Rsamtools ShortRead QDNAseq edgeR qrqc
-#  - $RENV install_deps
+  - $RENV install_r R.utils R.cache matrixStats
+  - $RENV install_deps
 
 script:
   - $RENV run_build
