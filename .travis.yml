@@ -44,8 +44,9 @@ before_install:
     fi
 
 install:
-  - $RENV install_r R.utils R.cache matrixStats
-  - $RENV install_deps
+  - $RENV install_r R.utils matrixStats R.cache digest snowfall
+  - $RENV install_bioc Biobase CGHbase CGHcall DNAcopy Rsamtools BSgenome GenomeInfoDb 
+#  - $RENV install_deps
 
 script:
   - $RENV run_build
