@@ -52,7 +52,7 @@
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
-        info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
+        info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
         style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
         chrs <- info[, style]
     }, silent=TRUE)
