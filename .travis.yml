@@ -60,7 +60,7 @@ after_success:
   - $RENV install_devtools
   - $RENV install_github HenrikBengtsson/R.methodsS3@develop
   - $RENV install_github HenrikBengtsson/covr
-  - curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R;
+  - curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R
   - $RENV run_script .coveralls.R
 
 after_failure:
