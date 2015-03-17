@@ -28,7 +28,7 @@
 # \examples{
 # data(LGG150)
 # readCounts <- LGG150
-# # Note: the following command will "pool" data from a single run, which 
+# # Note: the following command will "pool" data from a single run, which
 # # does not really make sense:
 # pooledReadCounts <- poolRuns(readCounts, "LGG150")
 # }
@@ -72,7 +72,7 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
             nrow=nrow(object), ncol=length(newsamples),
             dimnames=list(featureNames(object), newsamples))
     }
-    
+
     concatenateIfNotEqual <- function(x) {
         x <- sort(unique(x))
         paste(x, collapse=";")
@@ -90,15 +90,15 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
         totalReads <- sum(oldphenodata$total.reads)
         usedReads <- sum(oldphenodata$used.reads)
         numericCols <- sapply(oldphenodata, is.numeric)
-        oldphenodata[1, numericCols] <- apply(oldphenodata[, numericCols,
-            drop=FALSE], 2, mean)
+        oldphenodata[1, numericCols] <- colMeans(oldphenodata[, numericCols,
+            drop=FALSE])
         oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
             drop=FALSE], 2, concatenateIfNotEqual)
         oldphenodata[1, "total.reads"] <- totalReads
         oldphenodata[1, "used.reads"] <- usedReads
         oldphenodata[1, "expected.variance"] <-
             sum(binsToUse(object)) / usedReads
-        
+
         newphenodata <- rbind(newphenodata, oldphenodata[1,])
     }
     rownames(newphenodata) <- newphenodata[, 1]
