@@ -1,11 +1,11 @@
 Package: QDNAseq
-Version: 1.3.5
+Version: 1.3.6
 Date: 2015-01-21
 Title: Quantitative DNA sequencing for chromosomal aberrations
 Author: Ilari Scheinin [aut], Daoud Sie [aut, cre], Henrik Bengtsson [aut]
 Maintainer: Daoud Sie <d.sie@vumc.nl>
 Depends: R (>= 2.15.0)
-Imports: graphics, methods, stats, utils, matrixStats (>= 0.9.4),
+Imports: graphics, methods, stats, utils, matrixStats (>= 0.13.1),
         R.utils (>= 1.28.4), Biobase (>= 2.18.0), CGHbase (>= 1.18.0),
         CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0), Rsamtools (>= 1.19.17)
 Suggests: R.cache (>= 0.9.0), digest, snowfall, BSgenome, GenomeInfoDb

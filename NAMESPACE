@@ -23,7 +23,7 @@ importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
 importFrom(DNAcopy, CNA, segment, smooth.CNA)
 importFrom(graphics, abline, axis, axTicks, box, contour, image, mtext, par,
     points, rect, segments, text)
-importFrom(matrixStats, binCounts, madDiff)
+importFrom(matrixStats, binCounts, madDiff, sdDiff, rowMedians)
 importFrom(methods, callNextMethod, new)
 importFrom(R.utils, downloadFile)
 importFrom(Rsamtools, scanBamFlag)
