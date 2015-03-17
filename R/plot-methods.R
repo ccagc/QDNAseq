@@ -178,7 +178,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             box()
             lim[3:4] <- ylim
             par(usr=lim)
-            points(pos, cn, cex=.1, col=pointcol)
+            points(pos, cn, cex=pointcex, col=pointcol, pch=pointpch)
         } else {
             plot(pos, cn, cex=pointcex, col=pointcol, main=main[i],
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
