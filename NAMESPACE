@@ -1,0 +1,72 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# IMPORTS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
+    Versioned, VersionedBiobase, Versions)
+importClassesFrom(CGHbase, cghCall, cghRaw, cghSeg)
+importClassesFrom(methods, character, logical, matrix, missing, numeric)
+
+importMethodsFrom(Biobase, AnnotatedDataFrame, assayData, classVersion, fData,
+    "fData<-", featureData, featureNames, pData, "pData<-", phenoData,
+    sampleNames, "sampleNames<-", varMetadata)
+importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
+    copynumber, "copynumber<-", frequencyPlot, plot, probamp, "probamp<-",
+    probdloss, "probdloss<-", probgain, "probgain<-", probloss, "probloss<-",
+    probnorm, "probnorm<-", segmented, "segmented<-", "regions", "regions<-")
+importMethodsFrom(matrixStats, colMedians)
+importMethodsFrom(methods, coerce, initialize, show)
+importMethodsFrom(Rsamtools, scanBam, ScanBamParam)
+
+importFrom(Biobase, assayDataElement, "assayDataElement<-",
+    assayDataElementNames, assayDataElementReplace, assayDataNew)
+importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
+importFrom(DNAcopy, CNA, segment, smooth.CNA)
+importFrom(graphics, abline, axis, axTicks, box, contour, image, mtext, par,
+    points, rect, segments, text)
+importFrom(matrixStats, binCounts, madDiff, sdDiff, rowMedians)
+importFrom(methods, callNextMethod, new)
+importFrom(R.utils, downloadFile)
+importFrom(Rsamtools, scanBamFlag)
+importFrom(stats, lm, loess, predict)
+importFrom(utils, packageVersion, read.table, write.table)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# EXPORTS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#exportPattern("^[[:alpha:]]+")
+
+export("addPhenodata")
+export("applyFilters")
+export("binReadCounts")
+export("callBins")
+export("compareToReference")
+export("correctBins")
+export("downloadBinAnnotations")
+export("estimateCorrection")
+export("exportBins")
+export("frequencyPlot")
+export("getBinAnnotations")
+export("highlightFilters")
+export("isobarPlot")
+export("makeCgh")
+export("noisePlot")
+export("normalizeBins")
+export("normalizeSegmentedBins")
+export("plot")
+export("poolRuns")
+export("segmentBins")
+export("smoothOutlierBins")
+
+export("createBins")
+export("calculateMappability")
+export("calculateBlacklist")
+export("iterateResiduals")
+
+export("chromosomes")
+export("bpstart")
+export("bpend")
+
+exportClasses("QDNAseqCopyNumbers")
+exportClasses("QDNAseqReadCounts")
+
+# EOF

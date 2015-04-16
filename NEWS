@@ -1,0 +1,106 @@
+Changes in version 1.2.4 (2015-01-21)
+-------------------------------------
+
+OTHER
+
+    o update package maintainer
+
+Changes in version 1.2.3 (2015-01-20)
+-------------------------------------
+
+BUG FIXES
+
+    o createBins() now also works for species not supported by GenomeInfoDb
+      (such as Canis lupus familiaris)
+
+Changes in version 1.2.2 (2014-12-23)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o applyFilters() now ignores the residual filter for chromosomes for which
+      it does not exist (instead of always filtering out the entire chromosome)
+
+Changes in version 1.2.1 (2014-11-01)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o add an asterisk in the noise measure to clarify it's not a regular
+      standard deviation or variance, but first scaled with the mean (so that
+      the mean is 1.0 and the relationship holds between variance and 1/N, where
+      N is the average number of reads per bins)
+
+    o clarify the use of log2/sqrt transformation in segmentBins()
+
+Changes in version 1.2.0 (2014-10-14)
+-------------------------------------
+
+RELEASE
+
+    o Bioconductor 3.0
+
+IMPROVEMENTS
+
+    o segmentBins() supports another transformation option besides log2:
+      sqrt(x + 3/8), which stabilizes the variance
+
+    o plot() can skip plotting of segments and calls by specifying
+      doSegments=FALSE and doCalls=FALSE
+
+    o exportBins() also supports BED files
+
+BUG FIXES
+
+    o exportBins() saves base pair positions in fixed notation instead of
+      scientific
+
+Changes in version 1.0.5 (2014-06-13)
+-------------------------------------
+
+BUG FIXES
+
+    o fix a bug caused by package matrixStats changing madDiff() from an S4
+      to an S3 method in version 0.9.4, released on 2014-05-23
+
+Changes in version 1.0.4 (2014-05-23)
+-------------------------------------
+
+BUG FIXES
+
+    o getBinAnnotations() fixed after being broken by a change in Bitbucket
+
+Changes in version 1.0.3 (2014-05-23)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o added exportBins() for exporting to a file
+
+    o switch graphics in the vignette to PNG
+
+Changes in version 1.0.2 (2014-05-15)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o plot() honors user-specified values for xlab and xaxt
+
+    o plot() allows omission of labels for the standard deviation and
+      the number of data points
+
+    o improve diagnostic messages
+
+Changes in version 1.0.1 (2014-04-17)
+-------------------------------------
+
+BUG FIXES
+
+    o smoothOutlierBins() correctly ignores bins filtered out
+
+Changes in version 1.0.0 (2014-04-14)
+-------------------------------------
+
+RELEASE
+
+    o initial release as part of Bioconductor 2.14

@@ -1,0 +1,460 @@
+%\VignetteIndexEntry{Introduction to QDNAseq}
+
+\documentclass{article}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{
+  hyperref}
+
+\begin{document}
+
+\newcommand{\pkg}[1]{\texttt{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{Introduction to QDNAseq}
+\author{Ilari Scheinin}
+\maketitle
+
+\section{Running QDNAseq}
+
+This is a short tutorial on how to use the \pkg{QDNAseq} package. It covers an
+example run using the included data set of chromosomes 7--10 of a
+low grade glioma (LGG) sample. First step is naturally to load the package.
+
+<<>>=
+library(QDNAseq)
+@
+
+<<echo=FALSE>>=
+options("QDNAseq::verbose"=NA)
+options(width=40)
+@
+
+\subsection{Bin annotations}
+
+Then we need to obtain bin annotations. These are available pre-calculated for
+genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp.
+They can be downloaded for example with:
+
+\begin{Schunk}
+\begin{Sinput}
+> bins <- getBinAnnotations(binSize=15)
+Downloading bin annotations for genome hg19, bin size 15kbp,
+and experiment type SR50 ...
+> bins
+QDNAseq bin annotations for Hsapiens, build hg19.
+Created by Ilari Scheinin with QDNAseq 0.7.5, 2014-02-06 12:48:04.
+An object of class 'AnnotatedDataFrame'
+  rowNames: 1:1-15000 1:15001-30000 ... Y:59370001-59373566 (206391
+    total)
+  varLabels: chromosome start ... use (9 total)
+  varMetadata: labelDescription
+\end{Sinput}
+\end{Schunk}
+
+After downloading, the bin annotations can be saved locally with
+\code{saveRDS}, and in the future be read from the local file with
+\code{loadRDS} instead of relying on downloading.
+
+If you are working with another genome build (or another species), see the
+section on generating the bin annotations.
+
+\subsection{Processing bam files}
+
+Next step is to load the sequencing data from bam files. This can be done for
+example with one of the commands below.
+
+<<eval=FALSE>>=
+readCounts <- binReadCounts(bins)
+# all files ending in .bam from the current working directory
+
+# or
+
+readCounts <- binReadCounts(bins, bamfiles='tumor.bam')
+# file 'tumor.bam' from the current working directory
+
+# or
+
+readCounts <- binReadCounts(bins, path='tumors')
+# all files ending in .bam from the subdirectory 'tumors'
+@
+
+This will return an object of class \code{QDNAseqReadCounts}. If the same bam
+files will be used as input in future R sessions, option \code{cache=TRUE} can
+be used to cache intermediate files, which will speed up future analyses.
+Caching is done with package \pkg{R.cache}.
+
+For the purpose of this tutorial, we load an example data set of chromosomes
+7--10 of low grade glioma sample LGG150.
+
+<<>>=
+data(LGG150)
+readCounts <- LGG150
+readCounts
+@
+
+Plot a raw copy number profile (read counts across the genome), and highlight
+bins that will be removed with default filtering (Figure~\ref{fig:rawprofile}).
+
+<<echo=FALSE>>=
+png("rawprofile.png")
+@
+<<label=rawprofile>>=
+plot(readCounts, logTransform=FALSE, ylim=c(-50, 200))
+highlightFilters(readCounts, logTransform=FALSE,
+  residual=TRUE, blacklist=TRUE)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{rawprofile}
+  \caption{Read counts per bins. Highlighted with red are bins that will be
+    filtered out.}
+  \label{fig:rawprofile}
+\end{figure}
+
+Apply filters and plot median read counts as a function of GC content and
+mappability (Figure~\ref{fig:isobar}). As the example data set only contains a
+subset of the chromosomes, the distribution looks slithly less smooth than
+expected for the entire genome.
+
+<<>>=
+readCountsFiltered <- applyFilters(readCounts,
+  residual=TRUE, blacklist=TRUE)
+@
+<<echo=FALSE>>=
+png("isobar.png")
+@
+<<label=isobar>>=
+isobarPlot(readCountsFiltered)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{isobar}
+  \caption{Median read counts per bin shown as a function of GC content and
+    mappability.}
+  \label{fig:isobar}
+\end{figure}
+
+Estimate the correction for GC content and mappability, and make a plot for the
+relationship between the observed standard deviation in the data and its read
+depth (Figure~\ref{fig:noise}). The theoretical expectation is a linear
+relationship, which is shown in the plot with a black line. Samples with
+low-quality DNA will be noisier than expected and appear further above the line
+than good-quality samples.
+
+<<>>=
+readCountsFiltered <- estimateCorrection(readCountsFiltered)
+@
+<<echo=FALSE>>=
+png("noise.png")
+@
+<<label=noise>>=
+noisePlot(readCountsFiltered)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{noise}
+  \caption{The relationship between sequence depth and noise.}
+  \label{fig:noise}
+\end{figure}
+
+Next, we apply the correction for GC content and mappability. This will return
+a \code{QDNAseqCopyNumbers} object, which we then normalize, smooth outliers,
+and plot the copy number profile (Figure~\ref{fig:profile}).
+
+<<>>=
+copyNumbers <- correctBins(readCountsFiltered)
+copyNumbers
+copyNumbersNormalized <- normalizeBins(copyNumbers)
+copyNumbersSmooth <- smoothOutlierBins(copyNumbersNormalized)
+@
+<<echo=FALSE>>=
+png("profile.png")
+@
+<<label=profile>>=
+plot(copyNumbersSmooth)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{profile}
+  \caption{Copy number profile after correcting for GC content and mappability.}
+  \label{fig:profile}
+\end{figure}
+
+Data is now ready to be analyzed with a downstream package of choice. For
+analysis with an external program or for visualizations in IGV, the data can be
+exported to a file.
+
+<<eval=FALSE>>=
+exportBins(copyNumbersSmooth, file="LGG150.txt")
+exportBins(copyNumbersSmooth, file="LGG150.igv", format="igv")
+exportBins(copyNumbersSmooth, file="LGG150.bed", format="bed")
+@
+
+\subsection{Downstream analyses}
+
+Segmentation with the CBS algorithm from DNAcopy and calling copy number
+aberrations with CGHcall have been implemented for convenience.
+
+By default, segmentation uses a $\log_2$-transformation, but a sqrt(x + 3/8)
+can also be used as it stabilizes the variance of a Poisson distribution
+(Anscombe transform):
+
+<<>>=
+copyNumbersSegmented <- segmentBins(copyNumbersSmooth, transformFun="sqrt")
+copyNumbersSegmented <- normalizeSegmentedBins(copyNumbersSegmented)
+@
+<<echo=FALSE>>=
+png("segments.png")
+@
+<<label=segments>>=
+plot(copyNumbersSegmented)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{segments}
+  \caption{Copy number profile after segmenting.}
+  \label{fig:segments}
+\end{figure}
+
+Tune segmentation parameters and iterate until satisfied. Next, call
+aberrations, and plot the final results.
+
+<<>>=
+copyNumbersCalled <- callBins(copyNumbersSegmented)
+@
+<<echo=FALSE>>=
+png("calls.png")
+@
+<<label=calls>>=
+plot(copyNumbersCalled)
+@
+<<echo=FALSE, results=hide>>=
+dev.off()
+@
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{calls}
+  \caption{Copy number profile after calling gains and losses.}
+  \label{fig:calls}
+\end{figure}
+
+Finally, for other downstream analyses, such as running CGHregions, it might be
+useful to convert to a cghCall object.
+
+<<>>=
+cgh <- makeCgh(copyNumbersCalled)
+cgh
+@
+
+This command can also be used to generate cghRaw or cghSeg objects by running
+it before segmentation or calling.
+
+% caching
+
+% 661 bam files = 445G
+% cache/reads = 13G
+% cache/readCounts/15kbp = 139M
+% cache/readCounts/30kbp = 82M
+% cache/readCounts/100kbp = 32M
+% cache/readCounts/1000kbp = 5.2M
+
+\clearpage
+
+\section{Generating bin annotations}
+
+This section describes how bin annotations have been created for the hg19 build
+of the human reference genome, and can be applied for other genome builds and
+species. The first step is to create the bins based on chromosome sizes, and
+calculate their GC content and proportion of characterized nucletodies (non-N
+bases in the reference sequence). For this, the corresponding \pkg{BSgenome}
+package is needed.
+
+<<eval=FALSE>>=
+# load required packages for human reference genome build hg19
+library(QDNAseq)
+library(Biobase)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+# set the bin size
+binSize <- 15
+
+# create bins from the reference genome
+bins <- createBins(bsgenome=BSgenome.Hsapiens.UCSC.hg19, binSize=binSize)
+@
+
+The result is a \code{data.frame} with columns \code{chromosome}, \code{start},
+\code{end}, \code{gc}, and \code{bases}. Next step is to calculate the average
+mappabilities, which requires a mappability file in the \code{bigWig} format
+and the \code{bigWigAverageOverBed} binary. The mappability file can be
+generated with the \href{http://gemlibrary.sourceforge.net/}{GEM library} tools
+from the reference genome sequence. Or it might be available directly, as was
+the case for hg19, and file \code{wgEncodeCrgMapabilityAlign50mer.bigWig}
+downloaded from
+\href{http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}{
+ENCODE's download section of the UCSC Genome Browser}. The
+\code{bigWigAverageOverBed} binary can also be downloaded from
+\href{http://hgdownload.soe.ucsc.edu/admin/exe/}{UCSC Genome Browser's Other
+utilities section}.
+
+<<eval=FALSE>>=
+# calculate mappabilites per bin from ENCODE mapability tracks
+bins$mappability <- calculateMappability(bins,
+  bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
+  bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+@
+
+If there are genomic regions that should excluded from analyses, such as
+ENCODE's Blacklisted Regions, the percentage overlap between these regions can
+be calculated for each bin as follows. The regions to be excluded need to be in
+the \code{BED} format, like files
+\code{wgEncodeDacMapabilityConsensusExcludable.bed} and
+\code{wgEncodeDukeMapabilityRegionsExcludable.bed} that were downloaded from
+\href{http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}{
+ENCODE's download section of the UCSC Genome Browser} for hg19.
+
+<<eval=FALSE>>=
+# calculate overlap with ENCODE blacklisted regions
+bins$blacklist <- calculateBlacklist(bins,
+  bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
+  '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+@
+
+To calculate median residuals of the LOESS fit from a control dataset, the
+following command can be used. For the pre-generated annotations, the control
+set used is 38 samples from the 1000 Genomes project. See the next section on
+how those were downloaded.
+
+<<eval=FALSE>>=
+# load data for the 1000 Genomes (or similar) data set, and generate residuals
+ctrl <- binReadCounts(bins,
+  path='/path/to/control-set/bam/files')
+ctrl <- applyFilters(ctrl, residual=FALSE, blacklist=FALSE,
+  mappability=FALSE, bases=FALSE)
+bins$residual <- iterateResiduals(ctrl)
+@
+
+The column \code{use} specifies whether each bin should be used for subsequent
+analyses by default. The command \code{applyFilters} will change its value
+accordingly. By default, bins in the sex chromosomes, or with only
+uncharacterized nucleotides (N's) in their reference sequence, are flagged for
+exlusion.
+
+<<eval=FALSE>>=
+# by default, use all autosomal bins that have a reference sequence
+# (i.e. not only N's)
+bins$use <- bins$chromosome %in% as.character(1:22) & bins$bases > 0
+@
+
+Optionally, the resulting \code{data.frame} can be converted to an
+\code{AnnotateDataFrame} and metadata added for the columns.
+
+<<eval=FALSE>>=
+# convert to AnnotatedDataFrame and add metadata
+bins <- AnnotatedDataFrame(bins,
+  varMetadata=data.frame(labelDescription=c(
+  'Chromosome name',
+  'Base pair start position',
+  'Base pair end position',
+  'Percentage of non-N nucleotides (of full bin size)',
+  'Percentage of C and G nucleotides (of non-N nucleotides)',
+  'Average mappability of 50mers with a maximum of 2 mismatches',
+  'Percent overlap with ENCODE blacklisted regions',
+  'Median loess residual from 1000 Genomes (50mers)',
+  'Whether the bin should be used in subsequent analysis steps'),
+  row.names=colnames(bins)))
+@
+
+For the pre-generated annotations, some additional descriptive metadata has
+also been added.
+
+<<eval=FALSE>>=
+attr(bins, "QDNAseq") <- list(
+  author="Ilari Scheinin",
+  date=Sys.time(),
+  organism="Hsapiens",
+  build="hg19",
+  version=packageVersion("QDNAseq"),
+  url=paste0(
+  "http://cdn.bitbucket.org/ccagc/qdnaseq/downloads/QDNAseq.hg19.",
+  binsize, "kbp.SR50.rds"),
+  md5=digest::digest(bins@data),
+  sessionInfo=sessionInfo())
+@
+
+\section{Downloading 1000 Genomes Samples}
+
+This section defines the criteria that were used to download samples from the
+1000 Genomes project for the pre-generated bin annotations.
+
+<<eval=FALSE>>=
+# download table of samples
+server <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/"
+g1k <- read.table(paste0(server, "sequence.index"),
+  header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
+
+# keep cases that are Illumina, low coverage, single-read, and not withdrawn
+g1k <- g1k[g1k$INSTRUMENT_PLATFORM == 'ILLUMINA', ]
+g1k <- g1k[g1k$ANALYSIS_GROUP == 'low coverage', ]
+g1k <- g1k[g1k$LIBRARY_LAYOUT == 'SINGLE', ]
+g1k <- g1k[g1k$WITHDRAWN == 0, ]
+
+# keep cases with read lengths of at least 50 bp
+g1k <- g1k[!g1k$BASE_COUNT %in% c("not available", ""), ]
+g1k$BASE_COUNT <- as.numeric(g1k$BASE_COUNT)
+g1k$READ_COUNT <- as.integer(g1k$READ_COUNT)
+g1k$readLength <- g1k$BASE_COUNT / g1k$READ_COUNT
+g1k <- g1k[g1k$readLength > 50, ]
+
+# keep samples with a minimum of one million reads
+readCountPerSample <- aggregate(g1k$READ_COUNT,
+  by=list(sample=g1k$SAMPLE_NAME), sum)
+g1k <- g1k[g1k$SAMPLE_NAME %in%
+  readCountPerSample$sample[readCountPerSample$x >= 1e6], ]
+
+g1k$fileName <- basename(g1k$FASTQ_FILE)
+
+# download fastq files
+for (i in rownames(g1k)) {
+  sourceFile <- paste0(server, g1k[i, "FASTQ_FILE"])
+  destFile <- g1k[i, "fileName"]
+  if (!file.exists(destFile))
+    download.file(sourceFile, destFile)
+}
+@
+
+Next, reads were trimmed to 50 bp, and the multiple files for each sample (as
+defined by column SAMPLE\_NAME) were combined by concatenating the FASTQ
+together. Finally, they were aligned with BWA allowing two mismatches and
+end-trimming of bases with qualities below 40 (options -n 2 -q 40).
+
+\section{Session Information}
+
+The version number of R and packages loaded for generating the vignette were:
+
+<<echo=FALSE>>=
+sessionInfo()
+@
+
+\end{document}
+
+% EOF

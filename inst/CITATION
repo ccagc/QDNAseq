@@ -1,0 +1,23 @@
+bibentry(bibtype="Article",
+    author=c(person("Ilari", "Scheinin"),
+    person("Daoud", "Sie"),
+    person("Henrik", "Bengtsson"),
+    person(c("Mark", "A"), "van de Wiel"),
+    person(c("Adam", "B"), "Olshen"),
+    person(c("Hinke", "F"), "van Thuijl"),
+    person(c("Hendrik", "F"), "van Essen"),
+    person(c("Paul", "P"), "Eijk"),
+    person("Francois", "Rustenburg"),
+    person(c("Gerrit", "A"), "Meijer"),
+    person(c("Jaap", "C"), "Reijneveld"),
+    person("Pieter", "Wesseling"),
+    person("Daniel", "Pinkel"),
+    person(c("Donna", "G"), "Albertson"),
+    person("Bauke", "Ylstra")),
+    year=2014,
+    title=paste("DNA copy number analysis of fresh and formalin-fixed",
+    "specimens by shallow whole-genome sequencing with identification and",
+    "exclusion of problematic regions in the genome assembly"),
+    journal="Genome Research", volume=24, pages="2022--2032")
+
+# EOF
