@@ -77,10 +77,6 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     bins
 }
 
-downloadBinAnnotations <- function(...) {
-    .Defunct("getBinAnnotations")
-}
-
 setMethod("show", signature=c(object="AnnotatedDataFrame"),
     definition=function(object) {
     if (!is.null(attr(object, "QDNAseqVersion"))) {
