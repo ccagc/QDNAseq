@@ -26,7 +26,7 @@
 # }
 #
 #
-# @author
+# @author "IS"
 #*/#########################################################################
 
 setMethod('initialize', 'QDNAseqReadCounts',
