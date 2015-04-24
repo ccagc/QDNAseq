@@ -28,10 +28,10 @@ use branch *master* of each GitHub repository.
 #### Software quality
 
 * R CMD check status:
- - Bioconductor: <a href="http://master.bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/">Multipleplatform build/check report</a>
- - Travis CI: <a href="https://travis-ci.org/ccagc/QDNAseq"><img src="https://travis-ci.org/ccagc/QDNAseq.svg?branch=master" alt="Build status"></a>
+ - Bioconductor: <a href="http://master.bioconductor.org/checkResults/release/bioc-LATEST/QDNAseq/">Multipleplatform build/check report</a>
+ - Travis CI: <a href="https://travis-ci.org/ccagc/QDNAseq-release"><img src="https://travis-ci.org/ccagc/QDNAseq-release.svg?branch=master" alt="Build status"></a>
 * Test coverage status:
- - Coveralls CI: <a href='https://coveralls.io/r/ccagc/QDNAseq?branch=master'><img src='https://coveralls.io/repos/ccagc/QDNAseq/badge.png?branch=master' alt='Coverage Status' /></a>
+ - Coveralls CI: <a href='https://coveralls.io/r/ccagc/QDNAseq-release?branch=master'><img src='https://coveralls.io/repos/ccagc/QDNAseq-release/badge.png?branch=master' alt='Coverage Status' /></a>
 
 [bioc-devel]: http://bioconductor.org/packages/devel/bioc/html/QDNAseq.html
 [bioc-release]: http://bioconductor.org/packages/release/bioc/html/QDNAseq.html
