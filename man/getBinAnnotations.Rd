@@ -9,6 +9,7 @@
 \name{getBinAnnotations}
 \alias{getBinAnnotations}
 
+
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
