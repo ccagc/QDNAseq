@@ -16,7 +16,7 @@
 #     \item{genome}{A @character string specify the genome and genome version
 #        to be used.}
 #     \item{type}{A @character string specify the experiment type, e.g. "SR50"
-#        or "PE1000".}
+#        or "PE100".}
 #     \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
 #        regardless of it already exists in the cache or not.}
 #     \item{path}{A @character string specifying the path for the bin
@@ -75,10 +75,6 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     }
     vmsg()
     bins
-}
-
-downloadBinAnnotations <- function(...) {
-    .Defunct("getBinAnnotations")
 }
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),

@@ -16,7 +16,7 @@
 #     @eval "format(citation('QDNAseq'), style='text')"
 # }
 #
-# @author
+# @author "IS"
 #
 # \section{License}{
 #     This package is licensed under GPL.
