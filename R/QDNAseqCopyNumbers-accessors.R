@@ -35,7 +35,7 @@
 #     The bin data (assay data) may contain missing values.
 # }
 #
-# @author
+# @author "IS"
 #*/#########################################################################
 
 setMethod('initialize', 'QDNAseqCopyNumbers',

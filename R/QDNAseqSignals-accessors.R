@@ -11,7 +11,7 @@
 #     @get "title"
 # }
 #
-# @author
+# @author "IS"
 #*/#########################################################################
 
 setMethod("binsToUse", signature=c(object="QDNAseqSignals"),
