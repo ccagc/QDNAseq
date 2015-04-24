@@ -8,7 +8,7 @@
 #     LGG150, contained within a @see "QDNAseqReadCounts" object
 # }
 #
-# @author
+# @author "IS"
 #*/#########################################################################
 
 
