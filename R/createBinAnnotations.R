@@ -52,7 +52,7 @@
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
-        info <- GenomeInfoDb::genomeStyles(organism(bsgenome))
+        info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
         style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
         chrs <- info[, style]
     }, silent=TRUE)
@@ -193,7 +193,7 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     residuals <- counts / fit - 1
     # residuals[fit == 0] <- NA
     residuals[!binsToUse(object), ] <- NA
-    residual <- apply(residuals, 1, median, na.rm=TRUE)
+    residual <- rowMedians(residuals, na.rm=TRUE)
     cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
     if (is.numeric(cutoff))
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
@@ -209,7 +209,7 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
         residuals <- counts / fit - 1
         # residuals[fit == 0] <- NA
         residuals[!binsToUse(object), ] <- NA
-        residual <- apply(residuals, 1, median, na.rm=TRUE)
+        residual <- rowMedians(residuals, na.rm=TRUE)
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
             abs(residual) <= cutoffValue
         num <- sum(binsToUse(object))

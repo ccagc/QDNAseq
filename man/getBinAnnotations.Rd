@@ -9,15 +9,12 @@
 \name{getBinAnnotations}
 \alias{getBinAnnotations}
 
-
 \alias{downloadBinAnnotations}
 
 \title{Gets bin annotation data for a particular bin size}
 
 \usage{
 getBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE,
-  path=getOption("QDNAseq::binAnnotationPath", "http://qdnaseq.s3.amazonaws.com"))
-downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE,
   path=getOption("QDNAseq::binAnnotationPath", "http://qdnaseq.s3.amazonaws.com"))
 }
 
@@ -42,9 +39,7 @@ downloadBinAnnotations(binSize, genome="hg19", type="SR50", force=FALSE,
 }
 
 \details{
-    The current function name is getBinAnnotations, for which
-    downloadBinAnnotations is an old and deprecated alias that will be
-    removed in future versions.
+    Gets bin annotation data for a particular bin size
 }
 
 \value{

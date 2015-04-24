@@ -46,7 +46,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     }
     baseLine <- NA
     doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
-    doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments 
+    doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments
     if (doCalls) {
         if (is.null(ylim))
             if (logTransform) {
@@ -178,7 +178,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             box()
             lim[3:4] <- ylim
             par(usr=lim)
-            points(pos, cn, cex=.1, col=pointcol)
+            points(pos, cn, cex=pointcex, col=pointcol, pch=pointpch)
         } else {
             plot(pos, cn, cex=pointcex, col=pointcol, main=main[i],
                 xlab=NA, ylab=NA, ylim=ylim, xaxt="n", xaxs="i", yaxs="i",
@@ -389,7 +389,7 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 # @keyword hplot
 #*/#########################################################################
 setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
-    definition=function(x, y, main=NULL, nlevels=20L, 
+    definition=function(x, y, main=NULL, nlevels=20L,
     what=c("read counts", "fit", "residuals"), adjustIncompletes=TRUE,
     ...) {
     what <- match.arg(what)
@@ -520,7 +520,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     sdFUN <- match.fun(sdFUN)
     condition <- binsToUse(x)
     counts <- assayDataElement(x, "counts")[condition, , drop=FALSE]
-    usedReads <- apply(counts, 2, sum)
+    usedReads <- colSums(counts)
     if (adjustIncompletes) {
         counts <- counts / fData(x)$bases[condition] * 100L
         counts[fData(x)$bases[condition] == 0] <- 0L
