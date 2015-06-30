@@ -90,6 +90,13 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
         corrected <- counts / fit
         corrected[fit <= 0] <- 0
     }
+    if (anyNA(corrected[binsToUse(object), ])) {
+      old <- binsToUse(object)
+      missings <- is.na(rowMeans(corrected))
+      message("Note: Filtering out additional ", sum(old & missings),
+        " bins due to missing values.")
+      binsToUse(object) <- old & !missings
+    }
     new("QDNAseqCopyNumbers", bins=featureData(object), copynumber=corrected,
         phenodata=phenoData(object))
 })
