@@ -280,6 +280,46 @@ it before segmentation or calling.
 
 \clearpage
 
+\section{Sex chromosomes}
+
+By default, QDNAseq ignores sex chromosomes. In order to include them in the
+analysis, function \code{applyFilters()} should be run with argument
+\code{chromosomes=NA} to include both X and Y, or \code{chromosomes="Y"} to
+include X only.
+
+However, this will also affect which chromosomes are used when calculating the
+loes correction with \code{estimateCorrection()}. Unless the data set is only
+females, this could be undesirable. The solution is to first filter out the sex
+chromosomes, run \code{estimateCorrection()}, and finally to reverse the
+filtering of sex chromosomes:
+
+<<eval=FALSE>>=
+readCounts <- binReadCounts(getBinAnnotations(15))
+readCounts <- applyFilters(readCounts)
+readCounts <- estimateCorrection(readCounts)
+readCounts <- applyFilters(readCounts, chromosomes=NA)
+copyNumbers <- correctBins(readCounts)
+@
+
+Running \code{estimateCorrection()} and \code{correctBins()} with a different
+set of bins can have one side effect. This is caused by the fact that there can
+be bins in the sex chromosomes with a combination of GC content and mappability
+that is not found anywhere else in the genome. This will cause those bins to
+miss a correction estimate altogether, and these bins will be filtered out from
+subsequent steps by \code{correctBins()}. If this happens, it will print out a
+message speficying the number of bins affected.
+
+Another possible approach is to allow extrapolation while calculating the loess
+correction. But please do note that the effect of extrapolation has not been
+properly evaluated.
+
+<<eval=FALSE>>=
+readCounts <- estimateCorrection(readCounts,
+  control=loess.control(surface="direct"))
+@
+
+\clearpage
+
 \section{Generating bin annotations}
 
 This section describes how bin annotations have been created for the hg19 build
@@ -401,6 +441,8 @@ attr(bins, "QDNAseq") <- list(
   sessionInfo=sessionInfo())
 @
 
+\clearpage
+
 \section{Downloading 1000 Genomes Samples}
 
 This section defines the criteria that were used to download samples from the
@@ -446,6 +488,8 @@ Next, reads were trimmed to 50 bp, and the multiple files for each sample (as
 defined by column SAMPLE\_NAME) were combined by concatenating the FASTQ
 together. Finally, they were aligned with BWA allowing two mismatches and
 end-trimming of bases with qualities below 40 (options -n 2 -q 40).
+
+\clearpage
 
 \section{Session Information}
 
