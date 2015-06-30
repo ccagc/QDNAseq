@@ -1,3 +1,10 @@
+Changes in version 1.4.1 (2015-06-30)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o correctBins() now filters out bins with missing loess correction estimate
+
 Changes in version 1.4.0 (2015-04-17)
 -------------------------------------
 
