@@ -52,7 +52,7 @@
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE, 
-    excludeSeqnames=NULL) {
+    excludeSeqnames=NULL) { 
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
         info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
@@ -65,7 +65,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     if (ignoreMitochondria) {
         selectedMT <- grep("^(chr)?M(T)?$", chrs)
 	if (length(selectedMT) != 0)
-            chrs <- chrs[selectedMT]
+            chrs <- chrs[-selectedMT]
     }
     lengths <- GenomeInfoDb::seqlengths(bsgenome)[chrs]
     start <- end <- integer()
