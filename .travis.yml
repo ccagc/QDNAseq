@@ -28,7 +28,7 @@ env:
   matrix:
 #    - RVERSION=3.0.3
 #    - RVERSION=3.1.2
-    - RVERSION=3.2.2
+    - RVERSION=devel
 
 
 before_install:
