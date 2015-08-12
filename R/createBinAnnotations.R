@@ -56,8 +56,11 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE) {
         style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
         chrs <- info[, style]
     }, silent=TRUE)
-    if (ignoreMitochondria)
-        chrs <- chrs[-grep("^(chr)?M(T)?$", chrs)]
+    if (ignoreMitochondria) {
+        selectedMT <- grep("^(chr)?M(T)?$", chrs)
+        if (length(selectedMT) != 0)
+            chrs <- chrs[-selectedMT]
+    }
     lengths <- GenomeInfoDb::seqlengths(bsgenome)[chrs]
     start <- end <- integer()
     bases <- gc <- numeric()
