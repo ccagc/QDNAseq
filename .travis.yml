@@ -22,12 +22,13 @@ env:
     # time consuming because LaTeX needs to be installed
     - R_BUILD_ARGS="--no-build-vignettes ${R_BUILD_ARGS}"
     - R_CHECK_ARGS="--no-build-vignettes ${R_CHECK_ARGS}"
+    - BIOC_USE_DEVEL="TRUE"
 
   # R versions r-builder should test on (ignored by r-travis)
   matrix:
 #    - RVERSION=3.0.3
 #    - RVERSION=3.1.2
-    - RVERSION=devel
+    - RVERSION=3.2.2
 
 
 before_install:
