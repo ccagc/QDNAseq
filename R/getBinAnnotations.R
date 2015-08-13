@@ -17,8 +17,6 @@
 #        to be used.}
 #     \item{type}{A @character string specify the experiment type, e.g. "SR50"
 #        or "PE100".}
-#     \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
-#        regardless of it already exists in the cache or not.}
 #     \item{path}{A @character string specifying the path for the bin
 #         annotation files. Defaults to downloading from the Internet, but can
 #         also be a local path. Can also be defined by setting the 
@@ -48,7 +46,7 @@
 # @keyword IO
 #*/#########################################################################
 getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
+    path=getOption("QDNAseq::binAnnotationPath",
     "http://qdnaseq.s3.amazonaws.com")) {
 
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
