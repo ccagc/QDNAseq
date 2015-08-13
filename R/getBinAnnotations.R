@@ -49,6 +49,22 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     path=getOption("QDNAseq::binAnnotationPath",
     "http://qdnaseq.s3.amazonaws.com")) {
 
+    bins <- NULL
+    
+    # Look for binAnnotations with data()
+    BAname <- sprintf('%s.%gkbp.%s', genome, binSize, type)
+    tryCatch(data(list=BAname, envir = environment()),
+        warning=function(x) {
+            # TODO suggest install package
+            vmsg(BAname, " not found in local datasets")
+        }
+    )
+    try(bins <- get(BAname), silent=TRUE)
+    if(!is.null(bins)) {
+        vmsg("Loaded bins from annotation package.")
+        return(bins)
+    }
+    
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
     if (substring(path, 1, 7) == "http://") {
         vmsg('Downloading bin annotations for genome ', genome,
