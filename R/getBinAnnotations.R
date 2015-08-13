@@ -60,7 +60,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     }
     # Look for binAnnotations with data()
     BAname <- sprintf('%s.%gkbp.%s', genome, binSize, type)
-    tryCatch(data(list=BAname, envir = environment()),
+    tryCatch(data(list=BAname, package=PKname, envir = environment()),
         warning=function(x) {
             # TODO suggest install package
             vmsg(BAname, " not found in local datasets")
