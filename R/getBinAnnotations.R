@@ -58,6 +58,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
         vmsg("Annotation package is missing, please install first:")
         vmsg("biocLite('", PKname, "')")
     }
+    else {
     # Look for binAnnotations with data()
     BAname <- sprintf('%s.%gkbp.%s', genome, binSize, type)
     tryCatch(data(list=BAname, package=PKname, envir = environment()),
@@ -70,6 +71,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     if(!is.null(bins)) {
         vmsg("Loaded bins from annotation package.")
         return(bins)
+    }
     }
     
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
