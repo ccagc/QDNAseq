@@ -18,7 +18,7 @@
 #     \item{binSize}{A @numeric scalar specifying the width of the bins
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
-#     \item{ignoreMitochondria}{Wheter to ignore the mitochondria.}
+#     \item{ignoreMitochondria}{Whether to ignore the mitochondria.}
 # }
 #
 # \value{
