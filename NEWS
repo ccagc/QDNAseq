@@ -1,3 +1,12 @@
+Changes in version 1.4.2 (2015-08-20)
+-------------------------------------
+
+BUG FIXES
+
+    o createBins() now properly selects chromosomes when ignoring 
+      mitochondrial DNA. Please note that the mitochondrial DNA is only 
+      effectively ignored when it is in the form "chrM" or "M".
+
 Changes in version 1.4.1 (2015-06-30)
 -------------------------------------
 
