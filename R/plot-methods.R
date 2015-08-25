@@ -90,6 +90,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     all.chrom <- chromosomes(x)
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
+    chrom.num <- as.integer(factor(chrom, levels=uni.chrom, ordered=TRUE))
+    uni.chrom.num <- unique(chrom.num)
     if (!scale) {
         pos <- pos2 <- 1:sum(condition)
         chrom.ends <- aggregate(pos,
@@ -105,13 +107,17 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         }
         pos <- as.numeric(bpstart(x)[condition])
         pos2 <- as.numeric(bpend(x)[condition])
-        chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
+        chrom.lengths <- chrom.lengths[uni.chrom]
         chrom.ends <- integer()
         cumul <- 0
-        for (i in uni.chrom) {
-            pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
-            pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
-            cumul <- cumul + chrom.lengths[as.character(i)]
+        for (i in seq_along(uni.chrom)) {
+            pos[chrom.num > uni.chrom.num[i]] <-
+                pos[chrom.num > uni.chrom.num[i]] +
+                chrom.lengths[uni.chrom[i]]
+            pos2[chrom.num > uni.chrom.num[i]] <-
+              pos2[chrom.num > uni.chrom.num[i]] +
+              chrom.lengths[uni.chrom[i]]
+            cumul <- cumul + chrom.lengths[uni.chrom[i]]
             chrom.ends <- c(chrom.ends, cumul)
         }
         names(chrom.ends) <- names(chrom.lengths)
@@ -309,15 +315,21 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     }
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
-    chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
+    chrom.num <- as.integer(factor(chrom, levels=uni.chrom, ordered=TRUE))
+    uni.chrom.num <- unique(chrom.num)
+    chrom.lengths <- chrom.lengths[uni.chrom]
     pos <- as.numeric(bpstart(x)[condition])
     pos2 <- as.numeric(bpend(x)[condition])
     chrom.ends <- integer()
     cumul <- 0
-    for (i in uni.chrom) {
-        pos[chrom > i] <- pos[chrom > i] + chrom.lengths[as.character(i)]
-        pos2[chrom > i] <- pos2[chrom > i] + chrom.lengths[as.character(i)]
-        cumul <- cumul + chrom.lengths[as.character(i)]
+    for (i in seq_along(uni.chrom)) {
+        pos[chrom.num > uni.chrom.num[i]] <-
+            pos[chrom.num > uni.chrom.num[i]] +
+            chrom.lengths[uni.chrom[i]]
+        pos2[chrom.num > uni.chrom.num[i]] <-
+          pos2[chrom.num > uni.chrom.num[i]] +
+          chrom.lengths[uni.chrom[i]]
+        cumul <- cumul + chrom.lengths[uni.chrom[i]]
         chrom.ends <- c(chrom.ends, cumul)
     }
     names(chrom.ends) <- names(chrom.lengths)

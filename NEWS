@@ -1,3 +1,29 @@
+Changes in version 1.6.0 (2015-xx-yy)
+-------------------------------------
+
+RELEASE
+
+    o Bioconductor 3.2
+
+IMPROVEMENTS
+
+    o chromosomes() no longer tries to return chromosome names as an integer
+      vector, but returns a character vector instead
+
+BUG FIXES
+
+    o plot() and calculateMappability() now work also for other chromosome
+      names besides numbers and "X", "Y", and "MT"
+
+Changes in version 1.4.2 (2015-08-20)
+-------------------------------------
+
+BUG FIXES
+
+    o createBins() now properly selects chromosomes when ignoring 
+      mitochondrial DNA. Please note that the mitochondrial DNA is only 
+      ignored when it is called either "chrMT", "chrM", "MT", or "M"
+
 Changes in version 1.4.1 (2015-06-30)
 -------------------------------------
 

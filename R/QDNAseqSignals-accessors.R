@@ -43,10 +43,7 @@ setMethod("binsToUse", signature=c(object="AnnotatedDataFrame"),
 setMethod("chromosomes", signature=c(object="QDNAseqSignals"),
     definition=function(object) {
     
-    tmp <- fData(object)$chromosome
-    tmp[tmp=="X"] <- "23"
-    tmp[tmp=="Y"] <- "24"
-    as.integer(tmp)
+    fData(object)$chromosome
 })
 
 setMethod("bpstart", signature=c(object="QDNAseqSignals"),
