@@ -17,8 +17,6 @@
 #        to be used.}
 #     \item{type}{A @character string specify the experiment type, e.g. "SR50"
 #        or "PE100".}
-#     \item{force}{If @TRUE, the bin anonnation data is retrieved/calculated
-#        regardless of it already exists in the cache or not.}
 #     \item{path}{A @character string specifying the path for the bin
 #         annotation files. Defaults to downloading from the Internet, but can
 #         also be a local path. Can also be defined by setting the 
@@ -48,9 +46,34 @@
 # @keyword IO
 #*/#########################################################################
 getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    force=FALSE, path=getOption("QDNAseq::binAnnotationPath",
+    path=getOption("QDNAseq::binAnnotationPath",
     "http://qdnaseq.s3.amazonaws.com")) {
 
+    bins <- NULL
+    
+    # Check for annotation package
+    PKname <- sprintf('QDNAseq.%s', genome)
+    PKfound <- PKname %in% .packages(all.available=TRUE)
+    if(!PKfound) {
+        vmsg("Annotation package is missing, please install first:")
+        vmsg("biocLite('", PKname, "')")
+    }
+    else {
+    # Look for binAnnotations with data()
+    BAname <- sprintf('%s.%gkbp.%s', genome, binSize, type)
+    tryCatch(data(list=BAname, package=PKname, envir = environment()),
+        warning=function(x) {
+            # TODO suggest install package
+            vmsg(BAname, " not found in local datasets")
+        }
+    )
+    try(bins <- get(BAname), silent=TRUE)
+    if(!is.null(bins)) {
+        vmsg("Loaded bins from annotation package.")
+        return(bins)
+    }
+    }
+    
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
     if (substring(path, 1, 7) == "http://") {
         vmsg('Downloading bin annotations for genome ', genome,

@@ -16,7 +16,8 @@
 
 \usage{
 exportBins(object, file, format=c("tsv", "igv", "bed"), type=c("copynumber", "segments",
-  "calls"), filter=TRUE, logTransform=TRUE, digits=3, ...)
+  "calls"), filter=TRUE, logTransform=TRUE, digits=3,
+  chromosomeReplacements=c(`23` = "X", `24` = "Y", `25` = "MT"), ...)
 }
 
 \description{
@@ -38,6 +39,12 @@ exportBins(object, file, format=c("tsv", "igv", "bed"), type=c("copynumber", "se
     \item{logTransform}{If \code{\link[base:logical]{TRUE}} (default), data will be log2-transformed.}
     \item{digits}{The number of digits to round to. If not \code{\link[base]{numeric}}, no
         no rounding is performed.}
+    \item{chromosomeReplacements}{A named character vector of chromosome name
+        replacements to be done. Only used when \code{object} is of class
+        \code{\link{cghRaw}}, \code{\link{cghSeg}}, \code{\link{cghCall}}, or \code{\link{cghRegions}},
+       since these classes store chromosome names as integers, whereas all
+       QDNAseq object types use character vectors. Defaults to
+        \code{c("23"="X", "24"="Y", "25"="MT")} for human.}
     \item{...}{Additional arguments passed to \code{\link[utils]{write.table}}.}
 }
 

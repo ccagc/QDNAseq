@@ -26,6 +26,12 @@
 #     \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
 #     \item{digits}{The number of digits to round to. If not @numeric, no
 #         no rounding is performed.}
+#     \item{chromosomeReplacements}{A named character vector of chromosome name
+#         replacements to be done. Only used when \code{object} is of class
+#         @see "cghRaw", @see "cghSeg", @see "cghCall", or @see "cghRegions",
+#        since these classes store chromosome names as integers, whereas all
+#        QDNAseq object types use character vectors. Defaults to
+#         \code{c("23"="X", "24"="Y", "25"="MT")} for human.}
 #     \item{...}{Additional arguments passed to @see "utils::write.table".}
 # }
 #
@@ -53,7 +59,8 @@
 #*/#########################################################################
 exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
     type=c("copynumber", "segments", "calls"),
-    filter=TRUE, logTransform=TRUE, digits=3, ...) {
+    filter=TRUE, logTransform=TRUE, digits=3,
+    chromosomeReplacements=c("23"="X", "24"="Y", "25"="MT"), ...) {
 
     format <- match.arg(format)
     type <- match.arg(type)
@@ -91,9 +98,10 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
 
         feature <- featureNames(object)
         chromosome <- as.character(chromosomes(object))
-        chromosome[chromosome == "23"] <- "X"
-        chromosome[chromosome == "24"] <- "Y"
-        chromosome[chromosome == "25"] <- "MT"
+        for (chromosomeReplacement in names(chromosomeReplacements)) {
+          chromosome[chromosome == chromosomeReplacement] <-
+            chromosomeReplacements[chromosomeReplacement]
+        }
         start <- bpstart(object)
         end <- bpend(object)
         if (inherits(object, c("cghRaw", "cghSeg", "cghCall"))) {
