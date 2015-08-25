@@ -115,8 +115,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 pos[chrom.num > uni.chrom.num[i]] +
                 chrom.lengths[uni.chrom[i]]
             pos2[chrom.num > uni.chrom.num[i]] <-
-              pos2[chrom.num > uni.chrom.num[i]] +
-              chrom.lengths[uni.chrom[i]]
+                pos2[chrom.num > uni.chrom.num[i]] +
+                chrom.lengths[uni.chrom[i]]
             cumul <- cumul + chrom.lengths[uni.chrom[i]]
             chrom.ends <- c(chrom.ends, cumul)
         }
@@ -327,8 +327,8 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
             pos[chrom.num > uni.chrom.num[i]] +
             chrom.lengths[uni.chrom[i]]
         pos2[chrom.num > uni.chrom.num[i]] <-
-          pos2[chrom.num > uni.chrom.num[i]] +
-          chrom.lengths[uni.chrom[i]]
+            pos2[chrom.num > uni.chrom.num[i]] +
+            chrom.lengths[uni.chrom[i]]
         cumul <- cumul + chrom.lengths[uni.chrom[i]]
         chrom.ends <- c(chrom.ends, cumul)
     }

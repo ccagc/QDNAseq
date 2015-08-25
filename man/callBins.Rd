@@ -15,7 +15,7 @@
 \title{Call aberrations from segmented copy number data}
 
 \usage{
-callBins(object, ...)
+callBins(object, organism=c("human", "other"), ...)
 }
 
 \description{
@@ -24,6 +24,10 @@ callBins(object, ...)
 
 \arguments{
     \item{object}{An object of class QDNAseqCopyNumbers}
+    \item{organism}{Either ‘human’ or ‘other’, see manual page for
+        \code{\link[CGHcall]{CGHcall}} for more details. This is only used for
+        chromosome arm information when ‘prior’ is set to ‘all’ or ‘auto’
+        (and samplesize > 20).}
     \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
