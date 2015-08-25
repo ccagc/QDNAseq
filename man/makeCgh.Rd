@@ -15,7 +15,7 @@
 \title{Constructs a 'cghRaw', 'cghSeg', or 'cghCall' object}
 
 \usage{
-makeCgh(object, filter=TRUE, ...)
+makeCgh(object, filter=TRUE, chromosomeReplacements=c(X = 23, Y = 24, MT = 25), ...)
 }
 
 \description{
@@ -28,7 +28,8 @@ makeCgh(object, filter=TRUE, ...)
     \item{chromosomeReplacements}{A named integer vector of chromosome name
         replacements to be done. QDNAseq stores chromosome names as
         characters, but CGHcall expects them to be integers. Defaults to
-        \code{c(X=23, Y=24, MT=25)} for human.}
+        \code{c(X=23, Y=24, MT=25)} for human. Value of "auto" will use
+        running numbers in order of appearance in the bin annotations.}
     \item{...}{Not used.}
 }
 
