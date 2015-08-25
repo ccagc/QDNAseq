@@ -14,6 +14,10 @@
 # \arguments{
 #     \item{object}{A @see "QDNAseqCopyNumbers" object.}
 #     \item{filter}{If @TRUE, bins are filtered, otherwise not.}
+#     \item{chromosomeReplacements}{A named integer vector of chromosome name
+#         replacements to be done. QDNAseq stores chromosome names as
+#         characters, but CGHcall expects them to be integers. Defaults to
+#         \code{c(X=23, Y=24, MT=25)} for human.}
 #     \item{...}{Not used.}
 # }
 #
@@ -39,7 +43,8 @@
 # @keyword manip
 #*/#########################################################################
 setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
-    definition=function(object, filter=TRUE, ...) {
+    definition=function(object, filter=TRUE,
+      chromosomeReplacements=c(X=23, Y=24, MT=25), ...) {
 
     # Decide which cgh* class to create
     names <- assayDataElementNames(object)
@@ -67,7 +72,12 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
     }
 
     # Coerce chromosomes to integer indices
-    fData(object)$chromosome <- chromosomes(object)
+    tmp <- chromosomes(object)
+    for (chromosomeReplacement in names(chromosomeReplacements)) {
+      tmp[tmp == chromosomeReplacement] <-
+        chromosomeReplacements[chromosomeReplacement]
+    }
+    fData(object)$chromosome <- as.integer(tmp)
 
     # Update column names
     names <- colnames(fData(object))

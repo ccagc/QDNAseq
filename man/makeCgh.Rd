@@ -25,6 +25,10 @@ makeCgh(object, filter=TRUE, ...)
 \arguments{
     \item{object}{A \code{\link{QDNAseqCopyNumbers}} object.}
     \item{filter}{If \code{\link[base:logical]{TRUE}}, bins are filtered, otherwise not.}
+    \item{chromosomeReplacements}{A named integer vector of chromosome name
+        replacements to be done. QDNAseq stores chromosome names as
+        characters, but CGHcall expects them to be integers. Defaults to
+        \code{c(X=23, Y=24, MT=25)} for human.}
     \item{...}{Not used.}
 }
 
