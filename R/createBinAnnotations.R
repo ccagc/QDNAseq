@@ -64,7 +64,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     }
     if (ignoreMitochondria) {
         selectedMT <- grep("^(chr)?M(T)?$", chrs)
-	if (length(selectedMT) != 0)
+        if (length(selectedMT) != 0)
             chrs <- chrs[-selectedMT]
     }
     lengths <- GenomeInfoDb::seqlengths(bsgenome)[chrs]
@@ -138,12 +138,14 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
     colnames(combined) <- c("chromosome", "start", "end")
     combined$chromosome <- sub("^chr", "", combined$chromosome)
     combined <- combined[combined$chromosome %in% unique(bins$chromosome), ]
-    combined$chromosome[combined$chromosome=="X"] <- "23"
-    combined$chromosome[combined$chromosome=="Y"] <- "24"
-    combined$chromosome <- as.integer(combined$chromosome)
     combined <- combined[!is.na(combined$chromosome), ]
     combined$start <- combined$start + 1
-    combined <- combined[order(combined$chromosome, combined$start), ]
+    ## define correct sorting order of chromosomes as the order in which they
+    ## are in the bins
+    chromosomes <- unique(bins$chromosome)
+    chromosomeOrder <- factor(combined$chromosome, levels=chromosomes,
+       ordered=TRUE)
+    combined <- combined[order(chromosomeOrder, combined$start), ]
     joined <- data.frame()
     prev <- combined[1L,]
     # Sanity check
@@ -158,9 +160,6 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
         }
     }
     joined <- rbind(joined, prev)
-    bins$chromosome[bins$chromosome=="X"] <- "23"
-    bins$chromosome[bins$chromosome=="Y"] <- "24"
-    bins$chromosome <- as.integer(bins$chromosome)
     overlap.counter <- function(x, joined) {
         chr <- as.integer(x["chromosome"])
         start <- as.integer(x["start"])

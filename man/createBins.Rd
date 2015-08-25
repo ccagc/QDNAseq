@@ -17,7 +17,7 @@
 \title{Builds bin annotation data for a particular bin size}
 
 \usage{
-createBins(bsgenome, binSize, ignoreMitochondria=TRUE)
+createBins(bsgenome, binSize, ignoreMitochondria=TRUE, excludeSeqnames=NULL)
 }
 
 \description{
@@ -29,7 +29,9 @@ createBins(bsgenome, binSize, ignoreMitochondria=TRUE)
     \item{binSize}{A \code{\link[base]{numeric}} scalar specifying the width of the bins
         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
         to 15 kbp bins.}
-    \item{ignoreMitochondria}{Wheter to ignore the mitochondria.}
+    \item{ignoreMitochondria}{Whether to ignore the mitochondria.}
+    \item{excludeSeqnames}{Character vector of seqnames which should be
+        ignored.}
 }
 
 \value{
