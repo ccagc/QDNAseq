@@ -72,7 +72,7 @@ setMethod("normalizeSegmentedBins", signature=c(object="QDNAseqCopyNumbers"),
             assayDataElement(object, "probamp") <- NULL
     }
 
-    seg <- makeCgh(object)
+    seg <- makeCgh(object, chromosomeReplacements="auto")
     postseg <- postsegnormalize(seg, inter=inter)
     copynumber(object) <- log2adhoc(copynumber(postseg), inv=TRUE)
     segmented(object) <- log2adhoc(segmented(postseg), inv=TRUE)

@@ -1,7 +1,7 @@
 setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
     mappability=NA, bases=NA, chromosomes=c("X", "Y"))
     standardGeneric("applyFilters"))
-setGeneric("callBins", function(object, ...)
+setGeneric("callBins", function(object, organism=c("human", "other"), ...)
     standardGeneric("callBins"))
 setGeneric("compareToReference", function(object, references, force=FALSE)
     standardGeneric("compareToReference"))
@@ -16,7 +16,8 @@ setGeneric("highlightFilters", function(object, col="red", residual=NA,
     standardGeneric("highlightFilters"))
 setGeneric("isobarPlot", function(x, y, ...)
     standardGeneric("isobarPlot"))
-setGeneric("makeCgh", function(object, filter=TRUE, ...)
+setGeneric("makeCgh", function(object, filter=TRUE,
+    chromosomeReplacements=c(X=23, Y=24, MT=25), ...)
     standardGeneric("makeCgh"))
 setGeneric("noisePlot", function(x, y, ...)
     standardGeneric("noisePlot"))

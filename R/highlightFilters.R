@@ -117,9 +117,14 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
         names(chrom.lengths) <- all.chrom.lengths$chromosome
 
         pos <- as.numeric(bpstart(object)[condition])
-        chrom.lengths <- chrom.lengths[as.character(uni.chrom)]
-        for (j in uni.chrom)
-            pos[chrom > j] <- pos[chrom > j] + chrom.lengths[as.character(j)]
+        chrom.lengths <- chrom.lengths[uni.chrom]
+        chrom.num <- as.integer(factor(chrom, levels=uni.chrom, ordered=TRUE))
+        uni.chrom.num <- unique(chrom.num)
+        for (j in seq_along(uni.chrom)) {
+            pos[chrom.num > uni.chrom.num[j]] <-
+                pos[chrom.num > uni.chrom.num[j]] +
+                chrom.lengths[uni.chrom[j]]
+        }
     }
     if (class(object) == "QDNAseqReadCounts") {
         copynumber <- assayDataElement(object, "counts")[condition, ,
