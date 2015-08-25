@@ -17,7 +17,8 @@
 #     \item{chromosomeReplacements}{A named integer vector of chromosome name
 #         replacements to be done. QDNAseq stores chromosome names as
 #         characters, but CGHcall expects them to be integers. Defaults to
-#         \code{c(X=23, Y=24, MT=25)} for human.}
+#         \code{c(X=23, Y=24, MT=25)} for human. Value of "auto" will use
+#         running numbers in order of appearance in the bin annotations.}
 #     \item{...}{Not used.}
 # }
 #
@@ -73,11 +74,22 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
 
     # Coerce chromosomes to integer indices
     tmp <- chromosomes(object)
-    for (chromosomeReplacement in names(chromosomeReplacements)) {
-      tmp[tmp == chromosomeReplacement] <-
-        chromosomeReplacements[chromosomeReplacement]
+    if (identical(chromosomeReplacements, "auto")) {
+        chrs <- unique(tmp)
+        for (i in seq_along(chrs)) {
+            tmp[tmp == chrs[i]] <- i
+        }
+    } else {
+        for (chromosomeReplacement in names(chromosomeReplacements)) {
+            tmp[tmp == chromosomeReplacement] <-
+                chromosomeReplacements[chromosomeReplacement]
+        }
     }
     fData(object)$chromosome <- as.integer(tmp)
+    if (any(is.na(fData(object)$chromosome)))
+        stop(paste0("Unknown chromosome names:\n",
+            paste(unique(tmp[is.na(fData(object)$chromosome)]), collapse=", "),
+            "\n", "Please adjust argument chromosomeReplacements."))
 
     # Update column names
     names <- colnames(fData(object))

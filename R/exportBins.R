@@ -99,8 +99,8 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
         feature <- featureNames(object)
         chromosome <- as.character(chromosomes(object))
         for (chromosomeReplacement in names(chromosomeReplacements)) {
-          chromosome[chromosome == chromosomeReplacement] <-
-            chromosomeReplacements[chromosomeReplacement]
+            chromosome[chromosome == chromosomeReplacement] <-
+                chromosomeReplacements[chromosomeReplacement]
         }
         start <- bpstart(object)
         end <- bpend(object)
