@@ -21,6 +21,8 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
+#     \item{chunkSize} {An optional integer specifying the chunk size by which
+#         to process the bam file.}
 #     \item{cache}{Whether to read and write intermediate cache files, which
 #         speeds up subsequent analyses of the same files. Requires packages
 #         R.cache and digest (both available on CRAN) to be installed. Defaults
@@ -88,7 +90,7 @@
 # @keyword file
 #*/#########################################################################
 binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
-    bamnames=NULL, phenofile=NULL,
+    bamnames=NULL, phenofile=NULL, chunkSize=NULL,
     cache=getOption("QDNAseq::cache", FALSE), force=!cache,
     isPaired=NA, isProperPair=NA,
     isUnmappedQuery=FALSE, hasUnmappedMate=NA,
@@ -126,19 +128,33 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     for (i in seq_along(bamfiles)) {
         vmsg("    ", bamnames[i], " (", i, " of ", length(bamfiles), "): ",
             appendLF=FALSE)
+        if (!is.null(chunkSize)) {
+            counts[, i] <- .binReadCountsPerChunk(bins=bins,
+                bamfile=bamfiles[i], chunkSize=chunkSize,
+                cache=cache, force=force, isPaired=isPaired, 
+                isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, 
+                hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, 
+                isMateMinusStrand=isMateMinusStrand, 
+                isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
+                isSecondaryAlignment=isSecondaryAlignment,
+                isNotPassingQualityControls=isNotPassingQualityControls,
+                isDuplicate=isDuplicate,
+                minMapq=minMapq)
+        } else {
         counts[, i] <- .binReadCountsPerSample(bins=bins,
-            bamfile=bamfiles[i],
-            cache=cache, force=force,
-            isPaired=isPaired, isProperPair=isProperPair,
-            isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
-            isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
-            isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
-            isSecondaryAlignment=isSecondaryAlignment,
-            isNotPassingQualityControls=isNotPassingQualityControls,
-            isDuplicate=isDuplicate,
-            minMapq=37)
+                bamfile=bamfiles[i], cache=cache, force=force,
+                isPaired=isPaired, isProperPair=isProperPair,
+                isUnmappedQuery=isUnmappedQuery, hasUnmappedMate=hasUnmappedMate,
+                isMinusStrand=isMinusStrand, isMateMinusStrand=isMateMinusStrand,
+                isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
+                isSecondaryAlignment=isSecondaryAlignment,
+                isNotPassingQualityControls=isNotPassingQualityControls,
+                isDuplicate=isDuplicate,
+                minMapq=minMapq)
+        }
         vmsg()
         gc(FALSE)
+
     }
 
     condition <- binsToUse(bins)
@@ -149,6 +165,99 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 }
 
 
+
+.binReadCountsPerChunk <- function(bins, bamfile, chunkSize, cache, force,
+        isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
+        isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
+        isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq) {
+
+    binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
+
+    bamfile <- normalizePath(bamfile)
+    fullname <- sub('\\.[^.]*$', '', basename(bamfile))
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Check for cached results
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    vmsg('extracting reads ...', appendLF=TRUE)
+    flag <- scanBamFlag(isPaired=isPaired,
+            isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
+            hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
+            isMateMinusStrand=isMateMinusStrand,
+            isFirstMateRead=isFirstMateRead,
+            isSecondMateRead=isSecondMateRead,
+            isSecondaryAlignment=isSecondaryAlignment,
+            isNotPassingQualityControls=isNotPassingQualityControls,
+            isDuplicate=isDuplicate)
+
+# Fetch info from header
+    bamHeader <- scanBamHeader(bamfile)
+
+# targets named vector
+    targets <- bamHeader[[1]][1]$targets
+
+# determine chunk size
+    if (!is.integer(chunkSize))
+        chunkSize <- max(targets) + 1
+
+    seqNames <- names(targets)
+
+# Initialize readCounts
+    readCounts <- integer(length=nrow(bins))
+
+    for (i in 1:length(targets)) {
+        seqName <- seqNames[i]
+        seqNameI <- sub('chr', '', seqName)
+        seqLength <- targets[i]
+        for (chunk in 1:ceiling(seqLength / chunkSize)) {
+            chunkStart <- (chunk - 1) * chunkSize + 1
+            chunkEnd <- chunk * chunkSize + 1
+            params <- ScanBamParam(flag=flag, 
+                what=c('rname', 'pos', 'mapq'),
+                which=GRanges(seqName, IRanges(chunkStart, chunkEnd)))
+            reads <- scanBam(bamfile, param=params)
+            reads <- reads[[1L]]
+
+# Filter by read quality scores?
+            hasMapq <- any(is.finite(reads[['mapq']]))
+            if (hasMapq) {
+                keep <- which(reads[['mapq']] >= minMapq)
+                reads <- lapply(reads, FUN=function(x) x[keep])
+            }
+
+# Drop quality scores - not needed anymore
+            reads[['mapq']] <- NULL
+            hits <- list()
+            hits[[seqNameI]] <- reads[['pos']]
+
+            paste(seqName, chunkStart, chunkEnd, sep=":") -> chunkName
+            vmsg(paste('binning chunk -', chunkName, sep=" "), appendLF=TRUE)
+
+            keep <- which(
+                bins$chromosome == seqNameI &
+                bins$start >= chunkStart &
+                bins$end <= chunkEnd
+            )
+
+## No bins for this chromosome?
+            if (length(keep) == 0L)
+                next
+
+            chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
+            counts <- binCounts(hits[[seqNameI]], chromosomeBreaks)
+            readCounts[keep] <- readCounts[keep] + counts
+
+## Not needed anymore
+            chromosomeBreaks <- keep <- count <- NULL
+
+## Not needed anymore
+            rm(list=c("hits", "reads"))
+            gc(FALSE)
+
+        }
+    }
+    readCounts
+}
 
 .binReadCountsPerSample <- function(bins, bamfile, cache, force,
     isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
