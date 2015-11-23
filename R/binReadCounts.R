@@ -21,8 +21,8 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
-#     \item{chunkSize} {An optional integer specifying the chunk size by which
-#         to process the bam file.}
+#     \item{chunkSize} {An optional integer specifying the chunk size (nt) by 
+#         which to process the bam file.}
 #     \item{cache}{Whether to read and write intermediate cache files, which
 #         speeds up subsequent analyses of the same files. Requires packages
 #         R.cache and digest (both available on CRAN) to be installed. Defaults
@@ -197,7 +197,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     targets <- bamHeader[[1]][1]$targets
 
 # determine chunk size
-    if (!is.integer(chunkSize))
+    if (!is.numeric(chunkSize))
         chunkSize <- max(targets) + 1
 
     seqNames <- names(targets)
