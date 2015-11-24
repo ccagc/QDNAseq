@@ -16,6 +16,8 @@ importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
 importMethodsFrom(matrixStats, colMedians)
 importMethodsFrom(methods, coerce, initialize, show)
 importMethodsFrom(Rsamtools, scanBam, ScanBamParam, scanBamHeader)
+importMethodsFrom(BiocGenerics, intersect)
+importMethodsFrom(GenomicRanges, width, length, seqnames)
 
 importFrom(Biobase, assayDataElement, "assayDataElement<-",
     assayDataElementNames, assayDataElementReplace, assayDataNew)
@@ -29,7 +31,7 @@ importFrom(R.utils, downloadFile)
 importFrom(Rsamtools, scanBamFlag)
 importFrom(stats, lm, loess, predict)
 importFrom(utils, packageVersion, read.table, write.table)
-importFrom(GenomicRanges, GRanges)
+importFrom(GenomicRanges, GRanges, reduce)
 importFrom(IRanges, IRanges)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

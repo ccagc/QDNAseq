@@ -99,7 +99,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isSecondaryAlignment=NA,
     isNotPassingQualityControls=FALSE,
     isDuplicate=FALSE,
-    minMapq=37) {
+    minMapq=37, which=NULL) {
 
     if (is.null(bamfiles))
         bamfiles <- list.files(ifelse(is.null(path), '.', path),
@@ -123,6 +123,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (class(bins) == 'data.frame')
         bins <- AnnotatedDataFrame(bins)
 
+    if (is.null(which))
+    which <- reduce(GRanges(bins$chromosome, IRanges(bins$start, bins$end)))
+ 
     counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
         dimnames=list(featureNames(bins), bamnames))
     for (i in seq_along(bamfiles)) {
@@ -139,7 +142,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
                 isSecondaryAlignment=isSecondaryAlignment,
                 isNotPassingQualityControls=isNotPassingQualityControls,
                 isDuplicate=isDuplicate,
-                minMapq=minMapq)
+                minMapq=minMapq, which=which)
         } else {
         counts[, i] <- .binReadCountsPerSample(bins=bins,
                 bamfile=bamfiles[i], cache=cache, force=force,
@@ -169,7 +172,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 .binReadCountsPerChunk <- function(bins, bamfile, chunkSize, cache, force,
         isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
         isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
-        isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq) {
+        isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq,
+        which) {
 
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
@@ -201,20 +205,24 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         chunkSize <- max(targets) + 1
 
     seqNames <- names(targets)
+    seqNames <- seqNames[seqNames %in% seqnames(which)@values]
 
 # Initialize readCounts
     readCounts <- integer(length=nrow(bins))
 
-    for (i in 1:length(targets)) {
+    for (i in 1:length(seqNames)) {
         seqName <- seqNames[i]
-        seqNameI <- sub('chr', '', seqName)
         seqLength <- targets[i]
         for (chunk in 1:ceiling(seqLength / chunkSize)) {
             chunkStart <- (chunk - 1) * chunkSize + 1
             chunkEnd <- chunk * chunkSize + 1
+            suppressWarnings(grChunk <- intersect(GRanges(seqName, IRanges(chunkStart,
+                chunkEnd)), which))
+            if (length(grChunk) == 0)
+                next
             params <- ScanBamParam(flag=flag, 
                 what=c('rname', 'pos', 'mapq'),
-                which=GRanges(seqName, IRanges(chunkStart, chunkEnd)))
+                which=grChunk)
             reads <- scanBam(bamfile, param=params)
             reads <- reads[[1L]]
 
@@ -228,13 +236,13 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 # Drop quality scores - not needed anymore
             reads[['mapq']] <- NULL
             hits <- list()
-            hits[[seqNameI]] <- reads[['pos']]
+            hits[[seqName]] <- reads[['pos']]
 
             paste(seqName, chunkStart, chunkEnd, sep=":") -> chunkName
             vmsg(paste('binning chunk -', chunkName, sep=" "), appendLF=TRUE)
 
             keep <- which(
-                bins$chromosome == seqNameI &
+                bins$chromosome == seqName &
                 bins$start >= chunkStart &
                 bins$end <= chunkEnd
             )
@@ -244,7 +252,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
                 next
 
             chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
-            counts <- binCounts(hits[[seqNameI]], chromosomeBreaks)
+            counts <- binCounts(hits[[seqName]], chromosomeBreaks)
             readCounts[keep] <- readCounts[keep] + counts
 
 ## Not needed anymore
