@@ -88,6 +88,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if (length(ylab) == 1)
         ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
+    if (is.integer(all.chrom)) # when x is a cghRaw, cghSeg, or cghCall object
+        all.chrom <- as.character(all.chrom)
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
     chrom.num <- as.integer(factor(chrom, levels=uni.chrom, ordered=TRUE))
@@ -312,11 +314,12 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     function(x, y, main="Frequency Plot", losscol="red", gaincol="blue",
     misscol=NA, xlab=NULL, ... ) {
 
-    all.chrom <- chromosomes(x)
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
+        all.chrom <- as.character(chromosomes(x))
         condition <- rep(TRUE, times=nrow(x))
         chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
     } else {
+        all.chrom <- chromosomes(x)
         condition <- binsToUse(x)
         all.chrom.lengths <- aggregate(bpend(x),
             by=list(chromosome=all.chrom), FUN=max)
