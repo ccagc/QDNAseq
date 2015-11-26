@@ -33,11 +33,17 @@
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     function (x, y, main=NULL, includeReadCounts=TRUE,
     logTransform=TRUE, scale=TRUE, sdFUN="sdDiffTrim",
-    delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
-    pointcol="black", segcol="chocolate", misscol=NA,
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    pointcol=getOption("QDNAseq::pointcol", "black"),
+    segcol=getOption("QDNAseq::segcol", "chocolate"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    pointpch=getOption("QDNAseq::pointpch", 1L),
+    pointcex=getOption("QDNAseq::pointcex", 0.1),
     xlab=NULL, ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
-    doCalls=TRUE, ... ) {
+    showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -311,8 +317,13 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 # @keyword hplot
 #*/#########################################################################
 setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
-    function(x, y, main="Frequency Plot", losscol="red", gaincol="blue",
-    misscol=NA, xlab=NULL, ... ) {
+    function(x, y, main="Frequency Plot",
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    xlab=NULL, ... ) {
 
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
         all.chrom <- as.character(chromosomes(x))
