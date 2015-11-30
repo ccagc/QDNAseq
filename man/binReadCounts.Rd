@@ -13,9 +13,10 @@
 \title{Calculate binned read counts from a set of BAM files}
 
 \usage{
-binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofile=NULL,
-  cache=getOption("QDNAseq::cache", FALSE), force=!cache, isPaired=NA, isProperPair=NA,
-  isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA, isMateMinusStrand=NA,
+binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL,
+  phenofile=NULL, chunkSize=NULL, cache=getOption("QDNAseq::cache", FALSE),
+  force=!cache, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
+  hasUnmappedMate=NA, isMinusStrand=NA,isMateMinusStrand=NA, 
   isFirstMateRead=NA, isSecondMateRead=NA, isSecondaryAlignment=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37)
 }
@@ -36,6 +37,8 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
         file names with extension ext removed.}
     \item{phenofile}{An optional character(1) specifying a file name for
         phenotype data.}
+    \item{chunkSize}{An optional integer specifying the chunk size (nt) by
+        which to process the bam file.}
     \item{cache}{Whether to read and write intermediate cache files, which
         speeds up subsequent analyses of the same files. Requires packages
         R.cache and digest (both available on CRAN) to be installed. Defaults
@@ -97,8 +100,7 @@ readCounts <- binReadCounts(bins)
 }
 }
 
-\author{Ilari Scheinin}
-
+\author{Ilari Scheinin, Daoud Sie}
 
 
 \keyword{IO}
