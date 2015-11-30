@@ -33,11 +33,17 @@
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     function (x, y, main=NULL, includeReadCounts=TRUE,
     logTransform=TRUE, scale=TRUE, sdFUN="sdDiffTrim",
-    delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
-    pointcol="black", segcol="chocolate", misscol=NA,
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    pointcol=getOption("QDNAseq::pointcol", "black"),
+    segcol=getOption("QDNAseq::segcol", "chocolate"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    pointpch=getOption("QDNAseq::pointpch", 1L),
+    pointcex=getOption("QDNAseq::pointcex", 0.1),
     xlab=NULL, ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
-    doCalls=TRUE, ... ) {
+    showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -186,8 +192,16 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             }
             rect(pos[segment[,2]], 0, pos2[segment[,3]], losses[segment[,2]],
                 col=losscol, border=losscol)
+            if (!is.null(probdloss(x)))
+                rect(pos[segment[,2]], 0, pos2[segment[,3]],
+                    probdloss(x)[condition, i][segment[,2]],
+                    col=delcol, border=delcol)
             rect(pos[segment[,2]], 1, pos2[segment[,3]], 1-gains[segment[,2]],
                 col=gaincol, border=gaincol)
+            if (!is.null(probamp(x)))
+                rect(pos[segment[,2]], 1, pos2[segment[,3]],
+                    1-probamp(x)[condition, i][segment[,2]],
+                    col=ampcol, border=ampcol)
             axis(3, at=pos[which(probamp(x)[condition,i] >= 0.5)],
                 labels=FALSE, col=ampcol, col.axis="black", srt=270, las=1,
                 cex.axis=1, cex.lab=1)
@@ -311,8 +325,13 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 # @keyword hplot
 #*/#########################################################################
 setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
-    function(x, y, main="Frequency Plot", losscol="red", gaincol="blue",
-    misscol=NA, xlab=NULL, ... ) {
+    function(x, y, main="Frequency Plot",
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    xlab=NULL, ... ) {
 
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
         all.chrom <- as.character(chromosomes(x))
@@ -358,8 +377,6 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
             xlab <- "chromosome"
     }
     calls <- calls(x)[condition, , drop=FALSE]
-    loss.freq <- rowMeans(calls < 0)
-    gain.freq <- rowMeans(calls > 0)
     plot(NA, main=main, xlab=NA, ylab="frequency",
         xlim=c(0, max(pos2)), ylim=c(-1,1), xaxs="i", xaxt="n",
         yaxs="i", yaxt="n",...)
@@ -367,8 +384,10 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
         rect(0, -1, max(pos2), 1, col=misscol, border=NA)
         rect(pos, -1, pos2, 1, col="white", border=NA)
     }
-    rect(pos, 0, pos2, gain.freq, col=gaincol, border=gaincol)
-    rect(pos, 0, pos2, -loss.freq, col=losscol, border=losscol)
+    rect(pos, 0, pos2, rowMeans(calls > 0), col=gaincol, border=gaincol)
+    rect(pos, 0, pos2, rowMeans(calls > 1), col=ampcol, border=ampcol)
+    rect(pos, 0, pos2, -rowMeans(calls < 0), col=losscol, border=losscol)
+    rect(pos, 0, pos2, -rowMeans(calls < -1), col=delcol, border=delcol)
     box()
     abline(h=0)
     abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
