@@ -46,8 +46,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
 
     ## Import private functions
-    .getChromosomeLengths <- CGHbase:::.getChromosomeLengths
-    .makeSegments <- CGHbase:::.makeSegments
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
+    .makeSegments <- get(".makeSegments", envir=ns, mode="function")
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -338,7 +339,8 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     xlab=NULL, ... ) {
 
     ## Import private functions
-    .getChromosomeLengths <- CGHbase:::.getChromosomeLengths
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
 
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
         all.chrom <- as.character(chromosomes(x))

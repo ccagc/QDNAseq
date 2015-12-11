@@ -102,7 +102,9 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),
     definition=function(object) {
-    .showAnnotatedDataFrame <- Biobase:::.showAnnotatedDataFrame
+    ## Import private functions
+    ns <- asNamespace("Biobase")
+    .showAnnotatedDataFrame <- get(".showAnnotatedDataFrame", envir=ns, mode="function")
 
     if (!is.null(attr(object, "QDNAseqVersion"))) {
         cat("QDNAseq bin annotations\n")
