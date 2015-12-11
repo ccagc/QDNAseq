@@ -5,11 +5,11 @@ Title: Quantitative DNA sequencing for chromosomal aberrations
 Author: Ilari Scheinin [aut], Daoud Sie [aut, cre], Henrik Bengtsson [aut]
 Maintainer: Daoud Sie <d.sie@vumc.nl>
 Depends: R (>= 2.15.0)
-Imports: graphics, methods, stats, utils, matrixStats (>= 0.13.1),
-        R.utils (>= 1.28.4), Biobase (>= 2.18.0), CGHbase (>= 1.18.0),
+Imports: graphics, methods, stats, utils, matrixStats (>= 0.15.0),
+        R.utils (>= 2.2.0), Biobase (>= 2.18.0), CGHbase (>= 1.18.0),
         CGHcall (>= 2.18.0), DNAcopy (>= 1.32.0), Rsamtools (>= 1.20),
         GenomicRanges (>= 1.20), IRanges (>= 2.2)
-Suggests: R.cache (>= 0.9.0), digest, snowfall, BSgenome, GenomeInfoDb
+Suggests: R.cache (>= 0.12.0), digest, snowfall, BSgenome, GenomeInfoDb
 Description: Quantitative DNA sequencing for chromosomal aberrations.
         The genome is divided into non-overlapping fixed-sized bins, number of
         sequence reads in each counted, adjusted with a simultaneous
