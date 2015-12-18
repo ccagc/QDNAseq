@@ -1,4 +1,11 @@
-Changes in version 1.6.0 (2015-xx-yy)
+Changes in version 1.6.1 (2015-12-18)
+-------------------------------------
+
+BUG FIXES
+
+    o binCounts() is now called with named arguments.
+
+Changes in version 1.6.0 (2015-10-14)
 -------------------------------------
 
 RELEASE
