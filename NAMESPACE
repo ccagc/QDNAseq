@@ -15,7 +15,7 @@ importMethodsFrom(CGHbase, bpend, bpstart, calls, "calls<-", chromosomes,
     probnorm, "probnorm<-", segmented, "segmented<-", "regions", "regions<-")
 importMethodsFrom(matrixStats, colMedians)
 importMethodsFrom(methods, coerce, initialize, show)
-importMethodsFrom(Rsamtools, scanBam, ScanBamParam)
+importMethodsFrom(Rsamtools, scanBam, ScanBamParam, scanBamHeader)
 
 importFrom(Biobase, assayDataElement, "assayDataElement<-",
     assayDataElementNames, assayDataElementReplace, assayDataNew)
@@ -29,6 +29,8 @@ importFrom(R.utils, downloadFile)
 importFrom(Rsamtools, scanBamFlag)
 importFrom(stats, lm, loess, predict)
 importFrom(utils, packageVersion, read.table, write.table)
+importFrom(GenomicRanges, GRanges)
+importFrom(IRanges, IRanges)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS
