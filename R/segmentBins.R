@@ -94,9 +94,9 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     if (is.character(transformFun)) {
         transformFun <- match.arg(transformFun, c("log2", "sqrt", "none"))
         if (transformFun == "log2") {
-            transformFun <- QDNAseq:::log2adhoc
+            transformFun <- log2adhoc
         } else if (transformFun == "sqrt") {
-            transformFun <- QDNAseq:::sqrtadhoc
+            transformFun <- sqrtadhoc
         }
     }
     if (!is.character(transformFun) || transformFun != "none") {

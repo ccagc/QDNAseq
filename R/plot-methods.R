@@ -45,6 +45,11 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     xlab=NULL, ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
     showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
 
+    ## Import private functions
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
+    .makeSegments <- get(".makeSegments", envir=ns, mode="function")
+
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
     } else {
@@ -106,7 +111,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             by=list(chromosome=chrom), FUN=max)$x
     } else {
         if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
-            chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+            chrom.lengths <- .getChromosomeLengths("GRCh37")
         } else {
             all.chrom.lengths <- aggregate(bpend(x),
                 by=list(chromosome=all.chrom), FUN=max)
@@ -164,7 +169,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 segmented <- log2adhoc(segmented, inv=TRUE)
             if (logTransform)
                 segmented <- log2adhoc(segmented)
-            segment <- CGHbase:::.makeSegments(segmented, chrom)
+            segment <- .makeSegments(segmented, chrom)
         }
         if (doCalls) {
             losses <- probloss(x)[condition, i]
@@ -333,10 +338,14 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     misscol=getOption("QDNAseq::misscol", NA),
     xlab=NULL, ... ) {
 
+    ## Import private functions
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
+
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
         all.chrom <- as.character(chromosomes(x))
         condition <- rep(TRUE, times=nrow(x))
-        chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+        chrom.lengths <- .getChromosomeLengths("GRCh37")
     } else {
         all.chrom <- chromosomes(x)
         condition <- binsToUse(x)

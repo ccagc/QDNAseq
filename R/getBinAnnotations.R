@@ -19,7 +19,7 @@
 #        or "PE100".}
 #     \item{path}{A @character string specifying the path for the bin
 #         annotation files. Defaults to downloading from the Internet, but can
-#         also be a local path. Can also be defined by setting the 
+#         also be a local path. Can also be defined by setting the
 #         \code{QDNAseq::binAnnotationPath} option.}
 # }
 #
@@ -50,7 +50,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
     "http://qdnaseq.s3.amazonaws.com")) {
 
     bins <- NULL
-    
+
     # Check for annotation package
     PKname <- sprintf('QDNAseq.%s', genome)
     PKfound <- PKname %in% .packages(all.available=TRUE)
@@ -73,7 +73,7 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
         return(bins)
     }
     }
-    
+
     filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
     if (substring(path, 1, 7) == "http://") {
         vmsg('Downloading bin annotations for genome ', genome,
@@ -102,6 +102,10 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
 
 setMethod("show", signature=c(object="AnnotatedDataFrame"),
     definition=function(object) {
+    ## Import private functions
+    ns <- asNamespace("Biobase")
+    .showAnnotatedDataFrame <- get(".showAnnotatedDataFrame", envir=ns, mode="function")
+
     if (!is.null(attr(object, "QDNAseqVersion"))) {
         cat("QDNAseq bin annotations\n")
         cat("WARNING: These bin annotations are outdated, please re-download",
@@ -123,7 +127,7 @@ setMethod("show", signature=c(object="AnnotatedDataFrame"),
                 round((object$end[1] - object$start[1] + 1) / 1000),
                 "kbp.SR50.rds\n", sep="")
     }
-    Biobase:::.showAnnotatedDataFrame((object))
+    .showAnnotatedDataFrame((object))
 })
 
 # EOF
