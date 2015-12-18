@@ -244,7 +244,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
                 next
 
             chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
-            counts <- binCounts(hits[[seqNameI]], chromosomeBreaks)
+            counts <- binCounts(hits[[seqNameI]], bx=chromosomeBreaks)
             readCounts[keep] <- readCounts[keep] + counts
 
 ## Not needed anymore
@@ -379,7 +379,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             next
 
         chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
-        counts <- binCounts(hits[[chromosome]], chromosomeBreaks)
+        counts <- binCounts(hits[[chromosome]], bx=chromosomeBreaks)
         readCounts[keep] <- readCounts[keep] + counts
 
         ## Not needed anymore
