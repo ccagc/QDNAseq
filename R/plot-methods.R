@@ -33,11 +33,22 @@
 setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     function (x, y, main=NULL, includeReadCounts=TRUE,
     logTransform=TRUE, scale=TRUE, sdFUN="sdDiffTrim",
-    delcol="darkred", losscol="red", gaincol="blue", ampcol="darkblue",
-    pointcol="black", segcol="chocolate", misscol=NA,
-    xlab="chromosomes", ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE, pointpch=1, pointcex=.1, doSegments=TRUE,
-    doCalls=TRUE, ... ) {
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    pointcol=getOption("QDNAseq::pointcol", "black"),
+    segcol=getOption("QDNAseq::segcol", "chocolate"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    pointpch=getOption("QDNAseq::pointpch", 1L),
+    pointcex=getOption("QDNAseq::pointcex", 0.1),
+    xlab=NULL, ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
+    showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
+
+    ## Import private functions
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
+    .makeSegments <- get(".makeSegments", envir=ns, mode="function")
 
     if (inherits(x, c("QDNAseqCopyNumbers", "QDNAseqReadCounts"))) {
         condition <- binsToUse(x)
@@ -88,6 +99,8 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     if (length(ylab) == 1)
         ylab <- rep(ylab, times=ncol(x))
     all.chrom <- chromosomes(x)
+    if (is.integer(all.chrom)) # when x is a cghRaw, cghSeg, or cghCall object
+        all.chrom <- as.character(all.chrom)
     chrom <- all.chrom[condition]
     uni.chrom <- unique(chrom)
     chrom.num <- as.integer(factor(chrom, levels=uni.chrom, ordered=TRUE))
@@ -98,7 +111,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             by=list(chromosome=chrom), FUN=max)$x
     } else {
         if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
-            chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+            chrom.lengths <- .getChromosomeLengths("GRCh37")
         } else {
             all.chrom.lengths <- aggregate(bpend(x),
                 by=list(chromosome=all.chrom), FUN=max)
@@ -121,6 +134,17 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             chrom.ends <- c(chrom.ends, cumul)
         }
         names(chrom.ends) <- names(chrom.lengths)
+    }
+    if (length(uni.chrom) == 1) {
+        xax <- pretty(pos)
+        xaxlab <- xax / 1e6L
+        if (is.null(xlab))
+            xlab <- paste0("chromosome ", uni.chrom, ", Mbp")
+    } else {
+        xax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
+        xaxlab <- uni.chrom
+        if (is.null(xlab))
+            xlab <- "chromosome"
     }
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall")))
         copynumber <- log2adhoc(copynumber, inv=TRUE)
@@ -145,7 +169,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 segmented <- log2adhoc(segmented, inv=TRUE)
             if (logTransform)
                 segmented <- log2adhoc(segmented)
-            segment <- CGHbase:::.makeSegments(segmented, chrom)
+            segment <- .makeSegments(segmented, chrom)
         }
         if (doCalls) {
             losses <- probloss(x)[condition, i]
@@ -173,8 +197,16 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
             }
             rect(pos[segment[,2]], 0, pos2[segment[,3]], losses[segment[,2]],
                 col=losscol, border=losscol)
+            if (!is.null(probdloss(x)))
+                rect(pos[segment[,2]], 0, pos2[segment[,3]],
+                    probdloss(x)[condition, i][segment[,2]],
+                    col=delcol, border=delcol)
             rect(pos[segment[,2]], 1, pos2[segment[,3]], 1-gains[segment[,2]],
                 col=gaincol, border=gaincol)
+            if (!is.null(probamp(x)))
+                rect(pos[segment[,2]], 1, pos2[segment[,3]],
+                    1-probamp(x)[condition, i][segment[,2]],
+                    col=ampcol, border=ampcol)
             axis(3, at=pos[which(probamp(x)[condition,i] >= 0.5)],
                 labels=FALSE, col=ampcol, col.axis="black", srt=270, las=1,
                 cex.axis=1, cex.lab=1)
@@ -195,10 +227,9 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         abline(h=baseLine)
         abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
         if (!is.na(xaxt) && xaxt != "n") {
-            ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-            axis(side=1, at=ax, labels=NA, cex=.2, lwd=.5, las=1,
+            axis(side=1, at=xax, labels=NA, cex=.2, lwd=.5, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015)
-            axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=0, las=1,
+            axis(side=1, at=xax, labels=xaxlab, cex=.2, lwd=0, las=1,
                 cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
         }
         if (doSegments) {
@@ -299,14 +330,24 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
 # @keyword hplot
 #*/#########################################################################
 setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
-    function(x, y, main="Frequency Plot", losscol="red", gaincol="blue",
-    misscol=NA, ... ) {
+    function(x, y, main="Frequency Plot",
+    delcol=getOption("QDNAseq::delcol", "darkred"),
+    losscol=getOption("QDNAseq::losscol", "red"),
+    gaincol=getOption("QDNAseq::gaincol", "blue"),
+    ampcol=getOption("QDNAseq::ampcol", "darkblue"),
+    misscol=getOption("QDNAseq::misscol", NA),
+    xlab=NULL, ... ) {
 
-    all.chrom <- chromosomes(x)
+    ## Import private functions
+    ns <- asNamespace("CGHbase")
+    .getChromosomeLengths <- get(".getChromosomeLengths", envir=ns, mode="function")
+
     if (inherits(x, c("cghRaw", "cghSeg", "cghCall"))) {
+        all.chrom <- as.character(chromosomes(x))
         condition <- rep(TRUE, times=nrow(x))
-        chrom.lengths <- CGHbase:::.getChromosomeLengths("GRCh37")
+        chrom.lengths <- .getChromosomeLengths("GRCh37")
     } else {
+        all.chrom <- chromosomes(x)
         condition <- binsToUse(x)
         all.chrom.lengths <- aggregate(bpend(x),
             by=list(chromosome=all.chrom), FUN=max)
@@ -333,24 +374,37 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
         chrom.ends <- c(chrom.ends, cumul)
     }
     names(chrom.ends) <- names(chrom.lengths)
+    if (length(uni.chrom) == 1) {
+        xax <- pretty(pos)
+        xaxlab <- xax / 1e6L
+        if (is.null(xlab))
+            xlab <- paste0("chromosome ", uni.chrom, ", Mbp")
+    } else {
+        xax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
+        xaxlab <- uni.chrom
+        if (is.null(xlab))
+            xlab <- "chromosome"
+    }
     calls <- calls(x)[condition, , drop=FALSE]
-    loss.freq <- rowMeans(calls < 0)
-    gain.freq <- rowMeans(calls > 0)
-    plot(NA, main=main, xlab="chromosomes", ylab="frequency",
+    plot(NA, main=main, xlab=NA, ylab="frequency",
         xlim=c(0, max(pos2)), ylim=c(-1,1), xaxs="i", xaxt="n",
         yaxs="i", yaxt="n",...)
     if (!is.na(misscol)) {
         rect(0, -1, max(pos2), 1, col=misscol, border=NA)
         rect(pos, -1, pos2, 1, col="white", border=NA)
     }
-    rect(pos, 0, pos2, gain.freq, col=gaincol, border=gaincol)
-    rect(pos, 0, pos2, -loss.freq, col=losscol, border=losscol)
+    rect(pos, 0, pos2, rowMeans(calls > 0), col=gaincol, border=gaincol)
+    rect(pos, 0, pos2, rowMeans(calls > 1), col=ampcol, border=ampcol)
+    rect(pos, 0, pos2, -rowMeans(calls < 0), col=losscol, border=losscol)
+    rect(pos, 0, pos2, -rowMeans(calls < -1), col=delcol, border=delcol)
     box()
     abline(h=0)
     abline(v=chrom.ends[-length(chrom.ends)], lty="dashed")
-    ax <- (chrom.ends + c(0, chrom.ends[-length(chrom.ends)])) / 2
-    axis(side=1, at=ax, labels=uni.chrom, cex=.2, lwd=.5, las=1, cex.axis=1,
-        cex.lab=1)
+    mtext(text=xlab, side=1, line=2, cex=par("cex"))
+    axis(side=1, at=xax, labels=NA, cex=.2, lwd=.5, las=1,
+        cex.axis=1, cex.lab=1, tck=-0.015)
+    axis(side=1, at=xax, labels=xaxlab, cex=.2, lwd=0, las=1,
+        cex.axis=1, cex.lab=1, tck=-0.015, line=-0.4)
     axis(side=2, at=c(-1, -0.5, 0, 0.5, 1), labels=c("100 %", " 50 %", "0 %",
         "50 %", "100 %"), las=1)
     mtext("gains", side=2, line=3, at=0.5, cex=par("cex"))
