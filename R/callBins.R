@@ -13,10 +13,10 @@
 #
 # \arguments{
 #     \item{object}{An object of class QDNAseqCopyNumbers}
-#     \item{organism}{Either ‘human’ or ‘other’, see manual page for
-#         @see "CGHcall::CGHcall" for more details. This is only used for
-#         chromosome arm information when ‘prior’ is set to ‘all’ or ‘auto’
-#         (and samplesize > 20).}
+#     \item{organism}{Either \dQuote{human} or \dQuote{other}, see manual page
+#         for @see "CGHcall::CGHcall" for more details. This is only used for
+#         chromosome arm information when \dQuote{prior} is set to \dQuote{all}
+#         or \dQuote{auto} (and samplesize > 20).}
 #     \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
 # }
 #

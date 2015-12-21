@@ -1,4 +1,19 @@
-Changes in version 1.6.0 (2015-xx-yy)
+Changes in version 1.7.2 (2015-12-18)
+-------------------------------------
+
+BUG FIXES 
+
+    o binCounts() is now called with named arguments.
+    o Fixed R CMD check notes.
+
+Changes in version 1.7.1 (2015-11-23)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o binReadCounts() supports chunked processing of bam files. 
+
+Changes in version 1.6.0 (2015-10-14)
 -------------------------------------
 
 RELEASE
