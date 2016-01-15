@@ -21,7 +21,7 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
-#     \item{chunkSize} {An optional integer specifying the chunk size (nt) by 
+#     \item{chunkSize}{An optional integer specifying the chunk size (nt) by 
 #         which to process the bam file.}
 #     \item{cache}{Whether to read and write intermediate cache files, which
 #         speeds up subsequent analyses of the same files. Requires packages
@@ -84,7 +84,7 @@
 # }
 # }
 #
-# @author "IS"
+# @author "IS,DS"
 #
 # @keyword IO
 # @keyword file
