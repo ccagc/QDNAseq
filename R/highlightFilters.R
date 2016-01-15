@@ -53,13 +53,30 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
 
     condition <- rep(TRUE, times=nrow(object))
     type <- match.arg(type)
+    if (!is.na(residual)) {
+        residuals <- fData(object)$residual
+        cutoff <- residual * madDiff(residuals, na.rm=TRUE)
+        residualsMissing <- aggregate(residuals,
+            by=list(chromosome=fData(object)$chromosome),
+            function(x) all(is.na(x)))
+        chromosomesWithResidualsMissing <-
+            residualsMissing$chromosome[residualsMissing$x]
+        chromosomesToInclude <-
+            intersect(chromosomesWithResidualsMissing,
+                unique(fData(object)$chromosome[binsToUse(object)]))
+        if (length(chromosomesToInclude) > 0) {
+            message("Note: Residual filter missing for chromosomes: ",
+                paste(chromosomesToInclude, collapse=", "))
+            residuals[fData(object)$chromosome %in% chromosomesToInclude] <- 0
+        }
+    }
     if (type == "intersection") {
         if (!is.na(residual)) {
             if (is.numeric(residual)) {
-                condition <- condition & (is.na(fData(object)$residual) |
-                    abs(fData(object)$residual) > residual)
+                condition <- condition & (is.na(residuals) |
+                    abs(residuals) > cutoff)
             } else if (residual) {
-                condition <- condition & is.na(fData(object)$residual)
+                condition <- condition & is.na(residuals)
             }
         }
         if (!is.na(blacklist)) {
@@ -76,10 +93,10 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
     } else {
         if (!is.na(residual)) {
             if (is.numeric(residual)) {
-                condition <- condition & !is.na(fData(object)$residual) &
-                    abs(fData(object)$residual) <= residual
+                condition <- condition & !is.na(residuals) &
+                    abs(residuals) <= cutoff
             } else if (residual) {
-                condition <- condition & !is.na(fData(object)$residual)
+                condition <- condition & !is.na(residuals)
             }
         }
         if (!is.na(blacklist)) {
