@@ -15,7 +15,8 @@
 \title{Call aberrations from segmented copy number data}
 
 \usage{
-callBins(object, organism=c("human", "other"), ...)
+callBins(object, organism=c("human", "other"), method=c("CGHcall", "cutoff"),
+  cutoffLoss=-0.8, cutoffGain=0.5, ...)
 }
 
 \description{
@@ -27,7 +28,16 @@ callBins(object, organism=c("human", "other"), ...)
     \item{organism}{Either \dQuote{human} or \dQuote{other}, see manual page
         for \code{\link[CGHcall]{CGHcall}} for more details. This is only used for
         chromosome arm information when \dQuote{prior} is set to \dQuote{all}
-        or \dQuote{auto} (and samplesize > 20).}
+        or \dQuote{auto} (and samplesize > 20). Ignored when \code{method} is
+        not \dQuote{CGHcall}.}
+    \item{method}{Calling method to use. Options currently implemented are:
+        \dQuote{CGHcall} or \dQuote{cutoff}.}
+    \item{cutoffLoss}{When method=\dQuote{cutoff}, the (log2-transformed)
+        threshold to use for losses. Default is -0.8. (The expected log2-ratio
+        for a single copy loss present in all cells is -1.0.)}
+    \item{cutoffGain}{When method=\dQuote{cutoff}, the (log2-transformed)
+        threshold to use for gains. Default is 0.5. (The expected log2-ratio
+        for a single copy gain present in all cells is 0.6.)}
     \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 

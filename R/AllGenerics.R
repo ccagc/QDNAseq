@@ -1,7 +1,8 @@
 setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
     mappability=NA, bases=NA, chromosomes=c("X", "Y"))
     standardGeneric("applyFilters"))
-setGeneric("callBins", function(object, organism=c("human", "other"), ...)
+setGeneric("callBins", function(object, organism=c("human", "other"),
+    method=c("CGHcall", "cutoff"), cutoffLoss=-0.8, cutoffGain=0.5, ...)
     standardGeneric("callBins"))
 setGeneric("compareToReference", function(object, references, force=FALSE)
     standardGeneric("compareToReference"))
