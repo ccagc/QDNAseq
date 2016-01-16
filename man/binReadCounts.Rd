@@ -85,6 +85,9 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
         returned. 'Duplicated' reads may represent PCR or optical duplicates.}
     \item{minMapq}{If quality scores exists, the minimum quality score
         required in order to keep a read, otherwise all reads are kept.}
+    \item{pairedEnds}{A boolean value or vector specifying whether the BAM
+        files contain paired-end data or not. Only affects the calculation of
+        the expected variance.}
 }
 
 \value{

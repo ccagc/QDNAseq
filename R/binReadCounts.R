@@ -70,6 +70,9 @@
 #         returned. 'Duplicated' reads may represent PCR or optical duplicates.}
 #     \item{minMapq}{If quality scores exists, the minimum quality score
 #         required in order to keep a read, otherwise all reads are kept.}
+#     \item{pairedEnds}{A boolean value or vector specifying whether the BAM
+#         files contain paired-end data or not. Only affects the calculation of
+#         the expected variance.}
 # }
 #
 # \value{
@@ -99,7 +102,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isSecondaryAlignment=NA,
     isNotPassingQualityControls=FALSE,
     isDuplicate=FALSE,
-    minMapq=37) {
+    minMapq=37,
+    pairedEnds=NULL) {
 
     if (is.null(bamfiles))
         bamfiles <- list.files(ifelse(is.null(path), '.', path),
@@ -114,6 +118,13 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     }
     phenodata <- data.frame(name=bamnames, row.names=bamnames,
         stringsAsFactors=FALSE)
+    if (!is.null(pairedEnds) &&
+        (!length(pairedEnds) %in% c(1, length(bamnames)) ||
+        !is.logical(pairedEnds))) {
+
+        stop("Parameter pairedEnds has to be a logical vector with a ",
+            "length of either 1 or the number of BAM files.")
+    }
     if (!is.null(phenofile)) {
         pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
             row.names=1L)
@@ -157,10 +168,20 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
     }
 
+    if (!is.null(pairedEnds))
+        phenodata$paired.ends <- pairedEnds
     condition <- binsToUse(bins)
     phenodata$total.reads <- colSums(counts)
     phenodata$used.reads <- colSums(counts[condition, , drop=FALSE])
-    phenodata$expected.variance <- sum(condition) / phenodata$used.reads
+
+    if ("paired.ends" %in% colnames(phenodata)) {
+        divider <- ifelse(phenodata$paired.ends, 2, 1)
+        phenodata$expected.variance <-
+            sum(condition) / (phenodata$used.reads / divider)
+    } else {
+        phenodata$expected.variance <- sum(condition) / phenodata$used.reads
+    }
+
     new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
 }
 

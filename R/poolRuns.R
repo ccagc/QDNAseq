@@ -96,9 +96,19 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
             drop=FALSE], 2, concatenateIfNotEqual)
         oldphenodata[1, "total.reads"] <- totalReads
         oldphenodata[1, "used.reads"] <- usedReads
-        oldphenodata[1, "expected.variance"] <-
-            sum(binsToUse(object)) / usedReads
-
+        if ("paired.ends" %in% colnames(oldphenodata)) {
+            pairedEnds <- unique(oldphenodata$paired.ends)
+            if (length(pairedEnds) != 1) {
+                pairedEnds <- NA
+            }
+            oldphenodata[1, "paired.ends"] <- pairedEnds
+            divider <- ifelse(pairedEnds, 2, 1)
+            oldphenodata[1, "expected.variance"] <-
+                sum(binsToUse(object)) / (usedReads / divider)
+        } else {
+            oldphenodata[1, "expected.variance"] <-
+                sum(binsToUse(object)) / usedReads
+        }
         newphenodata <- rbind(newphenodata, oldphenodata[1,])
     }
     rownames(newphenodata) <- newphenodata[, 1]

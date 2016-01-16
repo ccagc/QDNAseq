@@ -96,7 +96,13 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     binsToUse(object) <- condition
     object$used.reads <- colSums(assayDataElement(object, "counts")[condition, ,
         drop=FALSE])
-    object$expected.variance <- sum(condition) / object$used.reads
+    if ("paired.ends" %in% colnames(pData(object))) {
+        divider <- ifelse(object$paired.ends, 2, 1)
+        object$expected.variance <-
+            sum(condition) / (object$used.reads / divider)
+    } else {
+        object$expected.variance <- sum(condition) / object$used.reads
+    }
     vmsg(paste(format(msg, big.mark=','), names(msg),
         sep='\t', collapse='\n'))
     object
