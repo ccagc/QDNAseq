@@ -29,7 +29,7 @@ setGeneric("poolRuns", function(object, samples, force=FALSE)
     standardGeneric("poolRuns"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
     alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-    force=FALSE, transformFun="log2", ...)
+    force=FALSE, transformFun="log2", mc.cores=getOption("mc.cores", 2L), ...)
     standardGeneric("segmentBins"))
 setGeneric("smoothOutlierBins", function(object,
     logTransform=TRUE, force=FALSE, ...)

@@ -32,6 +32,11 @@
 #         stabilizes the variance, "none" for no transformation, or any
 #         R function that performs the desired transformation and also its
 #         inverse when called with parameter \code{inv=TRUE}.}
+#     \item{mc.cores}{If package \pkg{parallel} is installed, the number of
+#         cores to use, i.e. at most how many child processes will be run
+#         simultaneously. The option is initialized from environment variable
+#         ‘MC_CORES’ if set. Must be at least one, and parallelization
+#         requires at least two cores.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -64,7 +69,7 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun="log2", ... ) {
+    transformFun="log2", mc.cores=getOption("mc.cores", 2L), ... ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -89,7 +94,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             smoothBy, " bins:")
     }
 
-    copynumber <- copynumber(object)
+    copynumber <- assayDataElement(object, "copynumber")
     copynumber[!condition, ] <- NA_real_
     if (is.character(transformFun)) {
         transformFun <- match.arg(transformFun, c("log2", "sqrt", "none"))
@@ -103,6 +108,34 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         transformFun <- match.fun(transformFun)
         copynumber <- transformFun(copynumber)
     }
+
+    if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+        if ("parallel" %in% .packages(all.available=TRUE)) {
+            cna <- lapply(sampleNames(object), function(x)
+                CNA(genomdat=copynumber[condition, x, drop=FALSE],
+                    chrom=factor(fData(object)$chromosome[condition],
+                        levels=unique(fData(object)$chromosome), ordered=TRUE), 
+                    maploc=fData(object)$start[condition], data.type="logratio",
+                    sampleid=x, presorted=TRUE))
+            segments <- parallel::mclapply(cna, segment, mc.cores=mc.cores,
+                verbose=1,
+                alpha=alpha, undo.splits=undo.splits, undo.SD=undo.SD, ...)
+            segmented <- do.call(cbind, lapply(segments, function(x)
+                rep(x$output$seg.mean, x$output$num.mark)))
+        } else {
+            cna <- CNA(genomdat=copynumber[condition, , drop=FALSE],
+                chrom=factor(fData(object)$chromosome[condition],
+                    levels=unique(fData(object)$chromosome), ordered=TRUE), 
+                maploc=fData(object)$start[condition], data.type="logratio",
+                sampleid=sampleNames(object), presorted=TRUE)
+            segments <- segment(cna, verbose=1,
+                alpha=alpha, undo.splits=undo.splits, undo.SD=undo.SD, ...)
+            segmented <- matrix(rep(segments$output$seg.mean,
+                times=segments$output$num.mark), ncol=ncol(copynumber),
+                byrow=FALSE)
+        }
+        dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
+    } else {
     segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
         dimnames=dimnames(copynumber))
 
@@ -147,6 +180,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         vmsg()
     }
     segmented[is.na(copynumber)] <- NA_real_
+    }
     if (!is.character(transformFun) || transformFun != "none")
         segmented <- transformFun(segmented, inv=TRUE)
     segmented(object) <- segmented
