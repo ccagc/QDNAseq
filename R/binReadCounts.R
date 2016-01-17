@@ -117,7 +117,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (!is.null(phenofile)) {
         pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
             row.names=1L)
-        phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
+        phenodata <- cbind(phenodata, pdata[rownames(phenodata), , drop=FALSE])
     }
 
     if (class(bins) == 'data.frame')
