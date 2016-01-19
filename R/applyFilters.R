@@ -29,8 +29,8 @@
 #         bases (not Ns) in the reference genome sequence. NA (default) or
 #         @FALSE will not filted based on uncharacterized bases.}
 #     \item{chromosomes}{A @character vector specifying which chromosomes
-#         to filter out. Defaults to the sex chromosomes,
-#         i.e. \code{c("X", "Y")}.}
+#         to filter out. Defaults to the sex chromosomes and mitochondria,
+#         i.e. \code{c("X", "Y", "MT")}.}
 # }
 #
 # \value{
@@ -49,7 +49,7 @@
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
-    bases=NA, chromosomes=c("X", "Y")) {
+    bases=NA, chromosomes=c("X", "Y", "MT")) {
 
     condition <- rep(TRUE, times=nrow(object))
     msg <- c('total bins'=sum(condition))
@@ -60,6 +60,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
 
     if (!is.na(residual)) {
         residuals <- fData(object)$residual
+        cutoff <- residual * madDiff(residuals, na.rm=TRUE)
         residualsMissing <- aggregate(residuals,
             by=list(chromosome=fData(object)$chromosome),
             function(x) all(is.na(x)))
@@ -74,7 +75,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
         }
         if (is.numeric(residual)) {
             condition <- condition & !is.na(residuals) &
-                abs(residuals) <= residual
+                abs(residuals) <= cutoff
         } else if (residual) {
             condition <- condition & !is.na(residuals)
         }

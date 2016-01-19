@@ -13,11 +13,10 @@
 \title{Calculate binned read counts from a set of BAM files}
 
 \usage{
-binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL,
-  phenofile=NULL, chunkSize=NULL, cache=getOption("QDNAseq::cache", FALSE),
-  force=!cache, isPaired=NA, isProperPair=NA, isUnmappedQuery=FALSE,
-  hasUnmappedMate=NA, isMinusStrand=NA,isMateMinusStrand=NA, 
-  isFirstMateRead=NA, isSecondMateRead=NA, isSecondaryAlignment=NA,
+binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofile=NULL,
+  chunkSize=NULL, cache=getOption("QDNAseq::cache", FALSE), force=!cache, isPaired=NA,
+  isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA,
+  isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isSecondaryAlignment=NA,
   isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37)
 }
 
@@ -101,6 +100,7 @@ readCounts <- binReadCounts(bins)
 }
 
 \author{Ilari Scheinin, Daoud Sie}
+
 
 
 \keyword{IO}
