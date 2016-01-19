@@ -16,7 +16,7 @@
 
 \usage{
 callBins(object, organism=c("human", "other"), method=c("CGHcall", "cutoff"),
-  cutoffLoss=-0.8, cutoffGain=0.5, ...)
+  cutoffs=log2(c(deletion = 0.5, loss = 1.5, gain = 2.5, amplification = 10)/2), ...)
 }
 
 \description{
@@ -32,21 +32,32 @@ callBins(object, organism=c("human", "other"), method=c("CGHcall", "cutoff"),
         not \dQuote{CGHcall}.}
     \item{method}{Calling method to use. Options currently implemented are:
         \dQuote{CGHcall} or \dQuote{cutoff}.}
-    \item{cutoffLoss}{When method=\dQuote{cutoff}, the (log2-transformed)
-        threshold to use for losses. Default is -0.8. (The expected log2-ratio
-        for a single copy loss present in all cells is -1.0.)}
-    \item{cutoffGain}{When method=\dQuote{cutoff}, the (log2-transformed)
-        threshold to use for gains. Default is 0.5. (The expected log2-ratio
-        for a single copy gain present in all cells is 0.6.)}
+    \item{cutoffs}{When method=\dQuote{cutoff}, the (log2-transformed)
+        thresholds to use for calling. Must be a numerical vector of length 4,
+        and sorted in numerical order. The first element corresponds to the
+        cutoff used for homozygous deletions, and can be NA to not distinguish
+        between hemizygous losses and homozygous deletions. The second and
+        third element represent the cutoffs used for losses and gains,
+        respectively, and cannot be NAs. The fourth element is the cutoff used
+        for amplifications, and can be NA to not distinguish between gains and
+        amplifications.}
     \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 
 \details{
-    Chromosomal aberrations are called with \pkg{CGHcall}. It has been
-    developed for the analysis of series of cancer samples, and uses a model
-    that contains both gains and losses. If used on a single sample, or
+    By default, chromosomal aberrations are called with \pkg{CGHcall}. It has
+    been developed for the analysis of series of cancer samples, and uses a
+    model that contains both gains and losses. If used on a single sample, or
     especially only on a subset of chromosomes, or especially on a single
-    non-cancer sample, it may fail.
+    non-cancer sample, it may fail, but method \dQuote{cutoff} can be used
+    instead.
+
+    When using method \dQuote{cutoff}, the default values assume a uniform
+    cell population and correspond to thresholds of (assuming a diploid
+    genome) 0.5, 1.5, 2.5, and 10 copies to distinguish between homozygous
+    deletions, (hemizygous) losses, normal copy number, gains, and
+    amplifications, respectively. When using with cancer samples, these values
+    might require adjustments to account for tumor cell percentage.
 }
 
 \value{
@@ -71,7 +82,7 @@ copyNumbersCalled <- callBins(copyNumbersSegmented)
 
 \seealso{
     Internally, \code{\link[CGHcall]{CGHcall}} and \code{\link[CGHcall]{ExpandCGHcall}} of
-    the \pkg{CGHcall} package are used.
+    the \pkg{CGHcall} package are used when method=\dQuote{CGHcall}.
 }
 
 

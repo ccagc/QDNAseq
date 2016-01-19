@@ -20,21 +20,32 @@
 #         not \dQuote{CGHcall}.}
 #     \item{method}{Calling method to use. Options currently implemented are:
 #         \dQuote{CGHcall} or \dQuote{cutoff}.}
-#     \item{cutoffLoss}{When method=\dQuote{cutoff}, the (log2-transformed)
-#         threshold to use for losses. Default is -0.8. (The expected log2-ratio
-#         for a single copy loss present in all cells is -1.0.)}
-#     \item{cutoffGain}{When method=\dQuote{cutoff}, the (log2-transformed)
-#         threshold to use for gains. Default is 0.5. (The expected log2-ratio
-#         for a single copy gain present in all cells is 0.6.)}
+#     \item{cutoffs}{When method=\dQuote{cutoff}, the (log2-transformed)
+#         thresholds to use for calling. Must be a numerical vector of length 4,
+#         and sorted in numerical order. The first element corresponds to the
+#         cutoff used for homozygous deletions, and can be NA to not distinguish
+#         between hemizygous losses and homozygous deletions. The second and
+#         third element represent the cutoffs used for losses and gains,
+#         respectively, and cannot be NAs. The fourth element is the cutoff used
+#         for amplifications, and can be NA to not distinguish between gains and
+#         amplifications.}
 #     \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
 # }
 #
 # \details{
-#     Chromosomal aberrations are called with \pkg{CGHcall}. It has been
-#     developed for the analysis of series of cancer samples, and uses a model
-#     that contains both gains and losses. If used on a single sample, or
+#     By default, chromosomal aberrations are called with \pkg{CGHcall}. It has
+#     been developed for the analysis of series of cancer samples, and uses a
+#     model that contains both gains and losses. If used on a single sample, or
 #     especially only on a subset of chromosomes, or especially on a single
-#     non-cancer sample, it may fail. 
+#     non-cancer sample, it may fail, but method \dQuote{cutoff} can be used
+#     instead.
+#
+#     When using method \dQuote{cutoff}, the default values assume a uniform
+#     cell population and correspond to thresholds of (assuming a diploid
+#     genome) 0.5, 1.5, 2.5, and 10 copies to distinguish between homozygous
+#     deletions, (hemizygous) losses, normal copy number, gains, and
+#     amplifications, respectively. When using with cancer samples, these values
+#     might require adjustments to account for tumor cell percentage.
 # }
 #
 # \value{
@@ -59,7 +70,7 @@
 #
 # \seealso{
 #     Internally, @see "CGHcall::CGHcall" and @see "CGHcall::ExpandCGHcall" of
-#     the \pkg{CGHcall} package are used.
+#     the \pkg{CGHcall} package are used when method=\dQuote{CGHcall}.
 # }
 #
 # @keyword manip
@@ -67,7 +78,7 @@
 setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     definition=function(object, organism=c("human", "other"),
     method=c("CGHcall", "cutoff"),
-    cutoffLoss=-0.8, cutoffGain=0.5,
+    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
     ...) {
 
     method <- match.arg(method)
@@ -123,17 +134,38 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
                 probamp(object) <- NULL
         }
     } else if (method == "cutoff") {
+        if (length(cutoffs) != 4 || !is.numeric(cutoffs))
+            stop("Parameter cutoff must be a numeric vector of length 4.")
+        if (any(is.na(cutoffs[2:3])))
+            stop("Only first and fourth element of parameter cutoff are ",
+                "allowed to be NA.")
+        cutoffOrder <- sort.list(cutoffs, na.last=NA)
+        if (!identical(cutoffOrder, seq_along(cutoffOrder)))
+            stop("Values provided for parameter cutoff must be in numerical ",
+                "order.")
         segmentedMatrix <- log2adhoc(assayDataElement(object, "segmented"))
-        callsMatrix <- (segmentedMatrix > cutoffGain) * 1L
-        callsMatrix[segmentedMatrix < cutoffLoss] <- -1L
+        ## multiplication with 1L turns a logical matrix into an integer one
+        ## multiplication with 1 turns a logical matrix into a numeric one
+        callsMatrix <- (segmentedMatrix > cutoffs[3]) * 1L
+        callsMatrix[segmentedMatrix < cutoffs[2]] <- -1L
+        if (!is.na(cutoffs[1])) {
+            callsMatrix[segmentedMatrix < cutoffs[1]] <- -2L
+            probdloss(object) <- (callsMatrix == -2) * 1
+        } else {
+            if ("probdloss" %in% assayDataElementNames(object))
+                probdloss(object) <- NULL
+        }
+        if (!is.na(cutoffs[4])) {
+            callsMatrix[segmentedMatrix > cutoffs[4]] <- 2L
+            probamp(object) <- (callsMatrix == 2) * 1
+        } else {
+            if ("probamp" %in% assayDataElementNames(object))
+                probamp(object) <- NULL
+        }
         calls(object) <- callsMatrix
-        if ("probdloss" %in% assayDataElementNames(object))
-            probdloss(object) <- NULL
         probloss(object) <- (callsMatrix == -1) * 1
         probnorm(object) <- (callsMatrix == 0) * 1
         probgain(object) <- (callsMatrix == 1) * 1
-        if ("probamp" %in% assayDataElementNames(object))
-            probamp(object) <- NULL
     }
     object
 })

@@ -2,7 +2,9 @@ setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
     mappability=NA, bases=NA, chromosomes=c("X", "Y"))
     standardGeneric("applyFilters"))
 setGeneric("callBins", function(object, organism=c("human", "other"),
-    method=c("CGHcall", "cutoff"), cutoffLoss=-0.8, cutoffGain=0.5, ...)
+    method=c("CGHcall", "cutoff"),
+    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
+    ...)
     standardGeneric("callBins"))
 setGeneric("compareToReference", function(object, references, force=FALSE)
     standardGeneric("compareToReference"))
