@@ -9,7 +9,8 @@ setGeneric("correctBins", function(object, fit=NULL,
     method="ratio", adjustIncompletes=TRUE, ...)
     standardGeneric("correctBins"))
 setGeneric("estimateCorrection", function(object, span=0.65, family="symmetric",
-    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0, ...)
+    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0,
+    mc.cores=getOption("mc.cores", 2L), ...)
     standardGeneric("estimateCorrection"))
 setGeneric("highlightFilters", function(object, col="red", residual=NA,
     blacklist=NA, mappability=NA, bases=NA, type="union", ...)

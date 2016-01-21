@@ -31,6 +31,11 @@
 #         (as estimated with @see "matrixStats::madDiff") the cutoff for removal
 #         of bins with median residuals larger than the cutoff. Not used if
 #         \code{maxIter=1} (default).}
+#     \item{mc.cores}{If package \pkg{parallel} is installed, the number of
+#         cores to use, i.e. at most how many child processes will be run
+#         simultaneously. The option is initialized from environment variable
+#         ‘MC_CORES’ if set. Must be at least one, and parallelization
+#         requires at least two cores.}
 #     \item{...}{Additional aguments passed to @see "stats::loess".}
 # }
 #
@@ -58,8 +63,9 @@
 
 setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
     definition=function(object, span=0.65, family="symmetric",
-    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0, ...) {
-    
+    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0,
+    mc.cores=getOption("mc.cores", 2L), ...) {
+
     counts <- assayDataElement(object, "counts")
     if (adjustIncompletes) {
         counts <- counts / fData(object)$bases * 100L
@@ -77,10 +83,6 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         stop("Parameter family has to be either a single value or ",
             "a vector the same length as there are samples in object.")
     condition <- binsToUse(object)
-    used.span <- rep(NA_real_, times=ncol(counts))
-    used.family <- rep(NA_character_, times=ncol(counts))
-    loessFit <- matrix(nrow=nrow(counts), ncol=ncol(counts),
-        dimnames=dimnames(counts))
     gc <- round(fData(object)$gc)
     mappability <- round(fData(object)$mappability)
     condition <- condition & !is.na(gc) & !is.na(mappability)
@@ -89,15 +91,16 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         mappability=unique(mappability[!is.na(mappability)]))
     rownames(all.combinations) <- paste0(all.combinations$gc, "-",
         all.combinations$mappability)
-    for (i in seq_len(ncol(counts))) {
+    calculateFits <-  function(i, ...) {
         if (is.na(span[i]) && is.na(family[i])) {
             vmsg("    Skipping sample ", sampleNames(object)[i], "...")
-            loessFit[, i] <- 1
-            next
+            loessFit <- rep(1, nrow(counts))
+            attr(loessFit, "used.span") <- NA
+            attr(loessFit, "used.family") <- NA
+            return(loessFit)
         }
         vmsg("    Calculating fit for sample ", sampleNames(object)[i],
-          " (", i, " of ", ncol(counts), ") ...", appendLF=FALSE)
-        noProb <- FALSE
+          " (", i, " of ", ncol(counts), ") ...")
         try({
             corvals <- counts[, i]
             median.counts <- aggregate(counts[condition, i],
@@ -136,17 +139,26 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
                     abs(residual) <= cutoffValue
                 iter <- iter + 1
             }
-            loessFit[, i] <- fit[paste0(gc, "-", mappability)]
-            used.span[i] <- span[i]
-            used.family[i] <- family[i]
-            noProb <- TRUE
+            loessFit <- fit[paste0(gc, "-", mappability)]
+            attr(loessFit, "used.span") <- span[i]
+            attr(loessFit, "used.family") <- family[i]
+            return(loessFit)
         }, silent=TRUE)
-        if (!noProb)
-            loessFit[, i] <- 1
-        vmsg()
+        loessFit <- rep(1, nrow(counts))
+        attr(loessFit, "used.span") <- NA
+        attr(loessFit, "used.family") <- NA
+        return(loessFit)
     }
-    object$loess.span <- used.span
-    object$loess.family <- used.family
+    if ("parallel" %in% .packages(all.available=TRUE) && mc.cores > 1) {
+        fits <- parallel::mclapply(seq_len(ncol(counts)), calculateFits, ...,
+        mc.cores=mc.cores)
+    } else {
+        fits <- lapply(seq_len(ncol(counts)), calculateFits, ...)
+    }
+    loessFit <- do.call(cbind, fits)
+    dimnames(loessFit) <- dimnames(counts)
+    object$loess.span <- unlist(lapply(fits, attr, which="used.span"))
+    object$loess.family <- unlist(lapply(fits, attr, which="used.family"))
     assayDataElement(object, "fit") <- loessFit
     vmsg("Done.")
     object

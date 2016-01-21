@@ -126,19 +126,19 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
         if ("parallel" %in% .packages(all.available=TRUE) && mc.cores > 1) {
-            segments <- parallel::mclapply(cna, FUN=function(x) {
+            segments <- parallel::mclapply(cna, FUN=function(x, ...) {
                 vmsg(msgs[colnames(x)[3]])
                 segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-            }, mc.cores=mc.cores)
+            }, ..., mc.cores=mc.cores)
         } else {
-            segments <- lapply(cna, FUN=function(x) {
+            segments <- lapply(cna, FUN=function(x, ...) {
                 vmsg(msgs[colnames(x)[3]], appendLF=FALSE)
                 seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
                 vmsg()
                 seg
-            })
+            }, ...)
         }
         segmented <- do.call(cbind, lapply(segments, function(x)
             rep(x$output$seg.mean, x$output$num.mark)))
@@ -167,20 +167,20 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         )
 
         if ("parallel" %in% .packages(all.available=TRUE) && mc.cores > 1) {
-            segments <- parallel::mclapply(cna, FUN=function(x) {
+            segments <- parallel::mclapply(cna, FUN=function(x, ...) {
                 vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
                 segment(x, alpha=alpha, undo.splits=undo.splits,
-                    undo.SD=undo.SD, verbose=0)#, ...)
-            }, mc.cores=mc.cores)
+                    undo.SD=undo.SD, verbose=0, ...)
+            }, ..., mc.cores=mc.cores)
         } else {
-            segments <- lapply(cna, FUN=function(x) {
+            segments <- lapply(cna, FUN=function(x, ...) {
                 vmsg("    Segmenting chromosome ", x$chrom[1], " ...",
                     appendLF=FALSE)
                 seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
-                    undo.SD=undo.SD, verbose=0)#, ...)
+                    undo.SD=undo.SD, verbose=0, ...)
                 vmsg()
                 seg
-            })
+            }, ...)
         }
 
         segmented <- do.call(rbind, lapply(segments, function(x) {
