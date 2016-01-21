@@ -16,7 +16,7 @@
 
 \usage{
 estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
-  maxIter=1, cutoff=4, ...)
+  maxIter=1, cutoff=4, mc.cores=getOption("mc.cores", 2L), ...)
 }
 
 \description{
@@ -43,6 +43,11 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
         (as estimated with \code{\link[matrixStats]{madDiff}}) the cutoff for removal
         of bins with median residuals larger than the cutoff. Not used if
         \code{maxIter=1} (default).}
+    \item{mc.cores}{If package \pkg{parallel} is installed, the number of
+        cores to use, i.e. at most how many child processes will be run
+        simultaneously. The option is initialized from environment variable
+        ‘MC_CORES’ if set. Must be at least one, and parallelization
+        requires at least two cores.}
     \item{...}{Additional aguments passed to \code{\link[stats]{loess}}.}
 }
 
