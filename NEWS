@@ -1,6 +1,11 @@
 Changes in version 1.7.3 (2016-xx-xx)
 -------------------------------------
 
+IMPROVEMENTS
+
+    o estimateCorrection() and segmentBins() now support parallel computing
+      via argument mc.cores (except on Windows)
+
 BUG FIXES 
 
     o applyFilters() and highlightFilters() now work properly when using a
