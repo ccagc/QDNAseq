@@ -19,7 +19,7 @@
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
 #     \item{ignoreMitochondria}{Whether to ignore the mitochondria.}
-#     \item{excludeSeqnames}{Character vector of seqnames which should be 
+#     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
 # }
 #
@@ -51,7 +51,7 @@
 #     @see "getBinAnnotations".
 # }
 #*/#########################################################################
-createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE, 
+createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     excludeSeqnames=NULL) {
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
@@ -173,14 +173,7 @@ calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
                 max(start, overlaps[i, "start"]) + 1
         bases / (end - start + 1) * 100
     }
-    if (ncpus > 1L) {
-        snowfall::sfInit(parallel=TRUE, cpus=ncpus)
-        snowfall::sfExport(list=c("overlap.counter"))
-        blacklist <- snowfall::sfApply(bins, 1, overlap.counter, joined)
-        snowfall::sfStop()
-    } else {
-        blacklist <- apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
-    }
+    blacklist <- fapply(bins, MARGIN=1L, FUN=overlap.counter, joined)
     vmsg()
     blacklist
 }
