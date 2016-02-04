@@ -120,11 +120,9 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
         segments <- flapply(cna, FUN=function(x, ...) {
-            vmsg(msgs[colnames(x)[3]], appendLF=FALSE)
-            seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
-                undo.SD=undo.SD, verbose=0, ...)
-            vmsg()
-            seg
+            vmsg(msgs[colnames(x)[3]])
+            segment(x, alpha=alpha, undo.splits=undo.splits,
+                    undo.SD=undo.SD, verbose=0, ...)
         }, ...)
         segmented <- do.call(cbind, lapply(segments, function(x)
             rep(x$output$seg.mean, x$output$num.mark)))
@@ -153,12 +151,9 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         )
 
         segments <- flapply(cna, FUN=function(x, ...) {
-            vmsg("    Segmenting chromosome ", x$chrom[1], " ...",
-                appendLF=FALSE)
-            seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
-                undo.SD=undo.SD, verbose=0, ...)
-            vmsg()
-            seg
+            vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
+            segment(x, alpha=alpha, undo.splits=undo.splits,
+                    undo.SD=undo.SD, verbose=0, ...)
         }, ...)
 
         segmented <- do.call(rbind, lapply(segments, function(x) {
