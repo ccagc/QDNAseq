@@ -124,9 +124,16 @@ calculateMappability <- function(bins, bigWigFile,
     map$V5 * 100
 }
 
-calculateBlacklist <- function(bins, bedFiles, ncpus=1) {
+calculateBlacklist <- function(bins, bedFiles, ...) {
     vmsg("Calculating overlaps per bin with BED files \n    ", paste(bedFiles,
         collapse="\n    "), "\n    ...", appendLF=FALSE)
+
+    ## Detected deprecated usage of argument 'ncpus'
+    args <- list(...)
+    if ("ncpus" %in% names(args)) {
+      .Deprecated(msg="Argument 'ncpus' of calculateBlacklist() is deprecated and ignored. Use options(mc.cores=ncpu) instead.")
+    }
+
     beds <- list()
     for (bed in bedFiles)
         beds[[bed]] <- read.table(bed, sep="\t", as.is=TRUE)
