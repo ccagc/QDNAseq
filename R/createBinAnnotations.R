@@ -128,7 +128,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
     vmsg("Calculating overlaps per bin with BED files \n    ", paste(bedFiles,
         collapse="\n    "), "\n    ...", appendLF=FALSE)
 
-    ## Detected deprecated usage of argument 'ncpus'
+    ## Detect deprecated usage of argument 'ncpus'
     args <- list(...)
     if ("ncpus" %in% names(args)) {
       .Deprecated(msg="Argument 'ncpus' of calculateBlacklist() is deprecated and ignored. Use options(mc.cores=ncpu) instead.")
