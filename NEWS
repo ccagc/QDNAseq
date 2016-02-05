@@ -5,6 +5,8 @@ IMPROVEMENTS
 
     o estimateCorrection() and segmentBins() now support parallel computing
       via argument mc.cores (except on Windows)
+    o binReadCounts() now contains parameter pairedEnds to specify when using
+      paired-end data, so that expected variance can be calculated correctly
 
 BUG FIXES 
 
