@@ -89,7 +89,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             smoothBy, " bins:")
     }
 
-    copynumber <- copynumber(object)
+    copynumber <- assayDataElement(object, "copynumber")
     copynumber[!condition, ] <- NA_real_
     if (is.character(transformFun)) {
         transformFun <- match.arg(transformFun, c("log2", "sqrt", "none"))
@@ -103,53 +103,83 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         transformFun <- match.fun(transformFun)
         copynumber <- transformFun(copynumber)
     }
-    segmented <- matrix(NA_real_, nrow=nrow(copynumber), ncol=ncol(copynumber),
-        dimnames=dimnames(copynumber))
 
-    ## loop through samples
-    for (s in seq_len(ncol(copynumber))) {
-        vmsg("    Segmenting: ", sampleNames(object)[s],
-            " (", s, " of ", ncol(object), ") ...", appendLF=FALSE)
-
-        ## loop through chromosomes
-        for (chr in unique(fData(object)$chromosome[condition])) {
-            index <- fData(object)$chromosome == chr
-            chrStarts <- fData(object)$start[index]
-            ## smooth if needed
-            if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
-                chrCopynumber <- copynumber[index, s]
-            } else {
-                binToBin <- 0:(sum(index)-1) %/% smoothBy
-                chrCopynumber <- aggregate(copynumber[index, s],
-                    by=list(binToBin), mean, na.rm=TRUE)$x
-                chrStarts <- chrStarts[seq(from=1, by=smoothBy,
-                    length.out=length(chrCopynumber))]
+    # if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+    if (is.na(smoothBy) || !smoothBy) {
+        ## create a list of CNA objects that can be analyzed with *lapply()
+        cna <- lapply(sampleNames(object), function(x)
+            CNA(genomdat=copynumber[condition, x, drop=FALSE],
+                chrom=factor(fData(object)$chromosome[condition],
+                    levels=unique(fData(object)$chromosome), ordered=TRUE),
+                maploc=fData(object)$start[condition], data.type="logratio",
+                sampleid=x, presorted=TRUE))
+        ## create a vector of messages to be printed
+        msgs <- paste0("    Segmenting: ", sampleNames(object),
+            " (", 1:ncol(object), " of ", ncol(object), ") ...")
+        ## use sample names for indexing, they are available in the CNA objects
+        ## as the name of the third column
+        names(msgs) <- sampleNames(object)
+        segments <- flapply(cna, FUN=function(x, ...) {
+            vmsg(msgs[colnames(x)[3]])
+            segment(x, alpha=alpha, undo.splits=undo.splits,
+                    undo.SD=undo.SD, verbose=0, ...)
+        }, ...)
+        segmented <- do.call(cbind, lapply(segments, function(x)
+            rep(x$output$seg.mean, x$output$num.mark)))
+        dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
+    } else {
+        cna <- lapply(unique(fData(object)$chromosome[condition]),
+            function(chr) {
+                index <- fData(object)$chromosome == chr
+                chrStarts <- fData(object)$start[index]
+                ## smooth if needed
+                if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
+                    chrCopynumber <- copynumber[index, , drop=FALSE]
+                } else {
+                    binToBin <- 0:(sum(index)-1) %/% smoothBy
+                    chrCopynumber <- aggregate(copynumber[index, , drop=FALSE],
+                        by=list(binToBin=binToBin), mean, na.rm=TRUE)
+                    chrCopynumber$binToBin <- NULL
+                    chrCopynumber <- as.matrix(chrCopynumber)
+                    chrStarts <- chrStarts[seq(from=1, by=smoothBy,
+                        length.out=nrow(chrCopynumber))]
+                }
+                CNA(genomdat=chrCopynumber, chrom=chr, maploc=chrStarts,
+                    data.type="logratio", sampleid=sampleNames(object),
+                    presorted=TRUE)
             }
+        )
 
-            ## segment
-            cna <- CNA(genomdat=chrCopynumber,
-                chrom=chr, maploc=chrStarts, data.type="logratio",
-                presorted=TRUE)
-            segments <- segment(cna, verbose=0,
-                alpha=alpha, undo.splits=undo.splits, undo.SD=undo.SD, ...)
-            chrSegmented <- rep(NA_real_, length=length(chrCopynumber))
-            for (i in 1:nrow(segments$output))
-                chrSegmented[segments$segRows$startRow[i]:
-                    segments$segRows$endRow[i]] <- segments$output$seg.mean[i]
+        segments <- flapply(cna, FUN=function(x, ...) {
+            vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
+            segment(x, alpha=alpha, undo.splits=undo.splits,
+                    undo.SD=undo.SD, verbose=0, ...)
+        }, ...)
 
+        segmented <- do.call(rbind, lapply(segments, function(x) {
+            chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),
+                ncol=ncol(x$data)-2,
+                dimnames=list(NULL, colnames(x$data)[-(1:2)]))
+            for (i in 1:nrow(x$output))
+                chrSegmented[x$segRows$startRow[i]:x$segRows$endRow[i],
+                    x$output$ID[i]] <- x$output$seg.mean[i]
             ## process results whether smoothed or not
+            index <- fData(object)$chromosome == x$data$chrom[1]
+            binToBin <- 0:(sum(index)-1) %/% smoothBy
             if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
-                segmented[index, s] <- chrSegmented
+                # chrSegmented
             } else {
-                segmented[index, s] <- rep(chrSegmented, times=table(binToBin))
+                chrSegmented <- apply(chrSegmented, 2, rep,
+                    times=table(binToBin))
             }
-        }
-        vmsg()
+            rownames(chrSegmented) <- rownames(copynumber)[index]
+            chrSegmented
+        }))
     }
-    segmented[is.na(copynumber)] <- NA_real_
     if (!is.character(transformFun) || transformFun != "none")
         segmented <- transformFun(segmented, inv=TRUE)
     segmented(object) <- segmented
+    segmented(object)[is.na(copynumber)] <- NA_real_
     object
 })
 
