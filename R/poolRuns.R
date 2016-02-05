@@ -87,6 +87,11 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
                 drop=FALSE])
         }
         oldphenodata <- phenodata[replicates, ]
+        if ("paired.ends" %in% colnames(oldphenodata)) {
+            pairedEnds <- unique(oldphenodata$paired.ends)
+            if (length(pairedEnds) != 1)
+                pairedEnds <- NA
+        }
         totalReads <- sum(oldphenodata$total.reads)
         usedReads <- sum(oldphenodata$used.reads)
         numericCols <- sapply(oldphenodata, is.numeric)
@@ -94,12 +99,11 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
             drop=FALSE])
         oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
             drop=FALSE], 2, concatenateIfNotEqual)
+        if ("paired.ends" %in% colnames(oldphenodata))
+            oldphenodata[1, "paired.ends"] <- pairedEnds
         oldphenodata[1, "total.reads"] <- totalReads
         oldphenodata[1, "used.reads"] <- usedReads
-        oldphenodata[1, "expected.variance"] <-
-            sum(binsToUse(object)) / usedReads
-
-        newphenodata <- rbind(newphenodata, oldphenodata[1,])
+        newphenodata <- rbind(newphenodata, oldphenodata[1, ])
     }
     rownames(newphenodata) <- newphenodata[, 1]
     newphenodata <- AnnotatedDataFrame(newphenodata,
@@ -117,6 +121,7 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
             copynumber=newcopynumber,
             phenodata=newphenodata)
     }
+    object2$expected.variance <- expectedVariance(object2)
     object2
 })
 
