@@ -4,7 +4,7 @@ Changes in version 1.7.3 (2016-xx-xx)
 IMPROVEMENTS
 
     o estimateCorrection() and segmentBins() now support parallel computing
-      via argument mc.cores (except on Windows)
+    o callBins() can now also use cutoffs instead of CGHcall
 
 BUG FIXES 
 
