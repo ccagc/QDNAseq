@@ -174,15 +174,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     phenodata$total.reads <- colSums(counts)
     phenodata$used.reads <- colSums(counts[condition, , drop=FALSE])
 
-    if ("paired.ends" %in% colnames(phenodata)) {
-        divider <- ifelse(phenodata$paired.ends, 2, 1)
-        phenodata$expected.variance <-
-            sum(condition) / (phenodata$used.reads / divider)
-    } else {
-        phenodata$expected.variance <- sum(condition) / phenodata$used.reads
-    }
-
-    new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
+    object <- new('QDNAseqReadCounts', bins=bins, counts=counts,
+        phenodata=phenodata)
+    object$expected.variance <- expectedVariance(object)
+    object
 }
 
 

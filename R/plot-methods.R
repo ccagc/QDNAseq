@@ -260,7 +260,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         par(xpd=FALSE)
         ### estimate for standard deviation
         if (showSD) {
-            if (is.numeric(x$expected.variance[i])) {
+            if (!is.na(x$expected.variance[i])) {
                 sdexp <- substitute(paste(E~sigma==e, ", ", symbol==sd),
                     list(e=sprintf("%.3g", sqrt(x$expected.variance[i])),
                     symbol=symbol, sd=sprintf("%.3g", noise[i])))
