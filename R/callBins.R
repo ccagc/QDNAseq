@@ -137,7 +137,7 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             stop("Parameter cutoff must be a numeric vector.")
         cutoffLosses <- sort(cutoffs[cutoffs < 0], decreasing=TRUE)
         cutoffGains <- sort(cutoffs[cutoffs > 0])
-        if (is.na(cutoffLosses[1]) || is.na(cutoffGains[1]))
+        if (is.na(cutoffLosses[1]) || is.na(cutoffGains[1]))
             stop("Parameter cutoff must contain at least one positive and one ",
                 "negative value, to be used as cutoffs for gains and losses, ",
                 "respectively.")
