@@ -13,6 +13,8 @@
 \author{Ilari Scheinin}
 \maketitle
 
+\tableofcontents
+
 \section{Running QDNAseq}
 
 This is a short tutorial on how to use the \pkg{QDNAseq} package. It covers an
@@ -51,8 +53,8 @@ An object of class 'AnnotatedDataFrame'
 \end{Schunk}
 
 After downloading, the bin annotations can be saved locally with
-\code{saveRDS}, and in the future be read from the local file with
-\code{loadRDS} instead of relying on downloading.
+\code{saveRDS()}, and in the future be read from the local file with
+\code{loadRDS()} instead of relying on downloading.
 
 If you are working with another genome build (or another species), see the
 section on generating the bin annotations.
@@ -207,8 +209,8 @@ exportBins(copyNumbersSmooth, file="LGG150.bed", format="bed")
 
 \subsection{Downstream analyses}
 
-Segmentation with the CBS algorithm from DNAcopy and calling copy number
-aberrations with CGHcall have been implemented for convenience.
+Segmentation with the CBS algorithm from DNAcopy, and calling copy number
+aberrations with CGHcall or cutoffs have been implemented for convenience.
 
 By default, segmentation uses a $\log_2$-transformation, but a sqrt(x + 3/8)
 can also be used as it stabilizes the variance of a Poisson distribution
@@ -257,6 +259,17 @@ dev.off()
   \caption{Copy number profile after calling gains and losses.}
   \label{fig:calls}
 \end{figure}
+
+It should be noted that CGHcall (which \code{callBins()} uses by default) was
+developed for the analysis of sets of cancer samples. It is based on a mixture
+model, and when there are not enough aberrations present in the data, model
+fitting can fail. This can happen especially with non-cancer samples, and/or
+when analyzing individual cases instead of larger data sets.
+
+If CGHcall fails, \code{callBins()} can also perform simple cutoff-based
+calling by setting parameter \code{method="cutoff"}. The default cutoff values
+are based on the assumption of uniform cell populations, and in case of cancer
+samples will most likely need calibration by adjusting parameter \code{cutoffs}.
 
 Finally, for other downstream analyses, such as running CGHregions, it might be
 useful to convert to a cghCall object.
