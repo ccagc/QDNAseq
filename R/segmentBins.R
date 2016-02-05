@@ -32,11 +32,6 @@
 #         stabilizes the variance, "none" for no transformation, or any
 #         R function that performs the desired transformation and also its
 #         inverse when called with parameter \code{inv=TRUE}.}
-#     \item{mc.cores}{If package \pkg{parallel} is installed, the number of
-#         cores to use, i.e. at most how many child processes will be run
-#         simultaneously. The option is initialized from environment variable
-#         ‘MC_CORES’ if set. Must be at least one, and parallelization
-#         requires at least two cores.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -69,7 +64,7 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun="log2", mc.cores=getOption("mc.cores", 2L), ... ) {
+    transformFun="log2", ... ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -111,12 +106,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
 
     # if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
     if (is.na(smoothBy) || !smoothBy) {
-        ## create a list of CNA objects that can be analyzed with mclapply()
-        ## for parallel processing, or lapply() for serial
+        ## create a list of CNA objects that can be analyzed with *lapply()
         cna <- lapply(sampleNames(object), function(x)
             CNA(genomdat=copynumber[condition, x, drop=FALSE],
                 chrom=factor(fData(object)$chromosome[condition],
-                    levels=unique(fData(object)$chromosome), ordered=TRUE), 
+                    levels=unique(fData(object)$chromosome), ordered=TRUE),
                 maploc=fData(object)$start[condition], data.type="logratio",
                 sampleid=x, presorted=TRUE))
         ## create a vector of messages to be printed
@@ -125,21 +119,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## use sample names for indexing, they are available in the CNA objects
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
-        if ("parallel" %in% .packages(all.available=TRUE) && mc.cores > 1) {
-            segments <- parallel::mclapply(cna, FUN=function(x, ...) {
-                vmsg(msgs[colnames(x)[3]])
-                segment(x, alpha=alpha, undo.splits=undo.splits,
+        segments <- flapply(cna, FUN=function(x, ...) {
+            vmsg(msgs[colnames(x)[3]])
+            segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-            }, ..., mc.cores=mc.cores)
-        } else {
-            segments <- lapply(cna, FUN=function(x, ...) {
-                vmsg(msgs[colnames(x)[3]], appendLF=FALSE)
-                seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
-                    undo.SD=undo.SD, verbose=0, ...)
-                vmsg()
-                seg
-            }, ...)
-        }
+        }, ...)
         segmented <- do.call(cbind, lapply(segments, function(x)
             rep(x$output$seg.mean, x$output$num.mark)))
         dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
@@ -166,22 +150,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             }
         )
 
-        if ("parallel" %in% .packages(all.available=TRUE) && mc.cores > 1) {
-            segments <- parallel::mclapply(cna, FUN=function(x, ...) {
-                vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
-                segment(x, alpha=alpha, undo.splits=undo.splits,
+        segments <- flapply(cna, FUN=function(x, ...) {
+            vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
+            segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-            }, ..., mc.cores=mc.cores)
-        } else {
-            segments <- lapply(cna, FUN=function(x, ...) {
-                vmsg("    Segmenting chromosome ", x$chrom[1], " ...",
-                    appendLF=FALSE)
-                seg <- segment(x, alpha=alpha, undo.splits=undo.splits,
-                    undo.SD=undo.SD, verbose=0, ...)
-                vmsg()
-                seg
-            }, ...)
-        }
+        }, ...)
 
         segmented <- do.call(rbind, lapply(segments, function(x) {
             chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),

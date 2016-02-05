@@ -15,8 +15,8 @@
 \title{Segments normalized copy number data}
 
 \usage{
-segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", undo.SD=1,
-  force=FALSE, transformFun="log2", mc.cores=getOption("mc.cores", 2L), ...)
+segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1,
+  force=FALSE, transformFun="log2", ...)
 }
 
 \description{
@@ -44,11 +44,6 @@ segmentBins(object, smoothBy=FALSE, alpha=0.0000000001, undo.splits="sdundo", un
         stabilizes the variance, "none" for no transformation, or any
         R function that performs the desired transformation and also its
         inverse when called with parameter \code{inv=TRUE}.}
-    \item{mc.cores}{If package \pkg{parallel} is installed, the number of
-        cores to use, i.e. at most how many child processes will be run
-        simultaneously. The option is initialized from environment variable
-        ‘MC_CORES’ if set. Must be at least one, and parallelization
-        requires at least two cores.}
     \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 

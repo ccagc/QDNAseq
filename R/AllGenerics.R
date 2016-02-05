@@ -9,8 +9,7 @@ setGeneric("correctBins", function(object, fit=NULL,
     method="ratio", adjustIncompletes=TRUE, ...)
     standardGeneric("correctBins"))
 setGeneric("estimateCorrection", function(object, span=0.65, family="symmetric",
-    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0,
-    mc.cores=getOption("mc.cores", 2L), ...)
+    adjustIncompletes=TRUE, maxIter=1, cutoff=4.0, ...)
     standardGeneric("estimateCorrection"))
 setGeneric("highlightFilters", function(object, col="red", residual=NA,
     blacklist=NA, mappability=NA, bases=NA, type="union", ...)
@@ -30,7 +29,7 @@ setGeneric("poolRuns", function(object, samples, force=FALSE)
     standardGeneric("poolRuns"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
     alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-    force=FALSE, transformFun="log2", mc.cores=getOption("mc.cores", 2L), ...)
+    force=FALSE, transformFun="log2", ...)
     standardGeneric("segmentBins"))
 setGeneric("smoothOutlierBins", function(object,
     logTransform=TRUE, force=FALSE, ...)
