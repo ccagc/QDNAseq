@@ -32,15 +32,14 @@ callBins(object, organism=c("human", "other"), method=c("CGHcall", "cutoff"),
         not \dQuote{CGHcall}.}
     \item{method}{Calling method to use. Options currently implemented are:
         \dQuote{CGHcall} or \dQuote{cutoff}.}
-    \item{cutoffs}{When method=\dQuote{cutoff}, the (log2-transformed)
-        thresholds to use for calling. Must be a numerical vector of length 4,
-        and sorted in numerical order. The first element corresponds to the
-        cutoff used for homozygous deletions, and can be NA to not distinguish
-        between hemizygous losses and homozygous deletions. The second and
-        third element represent the cutoffs used for losses and gains,
-        respectively, and cannot be NAs. The fourth element is the cutoff used
-        for amplifications, and can be NA to not distinguish between gains and
-        amplifications.}
+    \item{cutoffs}{When method=\dQuote{cutoff}, a numeric vector of
+        (log2-transformed) thresholds to use for calling. At least one
+        positive and one negative value must be provided. The smallest
+        positive value is used as the cutoff for calling gains, and the
+        negative value closest to zero is used as the cutoff for losses. If a
+        second positive value is provided, it is used as the cutoff for
+        amplifications. And if a second negative value is provided, it is used
+        as the cutoff for homozygous deletions.}
     \item{...}{Additional arguments passed to \code{\link[CGHcall]{CGHcall}}.}
 }
 

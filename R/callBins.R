@@ -20,15 +20,14 @@
 #         not \dQuote{CGHcall}.}
 #     \item{method}{Calling method to use. Options currently implemented are:
 #         \dQuote{CGHcall} or \dQuote{cutoff}.}
-#     \item{cutoffs}{When method=\dQuote{cutoff}, the (log2-transformed)
-#         thresholds to use for calling. Must be a numerical vector of length 4,
-#         and sorted in numerical order. The first element corresponds to the
-#         cutoff used for homozygous deletions, and can be NA to not distinguish
-#         between hemizygous losses and homozygous deletions. The second and
-#         third element represent the cutoffs used for losses and gains,
-#         respectively, and cannot be NAs. The fourth element is the cutoff used
-#         for amplifications, and can be NA to not distinguish between gains and
-#         amplifications.}
+#     \item{cutoffs}{When method=\dQuote{cutoff}, a numeric vector of
+#         (log2-transformed) thresholds to use for calling. At least one
+#         positive and one negative value must be provided. The smallest
+#         positive value is used as the cutoff for calling gains, and the
+#         negative value closest to zero is used as the cutoff for losses. If a
+#         second positive value is provided, it is used as the cutoff for
+#         amplifications. And if a second negative value is provided, it is used
+#         as the cutoff for homozygous deletions.}
 #     \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
 # }
 #
@@ -134,29 +133,38 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
                 probamp(object) <- NULL
         }
     } else if (method == "cutoff") {
-        if (length(cutoffs) != 4 || !is.numeric(cutoffs))
-            stop("Parameter cutoff must be a numeric vector of length 4.")
-        if (any(is.na(cutoffs[2:3])))
-            stop("Only first and fourth element of parameter cutoff are ",
-                "allowed to be NA.")
-        cutoffOrder <- sort.list(cutoffs, na.last=NA)
-        if (!identical(cutoffOrder, seq_along(cutoffOrder)))
-            stop("Values provided for parameter cutoff must be in numerical ",
-                "order.")
+        if (!is.numeric(cutoffs))
+            stop("Parameter cutoff must be a numeric vector.")
+        cutoffLosses <- sort(cutoffs[cutoffs < 0], decreasing=TRUE)
+        cutoffGains <- sort(cutoffs[cutoffs > 0])
+        if (is.na(cutoffLosses[1]) || is.na(cutoffGains[1]))
+            stop("Parameter cutoff must contain at least one positive and one ",
+                "negative value, to be used as cutoffs for gains and losses, ",
+                "respectively.")
+        vmsg("Calling aberrations with the following cutoffs:")
+        if (!is.na(cutoffLosses[2]))
+            vmsg("homozygous deletion < ", round(cutoffLosses[2], digits=2),
+                " < ", appendLF=FALSE)
+        vmsg("loss < ", round(cutoffLosses[1], digits=2), " < normal < ",
+            round(cutoffGains[1], digits=2), " gain", appendLF=FALSE)
+        if (!is.na(cutoffGains[2]))
+            vmsg(" < ", round(cutoffGains[2], digits=2), " < amplification",
+                appendLF=FALSE)
+        vmsg()
         segmentedMatrix <- log2adhoc(assayDataElement(object, "segmented"))
-        ## multiplication with 1L turns a logical matrix into an integer one
-        ## multiplication with 1 turns a logical matrix into a numeric one
-        callsMatrix <- (segmentedMatrix > cutoffs[3]) * 1L
-        callsMatrix[segmentedMatrix < cutoffs[2]] <- -1L
-        if (!is.na(cutoffs[1])) {
-            callsMatrix[segmentedMatrix < cutoffs[1]] <- -2L
+        ## multiplication with 1L turns logical values into integers
+        ## multiplication with 1 turns logical values into numeric ones
+        callsMatrix <- (segmentedMatrix > cutoffGains[1]) * 1L
+        callsMatrix[segmentedMatrix < cutoffLosses[1]] <- -1L
+        if (!is.na(cutoffLosses[2])) {
+            callsMatrix[segmentedMatrix < cutoffLosses[2]] <- -2L
             probdloss(object) <- (callsMatrix == -2) * 1
         } else {
             if ("probdloss" %in% assayDataElementNames(object))
                 probdloss(object) <- NULL
         }
-        if (!is.na(cutoffs[4])) {
-            callsMatrix[segmentedMatrix > cutoffs[4]] <- 2L
+        if (!is.na(cutoffGains[2])) {
+            callsMatrix[segmentedMatrix > cutoffGains[2]] <- 2L
             probamp(object) <- (callsMatrix == 2) * 1
         } else {
             if ("probamp" %in% assayDataElementNames(object))
