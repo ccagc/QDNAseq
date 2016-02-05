@@ -37,7 +37,8 @@
 addPhenodata <- function(object, phenofile) {
     pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
         row.names=1L)
-    pData(object) <- cbind(pData(object), pdata[sampleNames(object), ])
+    pData(object) <- cbind(pData(object), pdata[sampleNames(object), ,
+        drop=FALSE])
     object
 }
 

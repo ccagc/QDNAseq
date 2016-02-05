@@ -1,3 +1,22 @@
+Changes in version 1.7.3 (2016-xx-xx)
+-------------------------------------
+
+IMPROVEMENTS
+
+    o estimateCorrection() and segmentBins() now support parallel computing
+      via argument mc.cores (except on Windows)
+
+BUG FIXES 
+
+    o applyFilters() and highlightFilters() now work properly when using a
+      numerical value for parameter residual
+    o highlightFilters() no longer highlights entire chromosomes for which
+      the residual filter is missing altogether, which matches the behavior of
+      applyFilters()
+    o getBinAnnotations() now allows custom bin annotations to be loaded via
+      the path parameter even when an annotation package has been installed
+    o phenodata files with a single variable are now handled correctly
+
 Changes in version 1.7.2 (2015-12-18)
 -------------------------------------
 
