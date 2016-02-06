@@ -31,7 +31,6 @@ importFrom(stats, aggregate, approxfun, density, lm, loess, median, predict)
 importFrom(utils, data, maintainer, packageVersion, read.table, write.table)
 importFrom(GenomicRanges, GRanges)
 importFrom(IRanges, IRanges)
-importFrom(future, future, values)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS

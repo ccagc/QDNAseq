@@ -294,6 +294,12 @@ objects by running it before segmentation or calling.
 
 \clearpage
 
+\section{Parallel computing}
+
+\fixme{TBA}
+
+\clearpage
+
 \section{Sex chromosomes}
 
 By default, \Biocpkg{QDNAseq} ignores sex chromosomes. In order to include them
