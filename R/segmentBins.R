@@ -15,7 +15,11 @@
 #     \item{object}{An object of class QDNAseqCopyNumbers.}
 #     \item{smoothBy}{An optional integer value to perform smoothing before
 #         segmentation by taking the mean of every smoothBy bins, and then
-#         segment those means. Default is to perform no smoothing.}
+#         segment those means. Default (@FALSE) is to perform no smoothing.
+#         \code{smoothBy=1L} is a special case that will not perform smoothing,
+#         but will split the segmentation process by chromosome instead of by
+#         sample. This has an effect when using parallel computing or specifying
+#         seeds for random number generation.}
 #     \item{alpha}{Significance levels for the test to accept change-points.
 #         Default is 1e-10.}
 #     \item{undo.splits}{A character string specifying how change-points are to
@@ -32,6 +36,13 @@
 #         stabilizes the variance, "none" for no transformation, or any
 #         R function that performs the desired transformation and also its
 #         inverse when called with parameter \code{inv=TRUE}.}
+#     \item{seeds}{An optional integer vector of seeds for random number
+#         generation, recycled as needed. Normally, the segmentation process is
+#         split by sample, and provided seeds also used per sample. But when
+#         smoothing is performed (or in the the special case of
+#         \code{smoothBy=1L}), the process is split by chromosome, seeds used
+#         per chromosome, and results not necessarily reproducible across
+#         samples.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -64,7 +75,7 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun="log2", ... ) {
+    transformFun="log2", seeds=NULL, ... ) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -119,11 +130,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## use sample names for indexing, they are available in the CNA objects
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
-        segments <- flapply(cna, FUN=function(x, ...) {
+        segments <- flapply(cna, FUN=function(x, ..., seeds=NULL) {
             vmsg(msgs[colnames(x)[3]])
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ...)
+        }, ..., seeds=seeds)
         segmented <- do.call(cbind, lapply(segments, function(x)
             rep(x$output$seg.mean, x$output$num.mark)))
         dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
@@ -150,11 +161,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             }
         )
 
-        segments <- flapply(cna, FUN=function(x, ...) {
+        segments <- flapply(cna, FUN=function(x, ..., seeds=NULL) {
             vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ...)
+        }, ..., seeds=seeds)
 
         segmented <- do.call(rbind, lapply(segments, function(x) {
             chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),
