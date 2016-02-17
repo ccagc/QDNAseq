@@ -591,7 +591,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         counts <- counts / fData(x)$bases[condition] * 100L
         counts[fData(x)$bases[condition] == 0] <- 0L
     }
-    reciprocalOfAverageUsedReadsPerBin <- 1/(usedReads/sum(condition))
+    reciprocalOfAverageUsedReadsPerBin <- expectedVariance(x)
     if (is.null(fit)) {
         if (! "fit" %in% assayDataElementNames(x))
             x <- estimateCorrection(x)
