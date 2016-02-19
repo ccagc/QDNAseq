@@ -21,7 +21,7 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
-#     \item{chunkSize} {An optional integer specifying the chunk size (nt) by 
+#     \item{chunkSize}{An optional integer specifying the chunk size (nt) by 
 #         which to process the bam file.}
 #     \item{cache}{Whether to read and write intermediate cache files, which
 #         speeds up subsequent analyses of the same files. Requires packages
@@ -70,6 +70,9 @@
 #         returned. 'Duplicated' reads may represent PCR or optical duplicates.}
 #     \item{minMapq}{If quality scores exists, the minimum quality score
 #         required in order to keep a read, otherwise all reads are kept.}
+#     \item{pairedEnds}{A boolean value or vector specifying whether the BAM
+#         files contain paired-end data or not. Only affects the calculation of
+#         the expected variance.}
 # }
 #
 # \value{
@@ -84,7 +87,7 @@
 # }
 # }
 #
-# @author "IS"
+# @author "IS,DS"
 #
 # @keyword IO
 # @keyword file
@@ -99,7 +102,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isSecondaryAlignment=NA,
     isNotPassingQualityControls=FALSE,
     isDuplicate=FALSE,
-    minMapq=37) {
+    minMapq=37,
+    pairedEnds=NULL) {
 
     if (is.null(bamfiles))
         bamfiles <- list.files(ifelse(is.null(path), '.', path),
@@ -114,10 +118,17 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     }
     phenodata <- data.frame(name=bamnames, row.names=bamnames,
         stringsAsFactors=FALSE)
+    if (!is.null(pairedEnds) &&
+        (!length(pairedEnds) %in% c(1, length(bamnames)) ||
+        !is.logical(pairedEnds))) {
+
+        stop("Parameter pairedEnds has to be a logical vector with a ",
+            "length of either 1 or the number of BAM files.")
+    }
     if (!is.null(phenofile)) {
         pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
             row.names=1L)
-        phenodata <- cbind(phenodata, pdata[rownames(phenodata), ])
+        phenodata <- cbind(phenodata, pdata[rownames(phenodata), , drop=FALSE])
     }
 
     if (class(bins) == 'data.frame')
@@ -157,11 +168,16 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
     }
 
+    if (!is.null(pairedEnds))
+        phenodata$paired.ends <- pairedEnds
     condition <- binsToUse(bins)
     phenodata$total.reads <- colSums(counts)
     phenodata$used.reads <- colSums(counts[condition, , drop=FALSE])
-    phenodata$expected.variance <- sum(condition) / phenodata$used.reads
-    new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
+
+    object <- new('QDNAseqReadCounts', bins=bins, counts=counts,
+        phenodata=phenodata)
+    object$expected.variance <- expectedVariance(object)
+    object
 }
 
 

@@ -1,7 +1,10 @@
 setGeneric("applyFilters", function(object, residual=TRUE, blacklist=TRUE,
     mappability=NA, bases=NA, chromosomes=c("X", "Y"))
     standardGeneric("applyFilters"))
-setGeneric("callBins", function(object, organism=c("human", "other"), ...)
+setGeneric("callBins", function(object, organism=c("human", "other"),
+    method=c("CGHcall", "cutoff"),
+    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
+    ...)
     standardGeneric("callBins"))
 setGeneric("compareToReference", function(object, references, force=FALSE)
     standardGeneric("compareToReference"))
@@ -29,7 +32,7 @@ setGeneric("poolRuns", function(object, samples, force=FALSE)
     standardGeneric("poolRuns"))
 setGeneric("segmentBins", function(object, smoothBy=FALSE,
     alpha=1e-10, undo.splits="sdundo", undo.SD=1.0,
-    force=FALSE, transformFun="log2", ...)
+    force=FALSE, transformFun="log2", seeds=NULL, ...)
     standardGeneric("segmentBins"))
 setGeneric("smoothOutlierBins", function(object,
     logTransform=TRUE, force=FALSE, ...)

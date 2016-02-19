@@ -14,7 +14,7 @@
 
 \usage{
 getBinAnnotations(binSize, genome="hg19", type="SR50",
-  path=getOption("QDNAseq::binAnnotationPath", "http://qdnaseq.s3.amazonaws.com"))
+  path=getOption("QDNAseq::binAnnotationPath", NULL))
 }
 
 \description{
