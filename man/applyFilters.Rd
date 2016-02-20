@@ -41,8 +41,8 @@ applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
         bases (not Ns) in the reference genome sequence. NA (default) or
         \code{\link[base:logical]{FALSE}} will not filted based on uncharacterized bases.}
     \item{chromosomes}{A \code{\link[base]{character}} vector specifying which chromosomes
-        to filter out. Defaults to the sex chromosomes,
-        i.e. \code{c("X", "Y")}.}
+        to filter out. Defaults to the sex chromosomes and mitochondria,
+        i.e. \code{c("X", "Y", "MT")}.}
 }
 
 \value{
