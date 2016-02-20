@@ -1,9 +1,15 @@
-Changes in version 1.7.3 (2016-02-15)
+Changes in version 1.8.0 (2016-04-15)
 -------------------------------------
+
+RELEASE
+
+    o Bioconductor 3.3
 
 IMPROVEMENTS
 
-    o estimateCorrection() and segmentBins() now support parallel computing
+    o estimateCorrection(), segmentBins(), createBins(), and
+      calculateBlacklist() now support parallel computing
+      (see vignette for more details)
 
     o callBins() can now also use cutoffs instead of CGHcall
 
@@ -12,6 +18,8 @@ IMPROVEMENTS
 
     o segmentBins() now allows seeds for random number generation to be
       specified for reproducibility
+
+    o binReadCounts() supports chunked processing of bam files
 
 BUG FIXES 
 
@@ -27,21 +35,8 @@ BUG FIXES
 
     o phenodata files with a single variable are now handled correctly
 
-Changes in version 1.7.2 (2015-12-18)
--------------------------------------
-
-BUG FIXES 
-
-    o binCounts() is now called with named arguments.
-
-    o Fixed R CMD check notes.
-
-Changes in version 1.7.1 (2015-11-23)
--------------------------------------
-
-IMPROVEMENTS
-
-    o binReadCounts() supports chunked processing of bam files. 
+    o calculateMappability() now retains correct chromosome order even when
+      bigWigAverageOverBed reorders them
 
 Changes in version 1.6.0 (2015-10-14)
 -------------------------------------
