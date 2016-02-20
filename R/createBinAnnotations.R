@@ -64,22 +64,20 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     }
     if (ignoreMitochondria) {
         selectedMT <- grep("^(chr)?M(T)?$", chrs)
-        if (length(selectedMT) != 0)
+        if (length(selectedMT) != 0L)
             chrs <- chrs[-selectedMT]
     }
     lengths <- GenomeInfoDb::seqlengths(bsgenome)[chrs]
-    start <- end <- integer()
-    bases <- gc <- numeric()
     vmsg("Creating bins of ", binSize, " kbp for genome ",
         substitute(bsgenome))
 
     # Bin size in units of base pairs
-    binWidth <- binSize*1000L
+    binWidth <- as.integer(binSize * 1000L)
 
-    for (chr in chrs) {
-        vmsg("    Processing ", chr, " ...", appendLF=FALSE)
+    chrData <- flapply(chrs, function(chr) {
+        vmsg("    Processing ", chr, " ...")
         chr.size <- lengths[chr]
-        chr.starts <- seq(from=1, to=chr.size, by=binWidth)
+        chr.starts <- seq(from=1L, to=chr.size, by=binWidth)
         chr.ends <- chr.starts + binWidth - 1L
         chr.ends[length(chr.ends)] <- chr.size
         chr.seq <- BSgenome::getSeq(bsgenome, chr, as.character=TRUE)
@@ -88,12 +86,12 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
         cg <- gsub("[^CG]", "", acgt)
         chr.bases <- nchar(acgt) / (binWidth) * 100
         chr.gc <- nchar(cg) / nchar(acgt) * 100
-        start <- c(start, chr.starts)
-        end <- c(end, chr.ends)
-        bases <- c(bases, chr.bases)
-        gc <- c(gc, chr.gc)
-        vmsg()
-    }
+        list(start=chr.starts, end=chr.ends, bases=chr.bases, gc=chr.gc)
+    })
+    start <- unlist(lapply(chrData, "[[", "start"))
+    end <- unlist(lapply(chrData, "[[", "end"))
+    bases <- unlist(lapply(chrData, "[[", "bases"))
+    gc <- unlist(lapply(chrData, "[[", "gc"))
     gc[is.nan(gc)] <- NA_real_
     bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
         start, end, bases, gc, stringsAsFactors=FALSE)
@@ -132,7 +130,8 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
     ## Detect deprecated usage of argument 'ncpus'
     args <- list(...)
     if ("ncpus" %in% names(args)) {
-      .Deprecated(msg="Argument 'ncpus' of calculateBlacklist() is deprecated and ignored. Use options(mc.cores=ncpu) instead.")
+      .Deprecated(msg=paste("Argument 'ncpus' of calculateBlacklist() is",
+          "deprecated and ignored. Use options(mc.cores=ncpu) instead.")
     }
 
     beds <- list()

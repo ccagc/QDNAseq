@@ -1,9 +1,11 @@
-Changes in version 1.7.3 (2016-02-15)
+Changes in version 1.7.3 (2016-02-20)
 -------------------------------------
 
 IMPROVEMENTS
 
-    o estimateCorrection() and segmentBins() now support parallel computing
+    o estimateCorrection(), segmentBins(), createBins(), and
+      calculateBlacklist() now support parallel computing
+      (see vignette for more details)
 
     o callBins() can now also use cutoffs instead of CGHcall
 
