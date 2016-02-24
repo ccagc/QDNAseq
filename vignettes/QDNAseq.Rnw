@@ -79,8 +79,8 @@ readCounts <- binReadCounts(bins, path='tumors')
 @
 
 This will return an object of class \Rclass{QDNAseqReadCounts}. If the same bam
-files will be used as input in future R sessions, option \Rcode{cache=TRUE} can
-be used to cache intermediate files, which will speed up future analyses.
+files will be used as input in future \R{} sessions, option \Rcode{cache=TRUE}
+can be used to cache intermediate files, which will speed up future analyses.
 Caching is done with package \CRANpkg{R.cache}.
 
 For the purpose of this tutorial, we load an example data set of chromosomes
@@ -294,9 +294,72 @@ objects by running it before segmentation or calling.
 
 \clearpage
 
-\section{Parallel computing}
+\section{Parallel computation}
 
-\fixme{TBA}
+\Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
+After installing it with \Rcode{install.packages("future")}, all that is
+required is to select an appropriate \textit{plan}. The recommended way to do
+that is to include it in your \file{$\sim$/.Rprofile}.
+
+The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
+support parallel processing. At the moment these include
+\Rfunction{estimateCorrection()}, \Rfunction{segmentBins()},
+\Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}.
+
+However, when argument \Rcode{method="CGHcall"} (which is the default),
+function \Rfunction{callBins()} calls function \Rfunction{CGHcall()} from
+package \Biocpkg{CGHcall}, which uses another mechanism for parallel
+computation. For that, the number of processes to use should be specified with
+argument \Rcode{ncpus}, with something along the lines of:
+
+<<eval=FALSE>>=
+copyNumbers <- callBins(..., ncpus=4L)
+@
+
+\subsection{Non-parallel processing}
+
+The default is to use single-core processing via ``eager'' futures. This can be
+set explicitly with:
+
+<<eval=FALSE>>=
+future::plan("eager")
+@
+
+\subsection{Parallel processing on the current machine}
+
+To process data in parallel using multiple processes on the current machine,
+use the following:
+
+<<eval=FALSE>>=
+future::plan("multiprocess")
+@
+
+After that, all functions that support parallel processing will automatically
+use it.
+
+On Mac OS X and Linux, this will use multiple \textit{forked} \R{} processes
+\Rcode{("multicore")}. On Windows, which does not support \textit{forking},
+multiple \textit{background} \R{} processes \Rcode{("multisession")} will be
+used instead.
+
+The number of parallel processes to use can be defined via option
+\Robject{mc.cores}, for example with:
+
+<<eval=FALSE>>=
+options(mc.cores=4L)
+@
+
+\subsection{Parallel processing on a cluster}
+
+To process data using multiple \R{} sessions running on different machines, use
+something along the lines of:
+
+<<eval=FALSE>>=
+cl <- parallel::makeCluster(...)
+future::plan("cluster", cluster=cl)
+@
+
+See package \Rpackage{parallel} for more details.
 
 \clearpage
 
@@ -511,7 +574,7 @@ mismatches and end-trimming of bases with qualities below 40 (options
 
 \section{Session information}
 
-The version number of R and packages loaded for generating the vignette were:
+The version number of \R{} and packages loaded for generating the vignette were:
 
 <<echo=FALSE, results=tex>>=
 toLatex(sessionInfo())

@@ -1,6 +1,6 @@
 Package: QDNAseq
 Version: 1.7.4
-Date: 2016-02-20
+Date: 2016-02-24
 Title: Quantitative DNA sequencing for chromosomal aberrations
 Author: Ilari Scheinin [aut], Daoud Sie [aut, cre], Henrik Bengtsson [aut]
 Maintainer: Daoud Sie <d.sie@vumc.nl>
@@ -10,7 +10,7 @@ Imports: graphics, methods, stats, utils,
         DNAcopy (>= 1.32.0), GenomicRanges (>= 1.20), IRanges (>= 2.2),
         matrixStats (>= 0.15.0), R.utils (>= 2.2.0), Rsamtools (>= 1.20),
 Suggests: BiocStyle (>= 1.8.0), BSgenome (>= 1.38.0), digest (>= 0.6.8),
-        GenomeInfoDb (>= 1.6.0), future (>= 0.11.0), R.cache (>= 0.12.0)
+        GenomeInfoDb (>= 1.6.0), future (>= 0.12.0), R.cache (>= 0.12.0)
 Description: Quantitative DNA sequencing for chromosomal aberrations.
         The genome is divided into non-overlapping fixed-sized bins, number of
         sequence reads in each counted, adjusted with a simultaneous
