@@ -121,6 +121,7 @@ calculateMappability <- function(bins, bigWigFile,
         '" -bedOut="', mapbed, '" /dev/null')
     system(cmd)
     map <- read.table(mapbed, sep="\t", as.is=TRUE)
+    map <- map[order(map$V4), ]
     map$V5 * 100
 }
 
