@@ -131,7 +131,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
     args <- list(...)
     if ("ncpus" %in% names(args)) {
       .Deprecated(msg=paste("Argument 'ncpus' of calculateBlacklist() is",
-          "deprecated and ignored. Use options(mc.cores=ncpu) instead.")
+          "deprecated and ignored. Use options(mc.cores=ncpu) instead."))
     }
 
     beds <- list()
