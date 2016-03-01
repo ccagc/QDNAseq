@@ -136,7 +136,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         names(chrom.ends) <- names(chrom.lengths)
     }
     if (length(uni.chrom) == 1) {
-        xax <- pretty(pos)
+        xax <- pretty(c(0, chrom.lengths[uni.chrom]))
         xaxlab <- xax / 1e6L
         if (is.null(xlab))
             xlab <- paste0("chromosome ", uni.chrom, ", Mbp")
@@ -180,7 +180,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
                 gains <- gains + probamp(x)[condition, i]
             par(mar=c(5, 4, 4, 4) + 0.2)
             plot(NA, main=main[i], xlab=NA, ylab=NA, las=1,
-                xlim=c(0, max(pos2)), ylim=ylim, xaxs="i", xaxt="n",
+                xlim=c(0, max(chrom.ends)), ylim=ylim, xaxs="i", xaxt="n",
                 yaxp=c(ylim[1], ylim[2], ylim[2]-ylim[1]), yaxs="i")
             lim <- par("usr")
             lim[3:4] <- c(0, 1)
@@ -375,7 +375,7 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     }
     names(chrom.ends) <- names(chrom.lengths)
     if (length(uni.chrom) == 1) {
-        xax <- pretty(pos)
+        xax <- pretty(c(0, chrom.lengths[uni.chrom]))
         xaxlab <- xax / 1e6L
         if (is.null(xlab))
             xlab <- paste0("chromosome ", uni.chrom, ", Mbp")
@@ -387,7 +387,7 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
     }
     calls <- calls(x)[condition, , drop=FALSE]
     plot(NA, main=main, xlab=NA, ylab="frequency",
-        xlim=c(0, max(pos2)), ylim=c(-1,1), xaxs="i", xaxt="n",
+        xlim=c(0, max(chrom.ends)), ylim=c(-1,1), xaxs="i", xaxt="n",
         yaxs="i", yaxt="n",...)
     if (!is.na(misscol)) {
         rect(0, -1, max(pos2), 1, col=misscol, border=NA)
