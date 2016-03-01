@@ -56,7 +56,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
         info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
-        style <- GenomeInfoDb::seqlevelsStyle(bsgenome)
+        style <- GenomeInfoDb::seqlevelsStyle(bsgenome)[1]
         chrs <- info[, style]
     }, silent=TRUE)
     if (!is.null(excludeSeqnames)) {
