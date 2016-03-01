@@ -16,7 +16,7 @@
 
 \usage{
 estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE,
-  maxIter=1, cutoff=4, ...)
+  maxIter=1, cutoff=4, variables=c("gc", "mappability"), ...)
 }
 
 \description{
@@ -43,6 +43,9 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
         (as estimated with \code{\link[matrixStats]{madDiff}}) the cutoff for removal
         of bins with median residuals larger than the cutoff. Not used if
         \code{maxIter=1} (default).}
+    \item{variables}{A character vector specifying which variables to include
+        in the correction. Can be \code{c("gc", "mappability")} (the default),
+        \code{"gc"}, or \code{"mappability"}.}
     \item{...}{Additional aguments passed to \code{\link[stats]{loess}}.}
 }
 

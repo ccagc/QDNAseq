@@ -21,6 +21,9 @@ IMPROVEMENTS
 
     o binReadCounts() supports chunked processing of bam files
 
+    o estimateCorrection() now also allows correcting for only GC content or
+      mappability
+
 BUG FIXES 
 
     o applyFilters() and highlightFilters() now work properly when using a
