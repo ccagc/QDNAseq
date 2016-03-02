@@ -20,7 +20,7 @@ importMethodsFrom(Rsamtools, scanBam, ScanBamParam, scanBamHeader)
 importFrom(Biobase, assayDataElement, "assayDataElement<-",
     assayDataElementNames, assayDataElementReplace, assayDataNew)
 importFrom(CGHcall, CGHcall, ExpandCGHcall, postsegnormalize)
-importFrom(DNAcopy, CNA, segment, smooth.CNA)
+importFrom(DNAcopy, CNA, segment, smooth.CNA, segments.summary)
 importFrom(graphics, abline, axis, axTicks, box, contour, image, mtext, par,
     points, rect, segments, text)
 importFrom(matrixStats, binCounts, madDiff, sdDiff, rowMedians)
