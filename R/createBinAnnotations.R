@@ -18,7 +18,9 @@
 #     \item{binSize}{A @numeric scalar specifying the width of the bins
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
-#     \item{ignoreMitochondria}{Whether to ignore the mitochondria.}
+#     \item{ignoreMitochondria}{Whether to ignore the mitochondria.
+#          Mitochondria are defined as chromosomes with names that consist of 
+#         'chrM', 'chrMT', 'M' or 'MT' }
 #     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
 # }
@@ -95,13 +97,12 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     gc[is.nan(gc)] <- NA_real_
     bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
         start, end, bases, gc, stringsAsFactors=FALSE)
-    bins$chromosome <- sub("^chr", "", bins$chromosome)
     rownames(bins) <- sprintf("%s:%i-%i", bins$chromosome, bins$start, bins$end)
     bins
 }
 
 calculateMappability <- function(bins, bigWigFile,
-    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
+    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="") {
     vmsg("Calculating mappabilities per bin from file\n    ", bigWigFile,
         "\n    ", appendLF=FALSE)
     binbed <- tempfile(fileext=".bed")
@@ -143,7 +144,6 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
             combined <- rbind(combined, beds[[i]])
     combined <- combined[, 1:3]
     colnames(combined) <- c("chromosome", "start", "end")
-    combined$chromosome <- sub("^chr", "", combined$chromosome)
     combined <- combined[combined$chromosome %in% unique(bins$chromosome), ]
     combined <- combined[!is.na(combined$chromosome), ]
     combined$start <- combined$start + 1
@@ -168,7 +168,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
     }
     joined <- rbind(joined, prev)
     overlap.counter <- function(x, joined) {
-        chr <- as.integer(x["chromosome"])
+        chr <- x["chromosome"]
         start <- as.integer(x["start"])
         end <- as.integer(x["end"])
         overlaps <- joined[joined$chromosome == chr &
