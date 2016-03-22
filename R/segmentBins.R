@@ -43,6 +43,12 @@
 #         \code{smoothBy=1L}), the process is split by chromosome, seeds used
 #         per chromosome, and results not necessarily reproducible across
 #         samples.}
+#     \item{segmentStatistic}{A character vector specifying which segment 
+#         statistic to use.}
+#     \item{storeSegmentObjects}{A boolean to indicate whether to store the raw
+#         DNAcopy objects within the QDNAseq objects. Segment objects can be
+#         retrieved as segmentObject in assayData 
+#         eg. "assayDataElement(object, 'segmentObject')"}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
 # }
 #
@@ -75,7 +81,9 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun="log2", seeds=NULL, ... ) {
+    transformFun="log2", seeds=NULL, 
+    segmentStatistic="seg.mean", storeSegmentObjects=FALSE,
+    ...) {
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",
@@ -135,8 +143,15 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
         }, ..., seeds=seeds)
+        
+        if(storeSegmentObjects)
+          assayDataElementReplace(object, "segmentObj", segments) -> object
+        
+        segmentStatisticCol <- grep(segmentStatistic, 
+                                    colnames(segments.summary(segments[[1]])))
+        
         segmented <- do.call(cbind, lapply(segments, function(x)
-            rep(x$output$seg.mean, x$output$num.mark)))
+            rep(segments.summary(x)[,segmentStatisticCol], x$output$num.mark)))
         dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
     } else {
         cna <- lapply(unique(fData(object)$chromosome[condition]),
@@ -166,14 +181,20 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
         }, ..., seeds=seeds)
-
+        
+        if(storeSegmentObjects)
+          assayDataElementReplace(object, "segmentObj", segments) -> object
+        
+        segmentStatisticCol <- grep(segmentStatistic, 
+                                    colnames(segments.summary(segments[[1]])))
+        
         segmented <- do.call(rbind, lapply(segments, function(x) {
             chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),
                 ncol=ncol(x$data)-2,
                 dimnames=list(NULL, colnames(x$data)[-(1:2)]))
             for (i in 1:nrow(x$output))
                 chrSegmented[x$segRows$startRow[i]:x$segRows$endRow[i],
-                    x$output$ID[i]] <- x$output$seg.mean[i]
+                    x$output$ID[i]] <- segments.summary(x)[i, segmentStatisticCol]
             ## process results whether smoothed or not
             index <- fData(object)$chromosome == x$data$chrom[1]
             binToBin <- 0:(sum(index)-1) %/% smoothBy
