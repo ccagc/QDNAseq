@@ -18,9 +18,8 @@
 #     \item{binSize}{A @numeric scalar specifying the width of the bins
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
-#     \item{ignoreMitochondria}{Whether to ignore the mitochondria.
-#          Mitochondria are defined as chromosomes with names that consist of 
-#         'chrM', 'chrMT', 'M' or 'MT' }
+#     \item{ignoreMitochondria}{Whether to ignore the mitochondria, defined as
+#          chromosomes named 'chrM', 'chrMT', 'M', or 'MT'.}
 #     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
 # }
