@@ -104,12 +104,18 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
 
 calculateMappability <- function(bins, bigWigFile,
     bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
-    vmsg("Calculating mappabilities per bin from file\n    ", bigWigFile,
-        "\n    ", appendLF=FALSE)
+    
     binbed <- tempfile(fileext=".bed")
     mapbed <- tempfile(fileext=".bed")
-    bins <- bins[,c("chromosome", "start", "end")]
-    bins$chromosome <- paste0(chrPrefix, bins$chromosome)
+    bins <- bins[, c("chromosome", "start", "end")]
+    if (!is.null(chrPrefix) && !is.na(chrPrefix[1]) && chrPrefix[1] != "") {
+        vmsg("Prefixing chromosome names with '", chrPrefix[1], "'.")
+        bins$chromosome <- paste0(chrPrefix[1], bins$chromosome)
+    }
+    vmsg("Calculating mappabilities per bin for chromosomes:\n    ",
+        paste(unique(bins$chromosome), collapse=", "),
+        "\nfrom file:\n    ", bigWigFile, "\nchromosomes to process:   ",
+        rep(".", length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
     scipen <- options("scipen")
