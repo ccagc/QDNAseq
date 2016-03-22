@@ -97,12 +97,13 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     gc[is.nan(gc)] <- NA_real_
     bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
         start, end, bases, gc, stringsAsFactors=FALSE)
+    bins$chromosome <- sub("^chr", "", bins$chromosome)
     rownames(bins) <- sprintf("%s:%i-%i", bins$chromosome, bins$start, bins$end)
     bins
 }
 
 calculateMappability <- function(bins, bigWigFile,
-    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="") {
+    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
     vmsg("Calculating mappabilities per bin from file\n    ", bigWigFile,
         "\n    ", appendLF=FALSE)
     binbed <- tempfile(fileext=".bed")
@@ -144,6 +145,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
             combined <- rbind(combined, beds[[i]])
     combined <- combined[, 1:3]
     colnames(combined) <- c("chromosome", "start", "end")
+    combined$chromosome <- sub("^chr", "", combined$chromosome)
     combined <- combined[combined$chromosome %in% unique(bins$chromosome), ]
     combined <- combined[!is.na(combined$chromosome), ]
     combined$start <- combined$start + 1
