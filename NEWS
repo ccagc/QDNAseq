@@ -7,10 +7,6 @@ RELEASE
 
 IMPROVEMENTS
 
-    o segmentBins() now allows for selecting median as segment statistic
-
-    o segmentBins() now allows for saving raw DNAcopy objects
-
     o estimateCorrection(), segmentBins(), createBins(), and
       calculateBlacklist() now support parallel computing
       (see vignette for more details)
@@ -44,6 +40,8 @@ BUG FIXES
 
     o calculateMappability() now retains correct chromosome order even when
       bigWigAverageOverBed reorders them
+
+    o calculateBlacklist() now correctly handles non-integer chromosome names
 
 Changes in version 1.6.0 (2015-10-14)
 -------------------------------------

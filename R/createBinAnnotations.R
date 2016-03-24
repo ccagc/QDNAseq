@@ -18,7 +18,8 @@
 #     \item{binSize}{A @numeric scalar specifying the width of the bins
 #         in units of kbp (1000 base pairs), e.g. \code{binSize=15} corresponds
 #         to 15 kbp bins.}
-#     \item{ignoreMitochondria}{Whether to ignore the mitochondria.}
+#     \item{ignoreMitochondria}{Whether to ignore the mitochondria, defined as
+#          chromosomes named 'chrM', 'chrMT', 'M', or 'MT'.}
 #     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
 # }
@@ -102,12 +103,18 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
 
 calculateMappability <- function(bins, bigWigFile,
     bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
-    vmsg("Calculating mappabilities per bin from file\n    ", bigWigFile,
-        "\n    ", appendLF=FALSE)
+    
     binbed <- tempfile(fileext=".bed")
     mapbed <- tempfile(fileext=".bed")
-    bins <- bins[,c("chromosome", "start", "end")]
-    bins$chromosome <- paste0(chrPrefix, bins$chromosome)
+    bins <- bins[, c("chromosome", "start", "end")]
+    if (!is.null(chrPrefix) && !is.na(chrPrefix[1]) && chrPrefix[1] != "") {
+        vmsg("Prefixing chromosome names with '", chrPrefix[1], "'.")
+        bins$chromosome <- paste0(chrPrefix[1], bins$chromosome)
+    }
+    vmsg("Calculating mappabilities per bin for chromosomes:\n    ",
+        paste(unique(bins$chromosome), collapse=", "),
+        "\nfrom file:\n    ", bigWigFile, "\nchromosomes to process:   ",
+        rep(".", length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
     scipen <- options("scipen")
@@ -168,7 +175,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
     }
     joined <- rbind(joined, prev)
     overlap.counter <- function(x, joined) {
-        chr <- as.integer(x["chromosome"])
+        chr <- x["chromosome"]
         start <- as.integer(x["start"])
         end <- as.integer(x["end"])
         overlaps <- joined[joined$chromosome == chr &
