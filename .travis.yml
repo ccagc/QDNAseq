@@ -51,13 +51,11 @@ script:
 
 after_success:
   - $RENV dump_logs_by_extension out
-  - if [[ "$_R_COVR_" == "TRUE" && -f ".covr.R" ]]; then
+  - if [[ "$_R_COVR_" == "TRUE" && -f ".coveralls.R" ]]; then
       $RENV install_devtools;
       $RENV install_github jimhester/covr;
       curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R;
-    fi
-  - if [[ "$_R_COVR_" == "TRUE" && -f ".coveralls.R" ]]; then
-      $RENV run_script .coveralls.R
+      $RENV run_script .coveralls.R;
     fi
 
 after_failure:
