@@ -58,6 +58,29 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     condition <- condition & !is.na(fData(object)$gc)
     msg <- c(msg, 'of which with reference sequence'=sum(condition))
 
+    if (!is.na(residual) && !"residual" %in% colnames(fData(object))) {
+        if (is.numeric(residual) || residual) {
+            warning("Residuals missing from bin annotations, filter not used.")
+        }
+        residual <- NA
+    }
+    if (!is.na(blacklist) && !"blacklist" %in% colnames(fData(object))) {
+        if (is.numeric(blacklist) || blacklist) {
+            warning("Blacklisted regions missing from bin annotations, ",
+                "filter not used.")
+        }
+        blacklist <- NA
+    }
+    if (!is.na(mappability) && !"mappability" %in% colnames(fData(object))) {
+        warning("Mappabilities missing from bin annotations, filter not used.")
+        mappability <- NA
+    }
+    if (!is.na(bases) && !"bases" %in% colnames(fData(object))) {
+        warning("Percentages of characterized bases missing from bin ",
+            "annotations, filter not used.")
+        bases <- NA
+    }
+
     if (!is.na(residual)) {
         residuals <- fData(object)$residual
         cutoff <- residual * madDiff(residuals, na.rm=TRUE)
