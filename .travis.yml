@@ -26,14 +26,13 @@ env:
 
   # R versions r-builder should test on (ignored by r-travis)
   matrix:
-#    - RVERSION=3.0.3
-#    - RVERSION=3.1.2
-    - RVERSION=devel
+    - RVERSION=release
+    - RVERSION=devel _R_COVR_=TRUE
 
 
 before_install:
   - echo RENV=$RENV
-  - curl -OL https://raw.githubusercontent.com/HenrikBengtsson/r-builder/master/pkg-build.sh;
+  - curl -OL https://raw.githubusercontent.com/metacran/r-builder/master/pkg-build.sh;
   - chmod 755 $RENV
   - $RENV bootstrap
   - if [ "BOOTSTRAP_LATEX" == "true" ]; then
@@ -45,8 +44,6 @@ before_install:
 install:
   - $RENV install_r R.utils matrixStats R.cache digest future
   - $RENV install_bioc Biobase CGHbase CGHcall DNAcopy Rsamtools BSgenome GenomeInfoDb BiocStyle
-## Less overhead when not using 'install_deps'
-##  - $RENV install_deps
 
 script:
   - $RENV run_build
@@ -54,11 +51,12 @@ script:
 
 after_success:
   - $RENV dump_logs_by_extension out
-  - $RENV install_devtools
-  - $RENV install_github HenrikBengtsson/R.methodsS3@develop
-  - $RENV install_github HenrikBengtsson/covr
-  - curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R
-  - $RENV run_script .coveralls.R
+  - if [[ "$_R_COVR_" == "TRUE" && -f ".coveralls.R" ]]; then
+      $RENV install_devtools;
+      $RENV install_github jimhester/covr;
+      curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R;
+      $RENV run_script .coveralls.R;
+    fi
 
 after_failure:
   - $RENV dump_logs
