@@ -178,4 +178,82 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     object
 })
 
+# Experimental functions below!!!
+# Assess deletion, loss, gain, amplification
+
+cnvCall <- function(obj) {
+    cn <- assayDataElement(obj, "copynumber")
+    seg <- log2(assayDataElement(obj, "segmented"))
+    calls <- matrix(0, ncol=ncol(seg), nrow=nrow(seg))
+    # Duplication 
+    dupL <- log2(3.5/2)
+    dupU <- log2(4.5/2)
+    dup <- seg >= dupL & seg <= dupU
+    calls[dup] <- 2
+    print(paste("dup:", dupL, dupU, sep="\t"))
+    # Gain
+    gainL <- log2(2.5/2)
+    gainU <- log2(3.5/2)
+    gain <- seg >= gainL & seg < gainU
+    calls[gain] <- 1
+    print(paste("gain:", gainL, gainU, sep="\t"))
+    # Loss
+    lossL <- log2(0.5/2)
+    lossU <- log2(1.5/2)
+    loss <- seg >= lossL & seg <= lossU
+    calls[loss] <- -1
+    print(paste("loss:", lossL, lossU, sep="\t"))
+    # Amp 
+    amp <- seg > dupU
+    calls[amp] <- 3
+    # Norm 
+    nrm <- seg >= lossU & seg <= gainL
+    calls[nrm] <- 0
+    # Deletion
+    del <- seg < lossL
+    calls[del] <- -2
+
+    assayDataElement(obj, "cnvCalls") <- calls
+
+    return(obj)
+}
+
+betterCall <- function(obj) {
+    cn <- assayDataElement(obj, "copynumber")[,1]
+    seg <- log2(assayDataElement(obj, "segmented")[,1])
+    sd <- QDNAseq:::sdDiffTrim(cn, na.rm=T)
+    calls <- rep(0, length(seg))
+    pval <- 0.01
+    # Duplication 
+    dupL <- qnorm(pval, 1, sd, lower.tail=T)
+    dupU <- qnorm(pval, 1, sd, lower.tail=F)
+    dup <- seg >= dupL & seg <= dupU
+    calls[dup] <- 2
+    print(paste("dup:", dupL, dupU, sep="\t"))
+    # Gain
+    gainL <- qnorm(pval, log2(3/2), sd, lower.tail=T)
+    gainU <- qnorm(pval, log2(3/2), sd, lower.tail=F)
+    gain <- seg >= gainL & seg < gainU
+    calls[gain] <- 1
+    print(paste("gain:", gainL, gainU, sep="\t"))
+    # Loss
+    lossL <- qnorm(pval, -1, sd, lower.tail=T)
+    lossU <- qnorm(pval, -1, sd, lower.tail=F)
+    loss <- seg >= lossL & seg <= lossU
+    calls[loss] <- -1
+    print(paste("loss:", lossL, lossU, sep="\t"))
+    # Amp 
+    amp <- seg > dupU
+    calls[amp] <- 3
+    # Norm 
+    nrm <- seg >= lossU & seg <= gainL
+    calls[nrm] <- 0
+    # Deletion
+    del <- seg < lossL
+    calls[del] <- -2
+    return(calls)
+}
+
+
+
 # EOF

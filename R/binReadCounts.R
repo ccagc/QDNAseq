@@ -418,4 +418,24 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     readCounts
 }
 
+importReadCounts <- function(counts, bins, phenodata=NULL) {
+    if (class(bins) == 'data.frame')
+	bins <- AnnotatedDataFrame(bins)
+    if (class(phenodata) == 'data.frame')
+	phenodata <- AnnotatedDataFrame(phenodata)
+    if (is.null(phenodata)) {
+	condition <- binsToUse(bins)
+	phenodata <- AnnotatedDataFrame(
+					data.frame(
+						   sampleNames=colnames(counts),
+						   total.reads=colSums(counts),
+						   used.reads=colSums(counts[condition, , drop=FALSE])
+						   ))
+    }
+    object <- new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
+    return(object)
+}
+
+
+
 # EOF
