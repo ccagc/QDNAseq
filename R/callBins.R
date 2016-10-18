@@ -77,7 +77,7 @@
 setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     definition=function(object, organism=c("human", "other"),
     method=c("CGHcall", "cutoff"),
-    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
+    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, duplication=3.5, amplification=4.5) / 2),
     ...) {
 
     method <- match.arg(method)
@@ -147,9 +147,16 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
                 " < ", appendLF=FALSE)
         vmsg("loss < ", round(cutoffLosses[1], digits=2), " < normal < ",
             round(cutoffGains[1], digits=2), " gain", appendLF=FALSE)
-        if (!is.na(cutoffGains[2]))
-            vmsg(" < ", round(cutoffGains[2], digits=2), " < amplification",
+        if (!is.na(cutoffGains[3])) {
+            vmsg(" < ", round(cutoffGains[2], digits=2), " < duplication",
                 appendLF=FALSE)
+            vmsg(" < ", round(cutoffGains[3], digits=2), " < amplification",
+                appendLF=FALSE)
+	} else {
+            if (!is.na(cutoffGains[2]))
+                vmsg(" < ", round(cutoffGains[2], digits=2), " < amplification",
+                    appendLF=FALSE)
+	}
         vmsg()
         segmentedMatrix <- log2adhoc(assayDataElement(object, "segmented"))
         ## multiplication with 1L turns logical values into integers
@@ -163,12 +170,21 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             if ("probdloss" %in% assayDataElementNames(object))
                 probdloss(object) <- NULL
         }
-        if (!is.na(cutoffGains[2])) {
+        if (!is.na(cutoffGains[3])) {
             callsMatrix[segmentedMatrix > cutoffGains[2]] <- 2L
-            probamp(object) <- (callsMatrix == 2) * 1
+            assayDataElement(object, "probdgain") <- (callsMatrix == 2) * 1
+            callsMatrix[segmentedMatrix > cutoffGains[3]] <- 3L
+            probamp(object) <- (callsMatrix == 3) * 1
         } else {
-            if ("probamp" %in% assayDataElementNames(object))
-                probamp(object) <- NULL
+	    if (!is.na(cutoffGains[2])) {
+	        callsMatrix[segmentedMatrix > cutoffGains[2]] <- 2L
+                probamp(object) <- (callsMatrix == 2) * 1
+            } else {
+            	if ("probamp" %in% assayDataElementNames(object))
+                    probamp(object) <- NULL
+                #if ("probdgain" %in% assayDataElementNames(object))
+                #    assayDataElement(object, "probdgain") <- NULL
+	    }
         }
         calls(object) <- callsMatrix
         probloss(object) <- (callsMatrix == -1) * 1
@@ -181,46 +197,9 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
 # Experimental functions below!!!
 # Assess deletion, loss, gain, amplification
 
-cnvCall <- function(obj) {
-    cn <- assayDataElement(obj, "copynumber")
-    seg <- log2(assayDataElement(obj, "segmented"))
-    calls <- matrix(0, ncol=ncol(seg), nrow=nrow(seg))
-    # Duplication 
-    dupL <- log2(3.5/2)
-    dupU <- log2(4.5/2)
-    dup <- seg >= dupL & seg <= dupU
-    calls[dup] <- 2
-    print(paste("dup:", dupL, dupU, sep="\t"))
-    # Gain
-    gainL <- log2(2.5/2)
-    gainU <- log2(3.5/2)
-    gain <- seg >= gainL & seg < gainU
-    calls[gain] <- 1
-    print(paste("gain:", gainL, gainU, sep="\t"))
-    # Loss
-    lossL <- log2(0.5/2)
-    lossU <- log2(1.5/2)
-    loss <- seg >= lossL & seg <= lossU
-    calls[loss] <- -1
-    print(paste("loss:", lossL, lossU, sep="\t"))
-    # Amp 
-    amp <- seg > dupU
-    calls[amp] <- 3
-    # Norm 
-    nrm <- seg >= lossU & seg <= gainL
-    calls[nrm] <- 0
-    # Deletion
-    del <- seg < lossL
-    calls[del] <- -2
-
-    assayDataElement(obj, "cnvCalls") <- calls
-
-    return(obj)
-}
-
 betterCall <- function(obj) {
     cn <- assayDataElement(obj, "copynumber")[,1]
-    seg <- log2(assayDataElement(obj, "segmented")[,1])
+    seg <- log2adhoc(assayDataElement(obj, "segmented")[,1])
     sd <- QDNAseq:::sdDiffTrim(cn, na.rm=T)
     calls <- rep(0, length(seg))
     pval <- 0.01
