@@ -161,9 +161,12 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
 
 exportVCF <- function(obj) {
 
-    calls <- assayDataElement(obj, "cnvCalls")
-    segments <- log2(assayDataElement(obj, "segmented"))
+    calls <- assayDataElement(obj, "calls")
+    segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
+    fd <- fData(obj)
+    pd <- pData(obj)
+    
     vcfHeader <- cbind(c(
 			 '##fileformat=VCFv4.2',
 			 paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
@@ -178,13 +181,10 @@ exportVCF <- function(obj) {
 			 '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
 			 '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
 			 ))
-    fd <- fData(obj)
-    pd <- pData(obj)
-
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
-	sel <- d[,4] != 0
+	sel <- d[,4] != 0 & !is.na(d[,4])
 
 	dsel <- d[sel,]
 
@@ -231,20 +231,6 @@ exportVCF <- function(obj) {
 	write.table(vcfHeader, fname, quote=F, sep="\t", col.names=FALSE, row.names=FALSE)
 	suppressWarnings(write.table(out, fname, quote=F, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
     }
-}
-
-writeCalls <- function(calls, file, object) {
-	fd <- fData(object)
-        chromosome <- fd$chromosome
-        start <- fd$start
-        end <- fd$end
-        feature <- rownames(fd)
-        dat <- calls
-        out <- data.frame(chromosome = chromosome, start = start,
-            end = end, feature = feature, dat, check.names = FALSE,
-            stringsAsFactors = FALSE)
-        cat("#type=COPY_NUMBER\n#track coords=1\n", file = file)
-        suppressWarnings(write.table(out, file = file, append = TRUE, quote = FALSE, sep = "\t", na = "", row.names = FALSE))
 }
 
 #EOF
