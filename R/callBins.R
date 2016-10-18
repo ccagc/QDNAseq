@@ -77,7 +77,7 @@
 setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     definition=function(object, organism=c("human", "other"),
     method=c("CGHcall", "cutoff"),
-    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, duplication=3.5, amplification=4.5) / 2),
+    cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
     ...) {
 
     method <- match.arg(method)
