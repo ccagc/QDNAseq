@@ -21,7 +21,7 @@
 #         file names with extension ext removed.}
 #     \item{phenofile}{An optional character(1) specifying a file name for
 #         phenotype data.}
-#     \item{chunkSize}{An optional integer specifying the chunk size (nt) by 
+#     \item{chunkSize}{An optional integer specifying the chunk size (nt) by
 #         which to process the bam file.}
 #     \item{cache}{Whether to read and write intermediate cache files, which
 #         speeds up subsequent analyses of the same files. Requires packages
@@ -142,10 +142,10 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         if (!is.null(chunkSize)) {
             counts[, i] <- .binReadCountsPerChunk(bins=bins,
                 bamfile=bamfiles[i], chunkSize=chunkSize,
-                cache=cache, force=force, isPaired=isPaired, 
-                isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery, 
-                hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand, 
-                isMateMinusStrand=isMateMinusStrand, 
+                cache=cache, force=force, isPaired=isPaired,
+                isProperPair=isProperPair, isUnmappedQuery=isUnmappedQuery,
+                hasUnmappedMate=hasUnmappedMate, isMinusStrand=isMinusStrand,
+                isMateMinusStrand=isMateMinusStrand,
                 isFirstMateRead=isFirstMateRead, isSecondMateRead=isSecondMateRead,
                 isSecondaryAlignment=isSecondaryAlignment,
                 isNotPassingQualityControls=isNotPassingQualityControls,
@@ -216,19 +216,13 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (!is.numeric(chunkSize))
         chunkSize <- max(targets) + 1
 
-    seqNames <- names(targets)
-
-# Initialize readCounts
-    readCounts <- integer(length=nrow(bins))
-
-    for (i in 1:length(targets)) {
-        seqName <- seqNames[i]
+    countsPerTarget <- bplapply(names(targets), function(seqName) {
+        readCounts <- integer(length=nrow(bins))
         seqNameI <- sub('chr', '', seqName)
-        seqLength <- targets[i]
-        for (chunk in 1:ceiling(seqLength / chunkSize)) {
+        for (chunk in 1:ceiling(targets[seqName] / chunkSize)) {
             chunkStart <- (chunk - 1) * chunkSize + 1
             chunkEnd <- chunk * chunkSize + 1
-            params <- ScanBamParam(flag=flag, 
+            params <- ScanBamParam(flag=flag,
                 what=c('rname', 'pos', 'mapq'),
                 which=GRanges(seqName, IRanges(chunkStart, chunkEnd)))
             reads <- scanBam(bamfile, param=params)
@@ -241,8 +235,6 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
                 reads <- lapply(reads, FUN=function(x) x[keep])
             }
 
-# Drop quality scores - not needed anymore
-            reads[['mapq']] <- NULL
             hits <- list()
             hits[[seqNameI]] <- reads[['pos']]
 
@@ -255,24 +247,16 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
                 bins$end <= chunkEnd
             )
 
-## No bins for this chromosome?
             if (length(keep) == 0L)
                 next
 
             chromosomeBreaks <- c(bins$start[keep], max(bins$end[keep]) + 1)
             counts <- binCounts(hits[[seqNameI]], bx=chromosomeBreaks)
             readCounts[keep] <- readCounts[keep] + counts
-
-## Not needed anymore
-            chromosomeBreaks <- keep <- count <- NULL
-
-## Not needed anymore
-            rm(list=c("hits", "reads"))
-            gc(FALSE)
-
         }
-    }
-    readCounts
+        readCounts
+    })
+    Reduce('+', countsPerTarget)
 }
 
 .binReadCountsPerSample <- function(bins, bamfile, cache, force,
@@ -399,7 +383,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         readCounts[keep] <- readCounts[keep] + counts
 
         ## Not needed anymore
-        chromosomeBreaks <- keep <- count <- NULL
+        chromosomeBreaks <- keep <- counts <- NULL
     }
     ## Not needed anymore
     rm(list=c("hits"))
