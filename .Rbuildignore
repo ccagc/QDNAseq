@@ -29,3 +29,5 @@ README[.]md
 ^[.]devel
 ^[.]test
 ^[.]check
+^.*\.Rproj$
+^\.Rproj\.user$
