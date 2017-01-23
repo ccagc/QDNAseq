@@ -83,6 +83,12 @@ files will be used as input in future \R{} sessions, option \Rcode{cache=TRUE}
 can be used to cache intermediate files, which will speed up future analyses.
 Caching is done with package \CRANpkg{R.cache}.
 
+For large BAM files it is advisable to use the \Rcode{chunkSize} parameter to
+control memory usage. A non-\Rcode{NULL}, non-numeric value will use the length
+of the longest chromosome, effectively chunking by chromosome. A numeric value
+will use that many reads at a time. Note that total peak memory usage is
+controlled both by the chunk size and the number of parallel workers. See \autoref{sec:parallel}.
+
 For the purpose of this tutorial, we load an example data set of chromosomes
 7--10 of low grade glioma sample LGG150.
 
@@ -295,6 +301,7 @@ objects by running it before segmentation or calling.
 \clearpage
 
 \section{Parallel computation}
+\label{sec:parallel}
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
 After installing it with \Rcode{install.packages("future")}, all that is
@@ -304,7 +311,10 @@ that is to include it in your \file{$\sim$/.Rprofile}.
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
 \Rfunction{estimateCorrection()}, \Rfunction{segmentBins()},
-\Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}.
+\Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}. \Rfunction{binReadCounts()}
+parallelizes by chromosome when \Rcode{chunkSize} is used. The parallel
+environment used for this can be controlled using \Biocpkg{BiocParallel}'s
+standard configuration methods (e.g. \Rfunction{register()}, \Robject{mc.cores}).
 
 However, when argument \Rcode{method="CGHcall"} (which is the default),
 function \Rfunction{callBins()} calls function \Rfunction{CGHcall()} from
