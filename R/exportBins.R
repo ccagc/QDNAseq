@@ -233,4 +233,68 @@ exportVCF <- function(obj) {
     }
 }
 
+
+
+exportSEG <- function(obj) {
+
+    calls <- assayDataElement(obj, "calls")
+    segments <- log2adhoc(assayDataElement(obj, "segmented"))
+
+    fd <- fData(obj)
+    pd <- pData(obj)
+    
+    Header <- paste("SAMPLE_NAME", "CHROMOSOME", "START", "END", "DATAPOINTS", "SEGMENTATION_MEAN", sep="\t")
+
+    for (i in 1:ncol(calls)) {	
+	d <- cbind(fd[,1:3],calls[,i], segments[,i])
+	sel <- d[,4] != 0 & !is.na(d[,4])
+
+	dsel <- d[sel,]
+
+	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
+
+	endI <- cumsum(rleD$lengths)
+	posI <- c(1, endI[-length(endI)] + 1)
+
+	chr <- dsel[posI,1]
+	pos <- dsel[posI,2]
+	end <- dsel[endI,3]
+	score <- dsel[posI,4]
+	segVal <- round(dsel[posI,5],2)
+
+	svtype <- rep(NA, length(chr)) 
+	svlen <- rep(NA, length(chr)) 
+	gt <- rep(NA, length(chr)) 
+	bins <- rleD$lengths
+	svtype[dsel[posI,4] <= -1] <- "DEL"
+	svtype[dsel[posI,4] >= 1] <- "DUP"
+	svlen <- end - pos + 1
+
+	gt[score == -2] <- "1/1"	
+	gt[score == -1] <- "0/1"	
+	gt[score == 1] <- "0/1"	
+	gt[score == 2] <- "0/1"	
+	gt[score == 3] <- "0/1"	
+
+	options(scipen=100)
+
+	id <- "."
+	ref <- "<DIP>"
+	alt <- paste("<", svtype, ">", sep="")
+	qual <- 1000
+	filter <- "PASS"
+	info <- paste("SVTYPE=", svtype, ";END=", end, ";SVLEN=", svlen, ";BINS=", bins, ";SCORE=", score, ";LOG2CNT=", segVal, sep="")
+	format <- "GT"
+	sample <- gt
+	out <- cbind(sample, chr, pos, end, bins, segVal)	
+#	colnames(out) <- c(""#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
+	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "END", "DATAPOINTS", "SEGMENTATION_MEAN")
+
+	fname <- paste(pd$name[i], ".vcf", sep="")
+
+	#write.table(Header, fname, quote=F, sep="\t", col.names=FALSE, row.names=FALSE)
+	suppressWarnings(write.table(out, fname, quote=F, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+    }
+}
+
 #EOF
