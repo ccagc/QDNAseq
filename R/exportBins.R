@@ -266,6 +266,7 @@ exportSEG <- function(obj, fnames=NULL) {
 	end <- dsel[endI,3]
 	score <- dsel[posI,4]
 	segVal <- round(dsel[posI,5],2)
+	bins <- rleD$lengths
 
 	options(scipen=100)
 
