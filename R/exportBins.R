@@ -270,12 +270,12 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	options(scipen=100)
 
-	out <- cbind(sample, chr, pos, end, bins, segVal)	
+	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
 	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
 	fname <- paste(fnames[i], ".seg", sep="")
 
-	suppressWarnings(write.table(out, fname, quote=F, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+	write.table(out, fname, quote=F, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
     }
 }
 
