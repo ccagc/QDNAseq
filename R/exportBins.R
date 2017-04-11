@@ -57,7 +57,8 @@
 # @keyword IO
 # @keyword file
 #*/#########################################################################
-exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
+exportBins <- function(object, file, 
+    format=c("tsv", "igv", "bed", "vcf", "seg"),
     type=c("copynumber", "segments", "calls"),
     filter=TRUE, logTransform=TRUE, digits=3,
     chromosomeReplacements=c("23"="X", "24"="Y", "25"="MT"), ...) {
@@ -138,7 +139,7 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
         cat('#type=COPY_NUMBER\n#track coords=1\n', file=file)
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
-    }  else if (format == "bed" ) {
+    } else if (format == "bed" ) {
         for (i in seq_along(sampleNames(object))) {
             if (length(grep("%s", file) > 0L)) {
                 filename <- sprintf(file, sampleNames(object)[i])
@@ -154,6 +155,10 @@ exportBins <- function(object, file, format=c("tsv", "igv", "bed"),
                 col.names=FALSE,
                 quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
         }
+    } else if (format == "vcf") {
+	exportVCF(object)
+    } else if (format == "seg") {
+        exportSEG(object)
     }
     options(scipen=tmp)
 }
