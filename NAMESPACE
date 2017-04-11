@@ -30,6 +30,7 @@ importFrom(stats, aggregate, approxfun, density, formula, lm, loess, median, pre
 importFrom(utils, data, maintainer, packageVersion, read.table, write.table)
 importFrom(GenomicRanges, GRanges)
 importFrom(IRanges, IRanges)
+importFrom(BiocParallel, bplapply)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS
@@ -44,6 +45,7 @@ export("compareToReference")
 export("correctBins")
 export("estimateCorrection")
 export("exportBins")
+export("exportVCF")
 export("frequencyPlot")
 export("getBinAnnotations")
 export("highlightFilters")
@@ -60,6 +62,7 @@ export("smoothOutlierBins")
 export("createBins")
 export("calculateMappability")
 export("calculateBlacklist")
+export("calculateBlacklistByRegions")
 export("iterateResiduals")
 
 export("chromosomes")

@@ -83,6 +83,13 @@ files will be used as input in future \R{} sessions, option \Rcode{cache=TRUE}
 can be used to cache intermediate files, which will speed up future analyses.
 Caching is done with package \CRANpkg{R.cache}.
 
+For large BAM files it is advisable to use the \Rcode{chunkSize} parameter to
+control memory usage. A non-\Rcode{NULL}, non-numeric value will use the length
+of the longest chromosome, effectively chunking by chromosome. A numeric value
+will use that many reads at a time. Note that total peak memory usage is
+controlled both by the chunk size and the number of parallel workers. See
+\autoref{sec:parallel}.
+
 For the purpose of this tutorial, we load an example data set of chromosomes
 7--10 of low grade glioma sample LGG150.
 
@@ -260,6 +267,13 @@ dev.off()
   \includegraphics{calls}
 \end{figure}
 
+Called data can be exported as VCF file or SEG for further downstream analysis.
+
+<<eval=FALSE>>=
+exportBins(copyNumbersCalled, format="vcf")
+exportBins(copyNumbersCalled, format="seg")
+@
+
 It should be noted that \Biocpkg{CGHcall} (which \Rfunction{callBins()} uses by
 default) was developed for the analysis of sets of cancer samples. It is based
 on a mixture model, and when there are not enough aberrations present in the
@@ -295,6 +309,7 @@ objects by running it before segmentation or calling.
 \clearpage
 
 \section{Parallel computation}
+\label{sec:parallel}
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
 After installing it with \Rcode{install.packages("future")}, all that is
@@ -304,7 +319,11 @@ that is to include it in your \file{$\sim$/.Rprofile}.
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
 \Rfunction{estimateCorrection()}, \Rfunction{segmentBins()},
-\Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}.
+\Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}. 
+\Rfunction{binReadCounts()} parallelizes by chromosome when \Rcode{chunkSize} 
+is used. The parallel environment used for this can be controlled using 
+\Biocpkg{BiocParallel}'s standard configuration methods (e.g. 
+\Rfunction{register()}, \Robject{mc.cores}).
 
 However, when argument \Rcode{method="CGHcall"} (which is the default),
 function \Rfunction{callBins()} calls function \Rfunction{CGHcall()} from
@@ -460,6 +479,15 @@ ENCODE's download section of the UCSC Genome Browser} for hg19.
 bins$blacklist <- calculateBlacklist(bins,
   bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
   '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+@
+
+For any list of regions, the percentage of bin overlap can be calculated by using
+the following command. 
+
+<<eval=FALSE>>=
+# generic calculation of overlap with blacklisted regions
+bins$blacklist <- calculateBlacklistByRegions(bins, 
+  cbind(chromosome, bpStart, bpEnd))
 @
 
 To calculate median residuals of the LOESS fit from a control dataset, the
