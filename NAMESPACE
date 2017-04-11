@@ -62,6 +62,7 @@ export("smoothOutlierBins")
 export("createBins")
 export("calculateMappability")
 export("calculateBlacklist")
+export("calculateBlacklistByRegions")
 export("iterateResiduals")
 
 export("chromosomes")
