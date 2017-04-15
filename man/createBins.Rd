@@ -12,6 +12,7 @@
 
 \alias{calculateMappability}
 \alias{calculateBlacklist}
+\alias{calculateBlacklistByRegions}
 \alias{iterateResiduals}
 
 \title{Builds bin annotation data for a particular bin size}
