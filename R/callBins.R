@@ -200,7 +200,7 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
 betterCall <- function(obj) {
     cn <- assayDataElement(obj, "copynumber")[,1]
     seg <- log2adhoc(assayDataElement(obj, "segmented")[,1])
-    sd <- QDNAseq:::sdDiffTrim(cn, na.rm=T)
+    sd <- sdDiffTrim(cn, na.rm=T)
     calls <- rep(0, length(seg))
     pval <- 0.01
     # Duplication 

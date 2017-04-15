@@ -15,9 +15,9 @@
 \title{Exports to a file}
 
 \usage{
-exportBins(object, file, format=c("tsv", "igv", "bed"), type=c("copynumber", "segments",
-  "calls"), filter=TRUE, logTransform=TRUE, digits=3,
-  chromosomeReplacements=c(`23` = "X", `24` = "Y", `25` = "MT"), ...)
+exportBins(object, file, format=c("tsv", "igv", "bed", "vcf", "seg"),
+  type=c("copynumber", "segments", "calls"), filter=TRUE, logTransform=TRUE,
+  digits=3, chromosomeReplacements=c(`23` = "X", `24` = "Y", `25` = "MT"), ...)
 }
 
 \description{
