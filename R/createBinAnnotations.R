@@ -320,7 +320,7 @@ calculateBlacklistByRegions <- function(bins, regions) {
         s:e
     })) -> res3
     
-    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, length(res3))))
+    res <- rbind(res12, data.frame(Group.1 = res3, x = rep(binSize, length(res3))))
     
     aggregate(res$x, list(res$Group.1), max) -> res
     
