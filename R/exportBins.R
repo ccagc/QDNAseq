@@ -156,9 +156,9 @@ exportBins <- function(object, file,
                 quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
         }
     } else if (format == "vcf") {
-	exportVCF(object)
+	exportVCF(object, ...)
     } else if (format == "seg") {
-        exportSEG(object)
+        exportSEG(object, ...)
     }
     options(scipen=tmp)
 }
@@ -240,7 +240,7 @@ exportVCF <- function(obj) {
 
 
 
-exportSEG <- function(obj, fnames=NULL) {
+exportSEG <- function(obj, fnames=NULL, includeZero=FALSE, ...) {
 
     calls <- assayDataElement(obj, "calls")
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
@@ -257,8 +257,13 @@ exportSEG <- function(obj, fnames=NULL) {
  
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
 
+	if(!includeZero) {
+		sel <- d[,4] != 0 & !is.na(d[,4])
+	} else {
+		sel <- !is.na(d[,4])
+	}
+	    
 	dsel <- d[sel,]
 
 	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
@@ -280,7 +285,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	fname <- paste(fnames[i], ".seg", sep="")
 
-	write.table(out, fname, quote=F, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE, ...)
     }
 }
 
