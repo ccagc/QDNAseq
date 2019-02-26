@@ -249,9 +249,13 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         points(pos, dels, pch=25, col=pointcol, bg=pointcol, cex=0.5)
         if (doSegments) {
             amps <- assayDataElement(x, "segmented")[condition, i]
+            if (logTransform)
+                amps <- log2adhoc(amps)
             amps[amps <= ylim[2]] <- NA_real_
             amps[!is.na(amps)] <- ylim[2] + 0.01 * (ylim[2]-ylim[1])
             dels <- assayDataElement(x, "segmented")[condition, i]
+            if (logTransform)
+                dels <- log2adhoc(dels)
             dels[dels >= ylim[1]] <- NA_real_
             dels[!is.na(dels)] <- ylim[1] - 0.01 * (ylim[2]-ylim[1])
             points(pos, amps, pch=24, col=segcol, bg=segcol, cex=0.5)
