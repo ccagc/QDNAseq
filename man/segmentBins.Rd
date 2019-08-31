@@ -55,6 +55,12 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
         \code{smoothBy=1L}), the process is split by chromosome, seeds used
         per chromosome, and results not necessarily reproducible across
         samples.}
+    \item{segmentStatistic}{A character vector specifying which segment
+        statistic to use.}
+    \item{storeSegmentObjects}{A boolean to indicate whether to store the raw
+        DNAcopy objects within the QDNAseq objects. Segment objects can be
+        retrieved as segmentObject in assayData
+        eg. "assayDataElement(object, 'segmentObject')"}
     \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
 }
 
