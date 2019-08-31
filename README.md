@@ -1,13 +1,13 @@
-### QDNAseq: Quantitative DNA sequencing for chromosomal aberrations
+### QDNAseq: Quantitative DNA Sequencing for Chromosomal Aberrations
 
 This repository contains source code for the R/Bioconductor package
-[QDNAseq](http://bioconductor.org/packages/release/bioc/html/QDNAseq.html).
+[QDNAseq](https://bioconductor.org/packages/release/bioc/html/QDNAseq.html).
 For a description, please see
-[this article](http://genome.cshlp.org/content/24/12/2022.long),
+[Scheinin et al. (2014)](https://genome.cshlp.org/content/24/12/2022.long),
 and for usage, the vignette from Bioconductor
-[development version](http://bioconductor.org/packages/devel/bioc/vignettes/QDNAseq/inst/doc/QDNAseq.pdf)
+[development version](https://bioconductor.org/packages/devel/bioc/vignettes/QDNAseq/inst/doc/QDNAseq.pdf)
 or the
-[latest release](http://bioconductor.org/packages/release/bioc/vignettes/QDNAseq/inst/doc/QDNAseq.pdf)
+[latest release](https://bioconductor.org/packages/release/bioc/vignettes/QDNAseq/inst/doc/QDNAseq.pdf).
 
 #### Citing QDNAseq
 
@@ -22,8 +22,8 @@ Research* **24**: 2022-2032
 #### Software quality
 
 * R CMD check status:
-  - Bioconductor development version: [![BUILD/CHECK Report](http://bioconductor.org/shields/build/devel/bioc/QDNAseq.svg)](http://master.bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/)
-  - Bioconductor release version: [![BUILD/CHECK Report](http://bioconductor.org/shields/build/release/bioc/QDNAseq.svg)](http://master.bioconductor.org/checkResults/release/bioc-LATEST/QDNAseq/)
+  - Bioconductor development version: [![BUILD/CHECK Report](https://bioconductor.org/shields/build/devel/bioc/QDNAseq.svg)](https://master.bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/)
+  - Bioconductor release version: [![BUILD/CHECK Report](https://bioconductor.org/shields/build/release/bioc/QDNAseq.svg)](https://master.bioconductor.org/checkResults/release/bioc-LATEST/QDNAseq/)
   - Travis CI: [![Build Status](https://travis-ci.org/ccagc/QDNAseq.svg?branch=master)](https://travis-ci.org/ccagc/QDNAseq)
 * Test coverage status:
-  - Coveralls CI: [![Coverage Status](https://coveralls.io/repos/ccagc/QDNAseq/badge.png?branch=master)](https://coveralls.io/r/ccagc/QDNAseq?branch=master)
+  - <a href="https://codecov.io/gh/ccagc/QDNAseq"><img src="https://codecov.io/gh/ccagc/QDNAseq/branch/develop/graph/badge.svg" alt="Coverage Status"/></a>
