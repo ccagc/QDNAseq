@@ -54,7 +54,6 @@ bioc_packages:
   - BiocStyle
   - BSgenome
   - GenomeInfoDb
-	
 
 notifications:
   email:
