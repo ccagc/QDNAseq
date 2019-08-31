@@ -2,70 +2,61 @@
 # Travis-CI configuration for R packages
 #
 # REFERENCES:
-# * Travis CI: https://travis-ci.org/
-# * r-builder: https://github.com/metacran/r-builder
+# * Travis CI: https://docs.travis-ci.com/user/languages/r
 # * covr: https://github.com/jimhester/covr
-# * Coveralls: https://coveralls.io/
 #
-# Validate your .travis.yml file at http://lint.travis-ci.org/
+# YAML validated using http://www.yamllint.com/
 #----------------------------------------------------------------
-language: c
+language: r
+sudo: false
+cache: packages
+warnings_are_errors: false
+r_check_args: --as-cran
+latex: false
 
-env:
-  global:
-    - RENV="./pkg-build.sh"  ## r-builder
-    - R_BUILD_ARGS="--no-manual"
-    - R_CHECK_ARGS="--no-manual --as-cran"
-    - _R_CHECK_FORCE_SUGGESTS_=false
-    # Need LaTeX? (very time consuming!)
-    - BOOTSTRAP_LATEX=""
-    # time consuming because LaTeX needs to be installed
-    - R_BUILD_ARGS="--no-build-vignettes ${R_BUILD_ARGS}"
-    - R_CHECK_ARGS="--no-build-vignettes ${R_CHECK_ARGS}"
-    - BIOC_USE_DEVEL="TRUE"
-
-  # R versions r-builder should test on (ignored by r-travis)
-  matrix:
-    - RVERSION=release
-    - RVERSION=devel _R_COVR_=TRUE
-
-
-before_install:
-  - echo RENV=$RENV
-  - curl -OL https://raw.githubusercontent.com/metacran/r-builder/master/pkg-build.sh;
-  - chmod 755 $RENV
-  - $RENV bootstrap
-  - if [ "BOOTSTRAP_LATEX" == "true" ]; then
-      (cd /tmp && curl -OL http://mirrors.ctan.org/macros/latex/contrib/xcolor.zip && cd /usr/share/texmf/tex/latex && sudo unzip /tmp/xcolor.zip && cd xcolor && sudo latex xcolor.ins && sudo texhash);
-    else
-      export R_RSP_COMPILELATEX_FALLBACK="copy-force";
-    fi
-
-install:
-  - $RENV install_r R.utils matrixStats R.cache digest future
-  - $RENV install_bioc Biobase CGHbase CGHcall DNAcopy Rsamtools BSgenome GenomeInfoDb BiocStyle
-
-script:
-  - $RENV run_build
-  - $RENV run_check
-
-after_success:
-  - $RENV dump_logs_by_extension out
-  - if [[ "$_R_COVR_" == "TRUE" && -f ".coveralls.R" ]]; then
-      $RENV install_devtools;
-      $RENV install_github jimhester/covr;
-      curl -OL https://raw.githubusercontent.com/HenrikBengtsson/covr-utils/master/covr-utils.R;
-      $RENV run_script .coveralls.R;
-    fi
-
-after_failure:
-  - $RENV dump_logs
+matrix:
+  include:
+    - os: linux
+      r: oldrel
+    - os: linux
+      r: release
+    - os: linux
+      r: devel
+      env:
+        - R_KEEP_PKG_SOURCE=yes
+        - _R_S3_METHOD_LOOKUP_BASEENV_AFTER_GLOBALENV_=true
+        - _R_S3_METHOD_LOOKUP_USE_TOPENV_AS_DEFENV_=true
+        - _R_CHECK_CONNECTIONS_LEFT_OPEN_=true
+        - _R_CHECK_LENGTH_1_CONDITION_=true
+        - _R_CHECK_LENGTH_1_LOGIC2_=true
+    - os: osx
+      r: oldrel
+    - os: osx
+      r: release
+    - os: linux
+      r: release
+      r_check_args: --no-build-vignettes --no-codoc --no-examples --no-tests --no-manual --ignore-vignettes
+      r_packages:
+        - covr
+      after_success:
+        - Rscript -e 'covr::codecov(quiet=FALSE)'
+      env: NB='w/ covr' ## Just a label
+    
+bioc_packages:
+  - Biobase
+  - CGHbase
+  - CGHcall
+  - DNAcopy
+  - GenomicRanges
+  - IRanges
+  - Rsamtools
+  - BiocParallel
+  - BiocStyle
+  - BSgenome
+  - GenomeInfoDb
+	
 
 notifications:
   email:
     on_success: change
     on_failure: change
-
-branches:
-  except:
-   - /-expt$/
