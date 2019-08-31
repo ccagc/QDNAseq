@@ -14,6 +14,12 @@ warnings_are_errors: false
 #r_check_args: --as-cran
 latex: true
 
+before_install:
+  - tlmgr install bera
+  - tlmgr install nowidow
+  - tlmgr install parnotes
+  - tlmgr install marginfix
+
 r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
 r_check_args: --as-cran --no-build-vignettes --no-vignettes
 
@@ -23,6 +29,7 @@ matrix:
       r: oldrel
     - os: linux
       r: release
+      r_build_args: ## WORKAROUND: sectsty.sty missing
     - os: linux
       r: devel
       env:
