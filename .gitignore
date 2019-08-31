@@ -3,3 +3,6 @@
 **/*~
 .check
 .test
+revdep/checks/*
+revdep/data.sqlite
+revdep/library/*
