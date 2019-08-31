@@ -233,8 +233,8 @@ exportVCF <- function(obj) {
 
 	fname <- paste(pd$name[i], ".vcf", sep="")
 
-	write.table(vcfHeader, fname, quote=F, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, fname, quote=F, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+	write.table(vcfHeader, fname, quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
+	suppressWarnings(write.table(out, fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
     }
 }
 
@@ -280,7 +280,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	fname <- paste(fnames[i], ".seg", sep="")
 
-	write.table(out, fname, quote=F, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
     }
 }
 

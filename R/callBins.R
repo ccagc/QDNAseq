@@ -200,24 +200,24 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
 betterCall <- function(obj) {
     cn <- assayDataElement(obj, "copynumber")[,1]
     seg <- log2adhoc(assayDataElement(obj, "segmented")[,1])
-    sd <- sdDiffTrim(cn, na.rm=T)
+    sd <- sdDiffTrim(cn, na.rm=TRUE)
     calls <- rep(0, length(seg))
     pval <- 0.01
     # Duplication 
-    dupL <- qnorm(pval, 1, sd, lower.tail=T)
-    dupU <- qnorm(pval, 1, sd, lower.tail=F)
+    dupL <- qnorm(pval, 1, sd, lower.tail=TRUE)
+    dupU <- qnorm(pval, 1, sd, lower.tail=FALSE)
     dup <- seg >= dupL & seg <= dupU
     calls[dup] <- 2
     print(paste("dup:", dupL, dupU, sep="\t"))
     # Gain
-    gainL <- qnorm(pval, log2(3/2), sd, lower.tail=T)
-    gainU <- qnorm(pval, log2(3/2), sd, lower.tail=F)
+    gainL <- qnorm(pval, log2(3/2), sd, lower.tail=TRUE)
+    gainU <- qnorm(pval, log2(3/2), sd, lower.tail=FALSE)
     gain <- seg >= gainL & seg < gainU
     calls[gain] <- 1
     print(paste("gain:", gainL, gainU, sep="\t"))
     # Loss
-    lossL <- qnorm(pval, -1, sd, lower.tail=T)
-    lossU <- qnorm(pval, -1, sd, lower.tail=F)
+    lossL <- qnorm(pval, -1, sd, lower.tail=TRUE)
+    lossU <- qnorm(pval, -1, sd, lower.tail=FALSE)
     loss <- seg >= lossL & seg <= lossU
     calls[loss] <- -1
     print(paste("loss:", lossL, lossU, sep="\t"))
