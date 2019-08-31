@@ -11,8 +11,11 @@ language: r
 sudo: false
 cache: packages
 warnings_are_errors: false
-r_check_args: --as-cran
+#r_check_args: --as-cran
 latex: true
+
+r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
+r_check_args: --as-cran --no-build-vignettes --no-vignettes
 
 matrix:
   include:
