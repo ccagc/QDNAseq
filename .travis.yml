@@ -11,7 +11,7 @@ language: r
 sudo: false
 cache: packages
 warnings_are_errors: false
-#r_check_args: --as-cran
+r_check_args: --as-cran
 latex: true
 
 before_install:
@@ -20,16 +20,12 @@ before_install:
   - tlmgr install parnotes
   - tlmgr install marginfix
 
-r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
-r_check_args: --as-cran --no-build-vignettes --no-vignettes
-
 matrix:
   include:
     - os: linux
       r: oldrel
     - os: linux
       r: release
-      r_build_args: ## WORKAROUND: sectsty.sty missing
     - os: linux
       r: devel
       env:
