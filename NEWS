@@ -1,6 +1,14 @@
 Package: QDNQseq
 ----------------
 
+Version: 1.19.0-9000 [2019-08-30]
+
+SIGNIFICANT CHANGES:
+
+ * exportVCF() is no longer exported. Use exportBins(..., format="vcf")
+   instead.
+ 
+
 Version: 1.19.0 [2019-05-02]
 
 RELEASE:
