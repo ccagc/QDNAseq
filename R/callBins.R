@@ -201,7 +201,7 @@ betterCall <- function(obj) {
     cn <- assayDataElement(obj, "copynumber")[,1]
     seg <- log2adhoc(assayDataElement(obj, "segmented")[,1])
     sd <- sdDiffTrim(cn, na.rm=TRUE)
-    calls <- rep(0, length(seg))
+    calls <- rep(0, times=length(seg))
     pval <- 0.01
     # Duplication 
     dupL <- qnorm(pval, 1, sd, lower.tail=TRUE)

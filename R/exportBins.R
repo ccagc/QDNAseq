@@ -204,9 +204,9 @@ exportVCF <- function(obj) {
 	score <- dsel[posI,4]
 	segVal <- round(dsel[posI,5],2)
 
-	svtype <- rep(NA, length(chr)) 
-	svlen <- rep(NA, length(chr)) 
-	gt <- rep(NA, length(chr)) 
+	svtype <- rep(NA, times=length(chr)) 
+	svlen <- rep(NA, times=length(chr)) 
+	gt <- rep(NA, times=length(chr)) 
 	bins <- rleD$lengths
 	svtype[dsel[posI,4] <= -1] <- "DEL"
 	svtype[dsel[posI,4] >= 1] <- "DUP"

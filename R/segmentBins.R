@@ -151,7 +151,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
                                     colnames(segments.summary(segments[[1]])))
         
         segmented <- do.call(cbind, lapply(segments, function(x)
-            rep(segments.summary(x)[,segmentStatisticCol], x$output$num.mark)))
+            rep(segments.summary(x)[,segmentStatisticCol], times=x$output$num.mark)))
         dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
     } else {
         cna <- lapply(unique(fData(object)$chromosome[condition]),

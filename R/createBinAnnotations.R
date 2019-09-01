@@ -115,7 +115,7 @@ calculateMappability <- function(bins, bigWigFile,
     vmsg("Calculating mappabilities per bin for chromosomes:\n    ",
         paste(unique(bins$chromosome), collapse=", "),
         "\nfrom file:\n    ", bigWigFile, "\nchromosomes to process:   ",
-        rep(".", length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
+        rep(".", times=length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
     scipen <- options("scipen")
@@ -321,13 +321,13 @@ calculateBlacklistByRegions <- function(bins, regions) {
         s:e
     })) -> res3
     
-    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, length(res3))))
+    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))))
     
     aggregate(res$x, list(res$Group.1), max) -> res
     
     res$x / binSize * 100 -> res$pct
     
-    blacklist <- rep(0, nrow(bins))
+    blacklist <- rep(0, times=nrow(bins))
     blacklist[ as.numeric(res$Group.1) ] <- res$pct
     
     blacklist
