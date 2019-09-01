@@ -498,7 +498,7 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         median.signal$mappability, sep="")
     xx <- min(median.signal$mappability):max(median.signal$mappability)
     yy <- min(median.signal$gc):max(median.signal$gc)
-    m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
+    m <- matrix(NA_real_, nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
 
     for (i in seq_len(ncol(x))) {
         vmsg("Plotting sample ", main[i])
@@ -506,7 +506,7 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
             m[as.character(median.signal[j, "mappability"]),
                 as.character(median.signal[j, "gc"])] <- median.signal[j, i+2L]
         image(xx, yy, m, col=paste("#", c(sprintf("%02X", 0L:255L),
-            rep("FF", 256L)), c(rep("FF", 256L), sprintf("%02X", 255L:0L)),
+            rep("FF", times=256L)), c(rep("FF", times=256L), sprintf("%02X", 255L:0L)),
             sprintf("%02X", 255L), sep=""),
             main=main[i],
             xlab=NA, ylab=NA, xaxt="n", yaxt="n",
