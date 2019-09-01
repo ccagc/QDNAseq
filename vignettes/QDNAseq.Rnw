@@ -124,7 +124,7 @@ dev.off()
 
 Apply filters and plot median read counts as a function of GC content and
 mappability (Figure~\ref{fig:isobar}). As the example data set only contains a
-subset of the chromosomes, the distribution looks slithly less smooth than
+subset of the chromosomes, the distribution looks slightly less smooth than
 expected for the entire genome.
 
 <<>>=
@@ -409,7 +409,7 @@ there can be bins in the sex chromosomes with a combination of GC content and
 mappability that is not found anywhere else in the genome. This will cause
 those bins to miss a correction estimate altogether, and these bins will be
 filtered out from subsequent steps by \Rfunction{correctBins()}. If this
-happens, it will print out a message speficying the number of bins affected.
+happens, it will print out a message specifying the number of bins affected.
 
 Another possible approach is to allow extrapolation while calculating the loess
 correction. But please do note that the effect of extrapolation has not been
@@ -427,7 +427,7 @@ readCounts <- estimateCorrection(readCounts,
 This section describes how bin annotations have been created for the hg19 build
 of the human reference genome, and can be applied for other genome builds and
 species. The first step is to create the bins based on chromosome sizes, and
-calculate their GC content and proportion of characterized nucletodies (non-N
+calculate their GC content and proportion of characterized nucleotides (non-N
 bases in the reference sequence). For this, the corresponding
 \Biocpkg{BSgenome} package is needed.
 
@@ -508,7 +508,7 @@ The column \Robject{use} specifies whether each bin should be used for
 subsequent analyses by default. The command \Rfunction{applyFilters()} will
 change its value accordingly. By default, bins in the sex chromosomes, or with
 only uncharacterized nucleotides (N's) in their reference sequence, are flagged
-for exlusion.
+for exclusion.
 
 <<eval=FALSE>>=
 # by default, use all autosomal bins that have a reference sequence

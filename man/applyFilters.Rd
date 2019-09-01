@@ -33,13 +33,13 @@ applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
     \item{blacklist}{Either a \code{\link[base]{logical}} specifying whether to filter based on
         overlap with blacklisted regions, or if numeric, the maximum
         percentage of overlap allowed. Default is \code{\link[base:logical]{TRUE}}, which corresponds to
-        no overlap allowd (i.e. value of 0).}
+        no overlap allowed (i.e. value of 0).}
     \item{mappability}{A \code{\link[base]{numeric}} in \eqn{[0,100]} to specify filtering out
         bins with mappabilities lower than the number specified. NA (default)
         or \code{\link[base:logical]{FALSE}} will not filter based on mappability.}
     \item{bases}{A \code{\link[base]{numeric}} specifying the minimum percentage of characterized
         bases (not Ns) in the reference genome sequence. NA (default) or
-        \code{\link[base:logical]{FALSE}} will not filted based on uncharacterized bases.}
+        \code{\link[base:logical]{FALSE}} will not filter based on uncharacterized bases.}
     \item{chromosomes}{A \code{\link[base]{character}} vector specifying which chromosomes
         to filter out. Defaults to the sex chromosomes and mitochondria,
         i.e. \code{c("X", "Y", "MT")}.}

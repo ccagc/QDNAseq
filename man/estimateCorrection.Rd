@@ -46,7 +46,7 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
     \item{variables}{A character vector specifying which variables to include
         in the correction. Can be \code{c("gc", "mappability")} (the default),
         \code{"gc"}, or \code{"mappability"}.}
-    \item{...}{Additional aguments passed to \code{\link[stats]{loess}}.}
+    \item{...}{Additional arguments passed to \code{\link[stats]{loess}}.}
 }
 
 \value{
