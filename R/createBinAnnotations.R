@@ -207,8 +207,8 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     }
     fit <- assayDataElement(object, "fit")
     residuals <- counts / fit - 1
-    # residuals[fit == 0] <- NA
-    residuals[!binsToUse(object), ] <- NA
+    # residuals[fit == 0] <- NA_real_
+    residuals[!binsToUse(object), ] <- NA_real_
     residual <- rowMedians(residuals, na.rm=TRUE)
     cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
     if (is.numeric(cutoff))
@@ -223,8 +223,8 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
         object <- estimateCorrection(object, ...)
         fit <- assayDataElement(object, "fit")
         residuals <- counts / fit - 1
-        # residuals[fit == 0] <- NA
-        residuals[!binsToUse(object), ] <- NA
+        # residuals[fit == 0] <- NA_real_
+        residuals[!binsToUse(object), ] <- NA_real_
         residual <- rowMedians(residuals, na.rm=TRUE)
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
             abs(residual) <= cutoffValue

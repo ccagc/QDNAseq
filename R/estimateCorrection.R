@@ -96,8 +96,8 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         if (is.na(span[i]) && is.na(family[i])) {
             vmsg("    Skipping sample ", sampleNames(object)[i], "...")
             loessFit <- rep(1, times=nrow(counts))
-            attr(loessFit, "used.span") <- NA
-            attr(loessFit, "used.family") <- NA
+            attr(loessFit, "used.span") <- NA_real_
+            attr(loessFit, "used.family") <- NA_character_
             return(loessFit)
         }
         vmsg("    Calculating fit for sample ", sampleNames(object)[i],
@@ -146,8 +146,8 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
             return(loessFit)
         }, silent=TRUE)
         loessFit <- rep(1, times=nrow(counts))
-        attr(loessFit, "used.span") <- NA
-        attr(loessFit, "used.family") <- NA
+        attr(loessFit, "used.span") <- NA_real_
+        attr(loessFit, "used.family") <- NA_character_
         return(loessFit)
     }
     fits <- flapply(seq_len(ncol(counts)), calculateFits, ...)

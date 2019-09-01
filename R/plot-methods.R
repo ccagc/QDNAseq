@@ -55,7 +55,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     } else {
         condition <- rep(TRUE, times=nrow(x))
     }
-    baseLine <- NA
+    baseLine <- NA_real_
     doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
     doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments
     if (doCalls) {
@@ -616,14 +616,14 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         usedReadsAtTicks <- sum(condition)/at
         labels <- round(predict(relationship,
             newdata=data.frame(usedReads=usedReadsAtTicks)) / 1e6, digits=1)
-        labels[1] <- NA
+        labels[1] <- NA_real_
         xlab <- "million reads"
     } else if (xAxis == "reciprocal of average reads per bin") {
         labels <- round(at, digits=3)
         xlab <- expression((average~reads~per~bin)^-1)
     } else {
         labels <- round(1/at, digits=3)
-        labels[1] <- NA
+        labels[1] <- NA_real_
         xlab <- expression(average~reads~per~bin)
     }
     axis(side=1, tck=-.015, at=at, labels=NA)
