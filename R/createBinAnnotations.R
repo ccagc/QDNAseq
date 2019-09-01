@@ -90,10 +90,10 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
         chr.gc <- nchar(cg) / nchar(acgt) * 100
         list(start=chr.starts, end=chr.ends, bases=chr.bases, gc=chr.gc)
     })
-    start <- unlist(lapply(chrData, "[[", "start"))
-    end <- unlist(lapply(chrData, "[[", "end"))
-    bases <- unlist(lapply(chrData, "[[", "bases"))
-    gc <- unlist(lapply(chrData, "[[", "gc"))
+    start <- unlist(lapply(chrData, FUN="[[", "start"))
+    end <- unlist(lapply(chrData, FUN="[[", "end"))
+    bases <- unlist(lapply(chrData, FUN="[[", "bases"))
+    gc <- unlist(lapply(chrData, FUN="[[", "gc"))
     gc[is.nan(gc)] <- NA_real_
     bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
         start, end, bases, gc, stringsAsFactors=FALSE)
@@ -315,7 +315,7 @@ calculateBlacklistByRegions <- function(bins, regions) {
     vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
     sel3 <- combined$idDiff > 1
-    unlist(sapply(which(sel3), function(x) {
+    unlist(sapply(which(sel3), FUN=function(x) {
         s <- combined$sI[x] + 1
         e <- combined$eI[x] - 1
         s:e

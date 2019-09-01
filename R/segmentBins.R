@@ -126,7 +126,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     # if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
     if (is.na(smoothBy) || !smoothBy) {
         ## create a list of CNA objects that can be analyzed with *lapply()
-        cna <- lapply(sampleNames(object), function(x)
+        cna <- lapply(sampleNames(object), FUN=function(x)
             CNA(genomdat=copynumber[condition, x, drop=FALSE],
                 chrom=factor(fData(object)$chromosome[condition],
                     levels=unique(fData(object)$chromosome), ordered=TRUE),
@@ -150,12 +150,12 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         segmentStatisticCol <- grep(segmentStatistic, 
                                     colnames(segments.summary(segments[[1]])))
         
-        segmented <- do.call(cbind, lapply(segments, function(x)
+        segmented <- do.call(cbind, lapply(segments, FUN=function(x)
             rep(segments.summary(x)[,segmentStatisticCol], times=x$output$num.mark)))
         dimnames(segmented) <- dimnames(copynumber[condition, , drop=FALSE])
     } else {
         cna <- lapply(unique(fData(object)$chromosome[condition]),
-            function(chr) {
+            FUN=function(chr) {
                 index <- fData(object)$chromosome == chr
                 chrStarts <- fData(object)$start[index]
                 ## smooth if needed
@@ -188,7 +188,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         segmentStatisticCol <- grep(segmentStatistic, 
                                     colnames(segments.summary(segments[[1]])))
         
-        segmented <- do.call(rbind, lapply(segments, function(x) {
+        segmented <- do.call(rbind, lapply(segments, FUN=function(x) {
             chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),
                 ncol=ncol(x$data)-2,
                 dimnames=list(NULL, colnames(x$data)[-(1:2)]))
@@ -201,7 +201,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
                 # chrSegmented
             } else {
-                chrSegmented <- apply(chrSegmented, 2, rep,
+                chrSegmented <- apply(chrSegmented, MARGIN=2L, FUN=rep,
                     times=table(binToBin))
             }
             rownames(chrSegmented) <- rownames(copynumber)[index]

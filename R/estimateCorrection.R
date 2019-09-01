@@ -150,11 +150,11 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         attr(loessFit, "used.family") <- NA_character_
         return(loessFit)
     }
-    fits <- flapply(seq_len(ncol(counts)), calculateFits, ...)
+    fits <- flapply(seq_len(ncol(counts)), FUN=calculateFits, ...)
     loessFit <- do.call(cbind, fits)
     dimnames(loessFit) <- dimnames(counts)
-    object$loess.span <- unlist(lapply(fits, attr, which="used.span"))
-    object$loess.family <- unlist(lapply(fits, attr, which="used.family"))
+    object$loess.span <- unlist(lapply(fits, FUN=attr, which="used.span"))
+    object$loess.family <- unlist(lapply(fits, FUN=attr, which="used.family"))
     assayDataElement(object, "fit") <- loessFit
     vmsg("Done.")
     object
