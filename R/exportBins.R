@@ -252,7 +252,7 @@ exportSEG <- function(obj, fnames=NULL) {
 	fnames <- pd$name
 
     if (length(fnames) != length(pd$name)) {
-        print("Length of names is too short")
+        stop("Length of 'fnames' is too short: ", length(fnames), " != ", length(pd$name))
     }
  
     oopts2 <- options(scipen=100)
