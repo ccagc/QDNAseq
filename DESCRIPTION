@@ -7,10 +7,10 @@ Depends: R (>= 3.1.0)
 Imports: graphics, methods, stats, utils,
         Biobase (>= 2.18.0), CGHbase (>= 1.18.0), CGHcall (>= 2.18.0),
         DNAcopy (>= 1.32.0), GenomicRanges (>= 1.20), IRanges (>= 2.2),
-        matrixStats (>= 0.50.2), R.utils (>= 2.3.0), Rsamtools (>= 1.20),
+        matrixStats (>= 0.54.0), R.utils (>= 2.9.0), Rsamtools (>= 1.20),
         future (>= 1.14.0), future.apply (>= 1.3.0)
-Suggests: BiocStyle (>= 1.8.0), BSgenome (>= 1.38.0), digest (>= 0.6.8),
-        GenomeInfoDb (>= 1.6.0), R.cache (>= 0.12.0)
+Suggests: BiocStyle (>= 1.8.0), BSgenome (>= 1.38.0), digest (>= 0.6.20),
+        GenomeInfoDb (>= 1.6.0), R.cache (>= 0.13.0)
 Description: Quantitative DNA sequencing for chromosomal aberrations.
         The genome is divided into non-overlapping fixed-sized bins, number of
         sequence reads in each counted, adjusted with a simultaneous
