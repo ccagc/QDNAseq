@@ -16,7 +16,7 @@
 
  \usage{
 segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1,
-  force=FALSE, transformFun="log2", seeds=NULL, ...)
+  force=FALSE, transformFun="log2", seed=FALSE, ...)
 }
 
  \description{
@@ -48,8 +48,8 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
          stabilizes the variance, "none" for no transformation, or any
          R function that performs the desired transformation and also its
          inverse when called with parameter \code{inv=TRUE}.}
-     \item{seeds}{An optional integer vector of seeds for random number
-         generation, recycled as needed. Normally, the segmentation process is
+     \item{seed}{If \code{\link[base:logical]{TRUE}}, random number generation (RNG) is fully
+         reproducible. Normally, the segmentation process is
          split by sample, and provided seeds also used per sample. But when
          smoothing is performed (or in the the special case of
          \code{smoothBy=1L}), the process is split by chromosome, seeds used

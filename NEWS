@@ -3,6 +3,12 @@ Package: QDNQseq
 
 Version: 1.21.2-9000 [2019-09-03]
 
+SIGNIFICANT CHANGES:
+
+ * Argument 'seeds' of segmentBins() was renamed to 'seed' and can now only
+   take TRUE or FALSE as values.  A vector of integer seeds is no longer
+   accepted since that approach was not using proper random numbers.
+
 NEW FEATURES:
 
  * All functions that produce verbose output gained argument 'verbose'.  For
@@ -16,6 +22,10 @@ IMPROVEMENTS:
    
  * MEMORY: Utilize more memory-efficient matrixStats functions colSums2(),
    colMeans2(), etc.
+
+DEPRECATION AND DEFUNCT:
+
+ * Argument 'seeds' of segmentBins() is defunct. Use 'seed' instead.
 
 
 Version: 1.21.2 [2019-09-03]

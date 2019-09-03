@@ -36,8 +36,8 @@
 #         stabilizes the variance, "none" for no transformation, or any
 #         R function that performs the desired transformation and also its
 #         inverse when called with parameter \code{inv=TRUE}.}
-#     \item{seeds}{An optional integer vector of seeds for random number
-#         generation, recycled as needed. Normally, the segmentation process is
+#     \item{seed}{If @TRUE, random number generation (RNG) is fully
+#         reproducible. Normally, the segmentation process is
 #         split by sample, and provided seeds also used per sample. But when
 #         smoothing is performed (or in the the special case of
 #         \code{smoothBy=1L}), the process is split by chromosome, seeds used
@@ -86,10 +86,14 @@
 setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, smoothBy=FALSE, alpha=1e-10,
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
-    transformFun="log2", seeds=NULL, 
+    transformFun="log2", seed=FALSE, 
     segmentStatistic="seg.mean", storeSegmentObjects=FALSE,
     ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
 
+    if ("seeds" %in% names(list(...))) {
+      .Defunct("Argument 'seeds' (integer) is no longer supported. Please use argument 'seed' (logical) instead.")
+    }
+    
     oopts <- options("QDNAseq::verbose"=verbose)
     on.exit(options(oopts))
 
@@ -146,11 +150,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## use sample names for indexing, they are available in the CNA objects
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
-        segments <- future_lapply(cna, FUN=function(x, ..., seeds=NULL) {
+        segments <- future_lapply(cna, FUN=function(x, ...) {
             vmsg(msgs[colnames(x)[3]])
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ..., seeds=seeds)
+        }, ..., future.seed = seed)
         
         if(storeSegmentObjects)
           object <- assayDataElementReplace(object, "segmentObj", segments)
@@ -184,11 +188,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             }
         )
 
-        segments <- future_lapply(cna, FUN=function(x, ..., seeds=NULL) {
+        segments <- future_lapply(cna, FUN=function(x, ...) {
             vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ..., seeds=seeds)
+        }, ..., future.seed=seed)
         
         if(storeSegmentObjects)
           object <- assayDataElementReplace(object, "segmentObj", segments)
