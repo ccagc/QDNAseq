@@ -150,19 +150,17 @@ calculateMappability <- function(bins, bigWigFile,
 
 calculateBlacklist <- function(bins, bedFiles, ...,
     verbose=getOption("QDNAseq::verbose", TRUE)) {
-    
+
+    ## Detect defunct usage of argument 'ncpus'
+    if ("ncpus" %in% names(list(...))) {
+      .Defunct(msg="Argument 'ncpus' of calculateBlacklist() is defunct. Use future::plan() instead.")
+    }
+
     oopts <- options("QDNAseq::verbose"=verbose)
     on.exit(options(oopts))
     
     vmsg("Calculating overlaps per bin with BED files \n    ", paste(bedFiles,
         collapse="\n    "), "\n    ...", appendLF=FALSE)
-
-    ## Detect deprecated usage of argument 'ncpus'
-    args <- list(...)
-    if ("ncpus" %in% names(args)) {
-      .Deprecated(msg=paste("Argument 'ncpus' of calculateBlacklist() is",
-          "deprecated and ignored. Use options(mc.cores=ncpu) instead."))
-    }
 
     beds <- list()
     for (bed in bedFiles)
