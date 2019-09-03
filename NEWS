@@ -1,9 +1,13 @@
 Package: QDNQseq
 ----------------
 
-Version: 1.21.1-9000 [2019-08-31]
+Version: 1.21.1-9000 [2019-09-03]
 
- * ...
+IMPROVEMENTS:
+
+ * Avoiding data type coercions in more places by for instance making sure
+   that vectors and matrices are initated with the values of the correct
+   data type (instead of the default NA, which is a logical value).
 
 
 Version: 1.21.1 [2019-08-30]
