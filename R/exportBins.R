@@ -126,8 +126,8 @@ exportBins <- function(object, file,
     if (is.numeric(digits)) {
         dat <- round(dat, digits=digits)
     }
-    tmp <- options("scipen")
-    options(scipen=15)
+    oopts2 <- options(scipen=15)
+    on.exit(options(scipen=oopts2), add=TRUE)
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
             end=end, dat, check.names=FALSE, stringsAsFactors=FALSE)
@@ -160,7 +160,6 @@ exportBins <- function(object, file,
     } else if (format == "seg") {
         exportSEG(object)
     }
-    options(scipen=tmp)
 }
 
 
@@ -186,6 +185,9 @@ exportVCF <- function(obj) {
 			 '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
 			 '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
 			 ))
+
+    oopts2 <- options(scipen=100)
+    on.exit(options(scipen=oopts2), add=TRUE)
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
@@ -217,8 +219,6 @@ exportVCF <- function(obj) {
 	gt[score == 1] <- "0/1"	
 	gt[score == 2] <- "0/1"	
 	gt[score == 3] <- "0/1"	
-
-	options(scipen=100)
 
 	id <- "."
 	ref <- "<DIP>"
@@ -255,6 +255,9 @@ exportSEG <- function(obj, fnames=NULL) {
         print("Length of names is too short")
     }
  
+    oopts2 <- options(scipen=100)
+    on.exit(options(scipen=oopts2), add=TRUE)
+
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
 	sel <- d[,4] != 0 & !is.na(d[,4])
@@ -272,8 +275,6 @@ exportSEG <- function(obj, fnames=NULL) {
 	score <- dsel[posI,4]
 	segVal <- round(dsel[posI,5],2)
 	bins <- rleD$lengths
-
-	options(scipen=100)
 
 	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
 	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")

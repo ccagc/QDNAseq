@@ -135,11 +135,10 @@ calculateMappability <- function(bins, bigWigFile,
         rep(".", times=length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
-    scipen <- options("scipen")
-    options(scipen=10)
+    oopts2 <- options(scipen=10)
+    on.exit(options(scipen=oopts2), add=TRUE)
     write.table(bins, binbed, quote=FALSE, sep="\t", row.names=FALSE,
         col.names=FALSE)
-    options(scipen=scipen)
     cmd <- paste0(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
         '" -bedOut="', mapbed, '" /dev/null')
     system(cmd)
