@@ -62,7 +62,7 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
         cutoff <- residual * madDiff(residuals, na.rm=TRUE)
         residualsMissing <- aggregate(residuals,
             by=list(chromosome=fData(object)$chromosome),
-            function(x) all(is.na(x)))
+            FUN=function(x) all(is.na(x)))
         chromosomesWithResidualsMissing <-
             residualsMissing$chromosome[residualsMissing$x]
         chromosomesToInclude <-

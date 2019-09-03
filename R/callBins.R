@@ -217,20 +217,20 @@ betterCall <- function(obj) {
     calls <- rep(0, times=length(seg))
     pval <- 0.01
     # Duplication 
-    dupL <- qnorm(pval, 1, sd, lower.tail=TRUE)
-    dupU <- qnorm(pval, 1, sd, lower.tail=FALSE)
+    dupL <- qnorm(pval, mean=1, sd=sd, lower.tail=TRUE)
+    dupU <- qnorm(pval, mean=1, sd=sd, lower.tail=FALSE)
     dup <- seg >= dupL & seg <= dupU
     calls[dup] <- 2
     print(paste("dup:", dupL, dupU, sep="\t"))
     # Gain
-    gainL <- qnorm(pval, log2(3/2), sd, lower.tail=TRUE)
-    gainU <- qnorm(pval, log2(3/2), sd, lower.tail=FALSE)
+    gainL <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=TRUE)
+    gainU <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=FALSE)
     gain <- seg >= gainL & seg < gainU
     calls[gain] <- 1
     print(paste("gain:", gainL, gainU, sep="\t"))
     # Loss
-    lossL <- qnorm(pval, -1, sd, lower.tail=TRUE)
-    lossU <- qnorm(pval, -1, sd, lower.tail=FALSE)
+    lossL <- qnorm(pval, mean=-1, sd=sd, lower.tail=TRUE)
+    lossU <- qnorm(pval, mean=-1, sd=sd, lower.tail=FALSE)
     loss <- seg >= lossL & seg <= lossU
     calls[loss] <- -1
     print(paste("loss:", lossL, lossU, sep="\t"))

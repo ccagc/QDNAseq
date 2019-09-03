@@ -190,7 +190,7 @@ exportVCF <- function(obj) {
     on.exit(options(scipen=oopts2), add=TRUE)
 
     for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3],calls[,i], segments[,i])
+	d <- cbind(fd[,1:3], calls[,i], segments[,i])
 	sel <- d[,4] != 0 & !is.na(d[,4])
 
 	dsel <- d[sel,]
@@ -204,7 +204,7 @@ exportVCF <- function(obj) {
 	pos <- dsel[posI,2]
 	end <- dsel[endI,3]
 	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],2)
+	segVal <- round(dsel[posI,5], digits=2)
 
 	svtype <- rep(NA_character_, times=length(chr)) 
 	svlen <- rep(NA_real_, times=length(chr)) 
@@ -273,7 +273,7 @@ exportSEG <- function(obj, fnames=NULL) {
 	pos <- dsel[posI,2]
 	end <- dsel[endI,3]
 	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],2)
+	segVal <- round(dsel[posI,5],digits=2)
 	bins <- rleD$lengths
 
 	out <- cbind(fnames[i], chr, pos, end, bins, segVal)

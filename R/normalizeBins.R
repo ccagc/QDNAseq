@@ -94,8 +94,9 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
         values <- colMedians(copynumber, rows=condition, na.rm=TRUE)
     } else if (method == "mode") {
         values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
-            FUN=function(x) {
-            d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
+          FUN=function(x) {
+            d <- density(x, na.rm=TRUE)
+	    d$x[which.max(d$y)]
         })
     }
     vmsg()
