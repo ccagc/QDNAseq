@@ -42,6 +42,11 @@
 #     \code{fit} added.
 # }
 #
+# \section{Parallel processing}{
+#   This function uses \pkg{future} to parallelizes @see "calculateFits"
+#   across samples.
+# }
+#
 # \examples{
 # data(LGG150)
 # readCounts <- LGG150

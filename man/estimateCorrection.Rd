@@ -54,6 +54,11 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
     \code{fit} added.
 }
 
+\section{Parallel processing}{
+  This function uses \pkg{future} to parallelizes \code{\link{calculateFits}}
+  across samples.
+}
+
 \examples{
 data(LGG150)
 readCounts <- LGG150

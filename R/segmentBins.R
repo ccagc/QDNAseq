@@ -57,6 +57,10 @@
 #         added.
 # }
 #
+# \section{Parallel processing}{
+#   This function uses \pkg{future} to segment samples in parallel.
+# }
+#
 # \examples{
 # data(LGG150)
 # readCounts <- LGG150

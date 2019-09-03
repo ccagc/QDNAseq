@@ -33,6 +33,14 @@
 #     nucleotides of non-N nucleotides).
 # }
 #
+# \section{Parallel processing}{
+# The \pkg{future} is used parallelize the following functions:
+#  \itemize{
+#   \item \code{createBins()} - parallelizes binned GC content across chromosomes
+#   \item \code{calculateBlacklist()} - parallelizes overlap counts across bins)
+#  }
+# }
+#
 # \examples{
 # \dontrun{# NOTE: These take a very long time to run.
 # library(BSgenome.Hsapiens.UCSC.hg19)
