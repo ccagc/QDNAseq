@@ -221,19 +221,19 @@ betterCall <- function(obj) {
     dupU <- qnorm(pval, mean=1, sd=sd, lower.tail=FALSE)
     dup <- seg >= dupL & seg <= dupU
     calls[dup] <- 2
-    print(paste("dup:", dupL, dupU, sep="\t"))
+    vmsg(paste("dup:", dupL, dupU, sep="\t"))
     # Gain
     gainL <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=TRUE)
     gainU <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=FALSE)
     gain <- seg >= gainL & seg < gainU
     calls[gain] <- 1
-    print(paste("gain:", gainL, gainU, sep="\t"))
+    vmsg(paste("gain:", gainL, gainU, sep="\t"))
     # Loss
     lossL <- qnorm(pval, mean=-1, sd=sd, lower.tail=TRUE)
     lossU <- qnorm(pval, mean=-1, sd=sd, lower.tail=FALSE)
     loss <- seg >= lossL & seg <= lossU
     calls[loss] <- -1
-    print(paste("loss:", lossL, lossU, sep="\t"))
+    vmsg(paste("loss:", lossL, lossU, sep="\t"))
     # Amp 
     amp <- seg > dupU
     calls[amp] <- 3
