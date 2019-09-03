@@ -9,6 +9,11 @@ IMPROVEMENTS:
    that vectors and matrices are initated with the values of the correct
    data type (instead of the default NA, which is a logical value).
 
+SOFTWARE QUALITY:
+
+ * TESTS: Now asserting numerical reproducibility of also segmentBins() and
+   callBins().
+ 
 
 Version: 1.21.1 [2019-08-30]
 

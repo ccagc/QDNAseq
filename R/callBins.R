@@ -102,6 +102,9 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             seg <- makeCgh(object, chromosomeReplacements="auto")
         }
         tryCatch({
+            ## NOTE: CGHcall::CGHcall() produces warnings on "Recycling array
+            ##       of length 1 in vector-array arithmetic is deprecated.
+            ##       Use c() or as.vector() instead."
             listcall <- CGHcall(seg, organism=organism, ...)
         }, error=function(e) {
             stop("Command CGHcall() returned the following error message:\n",
