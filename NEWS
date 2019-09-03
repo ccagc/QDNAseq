@@ -8,6 +8,11 @@ SIGNIFICANT CHANGES:
  * Package now imports the 'future' and 'future.apply' packages; previously
    the 'future' was listed as a suggested package.
 
+ * Package no longer depends on BiocParallel.
+
+ * binReadCounts() now uses the future framework instead of BiocParallel for
+   parallelization.
+
 IMPROVEMENTS:
 
  * Avoiding data type coercions in more places by for instance making sure

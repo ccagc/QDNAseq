@@ -321,9 +321,7 @@ support parallel processing. At the moment these include
 \Rfunction{estimateCorrection()}, \Rfunction{segmentBins()},
 \Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}. 
 \Rfunction{binReadCounts()} parallelizes by chromosome when \Rcode{chunkSize} 
-is used. The parallel environment used for this can be controlled using 
-\Biocpkg{BiocParallel}'s standard configuration methods (e.g. 
-\Rfunction{register()}, \Robject{mc.cores}).
+is used.
 
 However, when argument \Rcode{method="CGHcall"} (which is the default),
 function \Rfunction{callBins()} calls function \Rfunction{CGHcall()} from
@@ -332,12 +330,12 @@ computation. For that, the number of processes to use should be specified with
 argument \Rcode{ncpus}, with something along the lines of:
 
 <<eval=FALSE>>=
-copyNumbers <- callBins(..., ncpus=4L)
+copyNumbers <- callBins(..., ncpus=4)
 @
 
 \subsection{Non-parallel processing}
 
-The default is to use single-core processing via ``eager'' futures. This can be
+The default is to use single-core processing via ``sequential'' futures. This can be
 set explicitly with:
 
 <<eval=FALSE>>=
@@ -354,31 +352,24 @@ future::plan("multiprocess")
 @
 
 After that, all functions that support parallel processing will automatically
-use it.
-
-On Mac OS X and Linux, this will use multiple \textit{forked} \R{} processes
-\Rcode{("multicore")}. On Windows, which does not support \textit{forking},
-multiple \textit{background} \R{} processes \Rcode{("multisession")} will be
-used instead.
-
-The number of parallel processes to use can be defined via option
-\Robject{mc.cores}, for example with:
+use it.  The number of parallel processes to use can be defined via argument `workers`, e.g.
 
 <<eval=FALSE>>=
-options(mc.cores=4L)
+future::plan("multiprocess", workers=4)
 @
 
-\subsection{Parallel processing on a cluster}
+
+\subsection{Parallel processing on an ad-hoc cluster}
 
 To process data using multiple \R{} sessions running on different machines, use
 something along the lines of:
 
 <<eval=FALSE>>=
-cl <- parallel::makeCluster(...)
+cl <- future::makeClusterPSOCK(...)
 future::plan("cluster", cluster=cl)
 @
 
-See package \Rpackage{parallel} for more details.
+See package \Rpackage{future} for more details.
 
 \clearpage
 
