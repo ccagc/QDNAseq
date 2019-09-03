@@ -50,6 +50,7 @@ hg
 hgdownload
 hgFileUi
 homozygous
+HPC
 Hsapiens
 http
 igv
@@ -64,15 +65,14 @@ Loess
 LOESS
 mappabilities
 mappability
-mc
 Meijer
 mer
-multisession
 ncpus
 Ns
 nt
 nucleotides
 Olshen
+parallelize
 parallelizes
 Pinkel
 pre
@@ -80,7 +80,6 @@ QDNAseqCopyNumbers
 QDNAseqReadCounts
 Reijneveld
 rowNames
-Rprofile
 Rustenburg
 samplesize
 saveRDS
