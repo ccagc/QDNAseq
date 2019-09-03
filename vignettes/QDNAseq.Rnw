@@ -313,8 +313,7 @@ objects by running it before segmentation or calling.
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
 After installing it with \Rcode{install.packages("future")}, all that is
-required is to select an appropriate \textit{plan}. The recommended way to do
-that is to include it in your \file{$\sim$/.Rprofile}.
+required is to select an appropriate \textit{plan}.
 
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
@@ -352,11 +351,20 @@ future::plan("multiprocess")
 @
 
 After that, all functions that support parallel processing will automatically
-use it.  The number of parallel processes to use can be defined via argument `workers`, e.g.
+use it.  The \Rpackage{future} framework attempts to play nice with the
+current compute environment.  It will automatically respect environment
+variables and \R{} options that are used to limit the number of parallel works.
+It will also respect environment variables such as number of cores assigned
+to job scripts in high-performance compute (HPC) clusters.  If no such
+restrictions are set, the default is to use all cores available.
+To explicitly set, and override other settings, the number of parallel workers,
+use argument \textit{workers}, e.g.
 
 <<eval=FALSE>>=
 future::plan("multiprocess", workers=4)
 @
+
+For more details, see the \Rpackage{future} documentation.
 
 
 \subsection{Parallel processing on an ad-hoc cluster}
@@ -370,6 +378,7 @@ future::plan("cluster", cluster=cl)
 @
 
 See package \Rpackage{future} for more details.
+
 
 \clearpage
 
