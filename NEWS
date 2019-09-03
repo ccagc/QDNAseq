@@ -5,6 +5,9 @@ Version: 1.21.2-9000 [2019-09-03]
 
 IMPROVEMENTS:
 
+ * callBins() now respects option 'QDNAseq::verbose' for controlling whether
+   output from the CGHcall package should be relayed or not.
+   
  * MEMORY: Utilize more memory-efficient matrixStats functions colSums2(),
    colMeans2(), etc.
 
