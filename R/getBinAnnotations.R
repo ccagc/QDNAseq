@@ -21,6 +21,7 @@
 #         annotation files. Defaults to downloading from the Internet, but can
 #         also be a local path. Can also be defined by setting the
 #         \code{QDNAseq::binAnnotationPath} option.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \details{
@@ -46,7 +47,11 @@
 # @keyword IO
 #*/#########################################################################
 getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
-    path=getOption("QDNAseq::binAnnotationPath", NULL)) {
+    path=getOption("QDNAseq::binAnnotationPath", NULL),
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     bins <- NULL
 

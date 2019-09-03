@@ -31,6 +31,7 @@
 #     \item{chromosomes}{A @character vector specifying which chromosomes
 #         to filter out. Defaults to the sex chromosomes and mitochondria,
 #         i.e. \code{c("X", "Y", "MT")}.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -49,7 +50,11 @@
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
-    bases=NA, chromosomes=c("X", "Y", "MT")) {
+    bases=NA, chromosomes=c("X", "Y", "MT"),
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     condition <- rep(TRUE, times=nrow(object))
     msg <- c('total bins'=sum(condition))

@@ -63,11 +63,14 @@
 # @keyword manip
 # @keyword loess
 #*/#########################################################################
-
 setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
     definition=function(object, span=0.65, family="symmetric",
     adjustIncompletes=TRUE, maxIter=1, cutoff=4.0,
-    variables=c("gc", "mappability"), ...) {
+    variables=c("gc", "mappability"), ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     counts <- assayDataElement(object, "counts")
     if (adjustIncompletes) {

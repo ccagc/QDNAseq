@@ -20,6 +20,7 @@
 #     \item{force}{Running this function will remove possible segmentation and
 #         calling results. When they are present, running requires specifying
 #         \code{force} is @TRUE.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -43,8 +44,12 @@
 ## Adapted from CGHcall::normalize()
 setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, method=c("median", "mean", "mode"),
-    force=FALSE) {
-    
+    force=FALSE,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Validate arguments
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

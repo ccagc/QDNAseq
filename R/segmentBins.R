@@ -50,6 +50,7 @@
 #%         retrieved as segmentObject in assayData 
 #%         eg. "assayDataElement(object, 'segmentObject')"}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::segment".}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -87,7 +88,10 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     undo.splits="sdundo", undo.SD=1.0, force=FALSE,
     transformFun="log2", seeds=NULL, 
     segmentStatistic="seg.mean", storeSegmentObjects=FALSE,
-    ...) {
+    ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     if (!force && "calls" %in% assayDataElementNames(object))
         stop("Data has already been called. Re-segmentation will ",

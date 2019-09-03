@@ -15,7 +15,8 @@
 \title{Normalizes binned read counts}
 
 \usage{
-normalizeBins(object, method="median", force=FALSE)
+normalizeBins(object, method="median", force=FALSE, verbose=getOption("QDNAseq::verbose",
+  TRUE))
 }
 
 \description{
@@ -31,6 +32,7 @@ normalizeBins(object, method="median", force=FALSE)
     \item{force}{Running this function will remove possible segmentation and
         calling results. When they are present, running requires specifying
         \code{force} is \code{\link[base:logical]{TRUE}}.}
+    \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \value{

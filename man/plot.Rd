@@ -6,38 +6,39 @@
 % by the Rdoc compiler part of the R.oo package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\name{plot}
+ \name{plot}
 \alias{plot}
 
 
-\alias{plot,QDNAseqSignals,missing-method}
+ \alias{plot,QDNAseqSignals,missing-method}
 
-\title{Plot copy number profile}
+ \title{Plot copy number profile}
 
-\usage{
+ \usage{
 plot(x, y, ...)
 }
 
-\description{
-    Plot copy number profile.
-}
+ \description{
+     Plot copy number profile.
+ }
 
-\arguments{
-    \item{x}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.}
-    \item{y}{missing}
-    \item{...}{...}
-}
+ \arguments{
+     \item{x}{A \code{\link{QDNAseqReadCounts}} or \code{\link{QDNAseqCopyNumbers}} object.}
+     \item{y}{missing}
+     \item{...}{...}
+%     \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
+ }
 
-\examples{
-data(LGG150)
-readCounts <- LGG150
-readCountsFiltered <- applyFilters(readCounts)
-readCountsFiltered <- estimateCorrection(readCountsFiltered)
-copyNumbers <- correctBins(readCountsFiltered)
-plot(copyNumbers)
-}
+ \examples{
+ data(LGG150)
+ readCounts <- LGG150
+ readCountsFiltered <- applyFilters(readCounts)
+ readCountsFiltered <- estimateCorrection(readCountsFiltered)
+ copyNumbers <- correctBins(readCountsFiltered)
+ plot(copyNumbers)
+ }
 
-\author{Ilari Scheinin}
+ \author{Ilari Scheinin}
 
 
 \keyword{hplot}

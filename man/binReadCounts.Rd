@@ -17,7 +17,8 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
   chunkSize=NULL, cache=getOption("QDNAseq::cache", FALSE), force=!cache, isPaired=NA,
   isProperPair=NA, isUnmappedQuery=FALSE, hasUnmappedMate=NA, isMinusStrand=NA,
   isMateMinusStrand=NA, isFirstMateRead=NA, isSecondMateRead=NA, isSecondaryAlignment=NA,
-  isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37, pairedEnds=NULL)
+  isNotPassingQualityControls=FALSE, isDuplicate=FALSE, minMapq=37, pairedEnds=NULL,
+  verbose=getOption("QDNAseq::verbose", TRUE))
 }
 
 \description{
@@ -88,6 +89,7 @@ binReadCounts(bins, bamfiles=NULL, path=NULL, ext="bam", bamnames=NULL, phenofil
     \item{pairedEnds}{A boolean value or vector specifying whether the BAM
         files contain paired-end data or not. Only affects the calculation of
         the expected variance.}
+    \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \value{

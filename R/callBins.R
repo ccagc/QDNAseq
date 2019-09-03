@@ -79,8 +79,10 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     definition=function(object, organism=c("human", "other"),
     method=c("CGHcall", "cutoff"),
     cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
-    ...) {
-    verbose <-getOption("QDNAseq::verbose", TRUE)
+    ..., verbose = getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
     
     method <- match.arg(method)
     if (method == "CGHcall") {

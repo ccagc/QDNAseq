@@ -62,6 +62,7 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
 %         retrieved as segmentObject in assayData
 %         eg. "assayDataElement(object, 'segmentObject')"}
      \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
+%     \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
  }
 
  \value{

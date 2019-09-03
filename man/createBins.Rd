@@ -18,7 +18,8 @@
 \title{Builds bin annotation data for a particular bin size}
 
 \usage{
-createBins(bsgenome, binSize, ignoreMitochondria=TRUE, excludeSeqnames=NULL)
+createBins(bsgenome, binSize, ignoreMitochondria=TRUE, excludeSeqnames=NULL,
+  verbose=getOption("QDNAseq::verbose", TRUE))
 }
 
 \description{
@@ -34,6 +35,7 @@ createBins(bsgenome, binSize, ignoreMitochondria=TRUE, excludeSeqnames=NULL)
          chromosomes named 'chrM', 'chrMT', 'M', or 'MT'.}
     \item{excludeSeqnames}{Character vector of seqnames which should be
         ignored.}
+    \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \value{

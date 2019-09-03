@@ -23,6 +23,7 @@
 #          chromosomes named 'chrM', 'chrMT', 'M', or 'MT'.}
 #     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -62,7 +63,11 @@
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
-    excludeSeqnames=NULL) {
+    excludeSeqnames=NULL, verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
         info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
@@ -111,8 +116,12 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
 }
 
 calculateMappability <- function(bins, bigWigFile,
-    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
-    
+    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr",
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     binbed <- tempfile(fileext=".bed")
     mapbed <- tempfile(fileext=".bed")
     bins <- bins[, c("chromosome", "start", "end")]
@@ -139,7 +148,12 @@ calculateMappability <- function(bins, bigWigFile,
     map$V5 * 100
 }
 
-calculateBlacklist <- function(bins, bedFiles, ...) {
+calculateBlacklist <- function(bins, bedFiles, ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+    
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+    
     vmsg("Calculating overlaps per bin with BED files \n    ", paste(bedFiles,
         collapse="\n    "), "\n    ...", appendLF=FALSE)
 
@@ -202,7 +216,11 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
 }
 
 iterateResiduals <- function(object, adjustIncompletes=TRUE,
-    cutoff=4.0, maxIter=30, ...) {
+    cutoff=4.0, maxIter=30, ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     first <- sum(binsToUse(object))
     previous <- first
     vmsg("Iteration #1 with ", format(previous, big.mark=","),
@@ -255,7 +273,12 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
 # More generic, eg when bed files are not readily available.
 # 
 ###############################################################################
-calculateBlacklistByRegions <- function(bins, regions) {
+calculateBlacklistByRegions <- function(bins, regions,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     vmsg("Calculating percent overlap per bin with regions")
     
     combined <- as.data.frame(regions)

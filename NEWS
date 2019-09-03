@@ -3,6 +3,12 @@ Package: QDNQseq
 
 Version: 1.21.2-9000 [2019-09-03]
 
+NEW FEATURES:
+
+ * All functions that produce verbose output gained argument 'verbose'.  For
+   backward compatibility, it currently defaults to 'verbose=TRUE' but that
+   may be changed to 'verbose=FALSE' in a future release.
+
 IMPROVEMENTS:
 
  * callBins() now respects option 'QDNAseq::verbose' for controlling whether

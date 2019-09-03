@@ -15,6 +15,7 @@
 #     \item{x}{A @see "QDNAseqReadCounts" or @see "QDNAseqCopyNumbers" object.}
 #     \item{y}{missing}
 #     \item{...}{...}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \examples{
@@ -43,7 +44,11 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     pointpch=getOption("QDNAseq::pointpch", 1L),
     pointcex=getOption("QDNAseq::pointcex", 0.1),
     xlab=NULL, ylab=NULL, ylim=NULL, xaxt="s", yaxp=NULL,
-    showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ... ) {
+    showDataPoints=TRUE, showSD=TRUE, doSegments=TRUE, doCalls=TRUE, ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     ## Import private functions
     ns <- asNamespace("CGHbase")
@@ -442,6 +447,7 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 #     \item{x}{A @see "QDNAseqReadCounts" object.}
 #     \item{y}{missing}
 #     \item{...}{...}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \examples{
@@ -457,7 +463,11 @@ setMethod("frequencyPlot", signature=c(x="QDNAseqCopyNumbers", y="missing"),
 setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     definition=function(x, y, main=NULL, nlevels=20L,
     what=c("read counts", "fit", "residuals"), adjustIncompletes=TRUE,
-    ...) {
+    ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
+    
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+    
     what <- match.arg(what)
     if (what == "read counts") {
         signal <- assayDataElement(x, "counts")
