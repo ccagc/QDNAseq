@@ -318,7 +318,7 @@ calculateBlacklistByRegions <- function(bins, regions,
     combined$idDiff <- combined$ei - combined$si 
     
     # Calculate continuous IDX
-    c(0, cumsum(rle(bins$chromosome)$lengths)) -> chrI
+    chrI <- c(0, cumsum(rle(bins$chromosome)$lengths))
     combined$sI <- combined$si + chrI[ as.integer(combined$chromosome) ]
     combined$eI <- combined$ei + chrI[ as.integer(combined$chromosome) ]
     
@@ -328,32 +328,33 @@ calculateBlacklistByRegions <- function(bins, regions,
     # Sum complete overlaps eg segment smaller than bin
     sel2 <- combined$idDiff == 0
     
-    aggregate(c(
+    res12 <- aggregate(
+      c(
         combined$sm[sel1], 
         combined$em[sel1],
         combined$seDiff[sel2]
-    ), 
-        list(c(
+      ), 
+      by=list(c(
             combined$sI[sel1], 
             combined$eI[sel1],
             combined$sI[sel2]
-        )
-        ), max) -> res12
+      )),
+      FUN=max)
     
     vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
     sel3 <- combined$idDiff > 1
-    unlist(sapply(which(sel3), FUN=function(x) {
+    res3 <- unlist(sapply(which(sel3), FUN=function(x) {
         s <- combined$sI[x] + 1
         e <- combined$eI[x] - 1
         s:e
-    })) -> res3
+    }))
     
     res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))))
     
-    aggregate(res$x, by=list(res$Group.1), FUN=max) -> res
+    res <- aggregate(res$x, by=list(res$Group.1), FUN=max)
     
-    res$x / binSize * 100 -> res$pct
+    res$pct <- res$x / binSize * 100
     
     blacklist <- rep(0, times=nrow(bins))
     blacklist[ as.numeric(res$Group.1) ] <- res$pct

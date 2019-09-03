@@ -153,7 +153,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         }, ..., seeds=seeds)
         
         if(storeSegmentObjects)
-          assayDataElementReplace(object, "segmentObj", segments) -> object
+          object <- assayDataElementReplace(object, "segmentObj", segments)
         
         segmentStatisticCol <- grep(segmentStatistic, 
                                     colnames(segments.summary(segments[[1]])))
@@ -191,7 +191,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         }, ..., seeds=seeds)
         
         if(storeSegmentObjects)
-          assayDataElementReplace(object, "segmentObj", segments) -> object
+          object <- assayDataElementReplace(object, "segmentObj", segments)
         
         segmentStatisticCol <- grep(segmentStatistic, 
                                     colnames(segments.summary(segments[[1]])))

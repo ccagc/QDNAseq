@@ -244,7 +244,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             hits <- list()
             hits[[seqNameI]] <- reads[['pos']]
 
-            paste(seqName, chunkStart, chunkEnd, sep=":") -> chunkName
+            chunkName <- paste(seqName, chunkStart, chunkEnd, sep=":")
             vmsg(paste('binning chunk -', chunkName, sep=" "), appendLF=TRUE)
 
             keep <- which(

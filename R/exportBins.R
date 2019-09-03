@@ -195,7 +195,7 @@ exportVCF <- function(obj) {
 
 	dsel <- d[sel,]
 
-	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
+	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
 	endI <- cumsum(rleD$lengths)
 	posI <- c(1, endI[-length(endI)] + 1)
@@ -264,7 +264,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	dsel <- d[sel,]
 
-	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
+	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
 	endI <- cumsum(rleD$lengths)
 	posI <- c(1, endI[-length(endI)] + 1)
