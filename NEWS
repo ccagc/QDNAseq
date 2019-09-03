@@ -3,12 +3,6 @@ Package: QDNQseq
 
 Version: 1.21.2-9000 [2019-09-03]
 
-SIGNIFICANT CHANGES:
-
- * Argument 'seeds' of segmentBins() was renamed to 'seed' and can now only
-   take TRUE or FALSE as values.  A vector of integer seeds is no longer
-   accepted since that approach was not using proper random numbers.
-
 NEW FEATURES:
 
  * All functions that produce verbose output gained argument 'verbose'.  For
@@ -25,7 +19,9 @@ IMPROVEMENTS:
 
 DEPRECATION AND DEFUNCT:
 
- * Argument 'seeds' of segmentBins() is defunct. Use 'seed' instead.
+ * Argument 'seeds' of segmentBins() is deprecated because it did not use
+   proper parallel random number generation (RNG).  We now instead rely on
+   future.apply::future_lapply(..., future.seed=TRUE) for this.
 
 
 Version: 1.21.2 [2019-09-03]
