@@ -142,7 +142,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## use sample names for indexing, they are available in the CNA objects
         ## as the name of the third column
         names(msgs) <- sampleNames(object)
-        segments <- flapply(cna, FUN=function(x, ..., seeds=NULL) {
+        segments <- future_lapply(cna, FUN=function(x, ..., seeds=NULL) {
             vmsg(msgs[colnames(x)[3]])
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
@@ -180,7 +180,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
             }
         )
 
-        segments <- flapply(cna, FUN=function(x, ..., seeds=NULL) {
+        segments <- future_lapply(cna, FUN=function(x, ..., seeds=NULL) {
             vmsg("    Segmenting chromosome ", x$chrom[1], " ...")
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)

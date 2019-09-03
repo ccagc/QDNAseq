@@ -155,7 +155,7 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
         attr(loessFit, "used.family") <- NA_character_
         return(loessFit)
     }
-    fits <- flapply(seq_len(ncol(counts)), FUN=calculateFits, ...)
+    fits <- future_lapply(seq_len(ncol(counts)), FUN=calculateFits, ...)
     loessFit <- do.call(cbind, fits)
     dimnames(loessFit) <- dimnames(counts)
     object$loess.span <- unlist(lapply(fits, FUN=attr, which="used.span"))

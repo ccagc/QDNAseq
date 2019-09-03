@@ -84,7 +84,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     # Bin size in units of base pairs
     binWidth <- as.integer(binSize * 1000L)
 
-    chrData <- flapply(chrs, function(chr) {
+    chrData <- future_lapply(chrs, function(chr) {
         vmsg("    Processing ", chr, " ...")
         chr.size <- lengths[chr]
         chr.starts <- seq(from=1L, to=chr.size, by=binWidth)
@@ -196,7 +196,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
                 max(start, overlaps[i, "start"]) + 1
         bases / (end - start + 1) * 100
     }
-    blacklist <- fapply(bins, MARGIN=1L, FUN=overlap.counter, joined)
+    blacklist <- future_apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
     vmsg()
     blacklist
 }
