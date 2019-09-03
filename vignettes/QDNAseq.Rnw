@@ -341,7 +341,7 @@ The default is to use single-core processing via ``eager'' futures. This can be
 set explicitly with:
 
 <<eval=FALSE>>=
-future::plan("eager")
+future::plan("sequential")
 @
 
 \subsection{Parallel processing on the current machine}
