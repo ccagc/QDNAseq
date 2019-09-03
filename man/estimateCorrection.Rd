@@ -55,8 +55,8 @@ estimateCorrection(object, span=0.65, family="symmetric", adjustIncompletes=TRUE
 }
 
 \section{Parallel processing}{
-  This function uses \pkg{future} to parallelizes \code{\link{calculateFits}}
-  across samples.
+  This function uses \pkg{future} to calculate the QDNAseq model across
+  samples in parallel.
 }
 
 \examples{

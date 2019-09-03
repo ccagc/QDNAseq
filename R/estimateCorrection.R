@@ -43,8 +43,8 @@
 # }
 #
 # \section{Parallel processing}{
-#   This function uses \pkg{future} to parallelizes @see "calculateFits"
-#   across samples.
+#   This function uses \pkg{future} to calculate the QDNAseq model across
+#   samples in parallel.
 # }
 #
 # \examples{
