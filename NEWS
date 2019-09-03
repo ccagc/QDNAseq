@@ -3,6 +3,10 @@ Package: QDNQseq
 
 Version: 1.21.1-9000 [2019-09-03]
 
+SIGNIFICANT CHANGES:
+
+ * Package now imports the 'future' package; previously it was only suggested.
+
 IMPROVEMENTS:
 
  * Avoiding data type coercions in more places by for instance making sure
@@ -10,6 +14,9 @@ IMPROVEMENTS:
    data type (instead of the default NA, which is a logical value).
 
 SOFTWARE QUALITY:
+
+ * TESTS: Now testing numerical reproducibility also for parallel processing
+   (using future strategies 'multisession' and 'multicore').
 
  * TESTS: Now asserting numerical reproducibility of also segmentBins() and
    callBins().

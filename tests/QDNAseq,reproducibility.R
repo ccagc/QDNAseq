@@ -35,17 +35,31 @@ fitC <- callBins(fit)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # REPRODUCIBILITY
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-dataFr <- applyFilters(data, residual=TRUE, blacklist=TRUE)
-stopifnot(all.equal(dataFr, dataF))
+strategies <- c("sequential", "multiprocess")
+if (future::supportsMulticore()) strategies <- c(strategies, "multicore")
 
-dataCr <- correctBins(dataF)
-stopifnot(all.equal(dataCr, dataC))
+oplan <- future::plan("list")
+for (strategy in strategies) {
+  message(sprintf("Reproducibility with plan(\"%s\") ...", strategy))
+  
+  future::plan(strategy)
+  
+  dataFr <- applyFilters(data, residual=TRUE, blacklist=TRUE)
+  stopifnot(all.equal(dataFr, dataF))
+  
+  dataCr <- correctBins(dataF)
+  stopifnot(all.equal(dataCr, dataC))
+  
+  dataNr <- normalizeBins(dataC)
+  stopifnot(all.equal(dataNr, dataN))
+  
+  fitr <- segmentBins(dataNr)
+  stopifnot(all.equal(fitr, fit))
+  
+  fitCr <- callBins(fitr)
+  stopifnot(all.equal(fitCr, fitC))
+  
+  message(sprintf("Reproducibility with plan(\"%s\") ... done", strategy))
+}
 
-dataNr <- normalizeBins(dataC)
-stopifnot(all.equal(dataNr, dataN))
-
-fitr <- segmentBins(dataNr)
-stopifnot(all.equal(fitr, fit))
-
-fitCr <- callBins(fitr)
-stopifnot(all.equal(fitCr, fitC))
+future::plan(oplan)
