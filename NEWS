@@ -1,6 +1,14 @@
 Package: QDNQseq
 ----------------
 
+Version: 1.21.2-9000 [2019-09-03]
+
+IMPROVEMENTS:
+
+ * MEMORY: Utilize more memory-efficient matrixStats functions colSums2(),
+   colMeans2(), etc.
+
+
 Version: 1.21.2 [2019-09-03]
 
 SIGNIFICANT CHANGES:
@@ -15,8 +23,8 @@ SIGNIFICANT CHANGES:
 
 IMPROVEMENTS:
 
- * Avoiding data type coercions in more places by for instance making sure
-   that vectors and matrices are initated with the values of the correct
+ * MEMORY: Avoiding data type coercions in more places by for instance making
+   sure that vectors and matrices are initated with the values of the correct
    data type (instead of the default NA, which is a logical value).
 
 SOFTWARE QUALITY:
