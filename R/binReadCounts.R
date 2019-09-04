@@ -216,7 +216,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     if (!is.numeric(chunkSize))
         chunkSize <- max(targets) + 1
 
-    countsPerTarget <- bplapply(names(targets), function(seqName) {
+    countsPerTarget <- future_lapply(names(targets), FUN=function(seqName) {
         readCounts <- integer(length=nrow(bins))
         seqNameI <- sub('chr', '', seqName)
         for (chunk in 1:ceiling(targets[seqName] / chunkSize)) {

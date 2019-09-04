@@ -33,6 +33,14 @@
 #     nucleotides of non-N nucleotides).
 # }
 #
+# \section{Parallel processing}{
+# The \pkg{future} is used parallelize the following functions:
+#  \itemize{
+#   \item \code{createBins()} - parallelizes binned GC content across chromosomes
+#   \item \code{calculateBlacklist()} - parallelizes overlap counts across bins)
+#  }
+# }
+#
 # \examples{
 # \dontrun{# NOTE: These take a very long time to run.
 # library(BSgenome.Hsapiens.UCSC.hg19)
@@ -76,7 +84,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     # Bin size in units of base pairs
     binWidth <- as.integer(binSize * 1000L)
 
-    chrData <- flapply(chrs, function(chr) {
+    chrData <- future_lapply(chrs, function(chr) {
         vmsg("    Processing ", chr, " ...")
         chr.size <- lengths[chr]
         chr.starts <- seq(from=1L, to=chr.size, by=binWidth)
@@ -90,10 +98,10 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
         chr.gc <- nchar(cg) / nchar(acgt) * 100
         list(start=chr.starts, end=chr.ends, bases=chr.bases, gc=chr.gc)
     })
-    start <- unlist(lapply(chrData, "[[", "start"))
-    end <- unlist(lapply(chrData, "[[", "end"))
-    bases <- unlist(lapply(chrData, "[[", "bases"))
-    gc <- unlist(lapply(chrData, "[[", "gc"))
+    start <- unlist(lapply(chrData, FUN="[[", "start"))
+    end <- unlist(lapply(chrData, FUN="[[", "end"))
+    bases <- unlist(lapply(chrData, FUN="[[", "bases"))
+    gc <- unlist(lapply(chrData, FUN="[[", "gc"))
     gc[is.nan(gc)] <- NA_real_
     bins <- data.frame(chromosome=rep(chrs, times=ceiling(lengths/binWidth)),
         start, end, bases, gc, stringsAsFactors=FALSE)
@@ -115,7 +123,7 @@ calculateMappability <- function(bins, bigWigFile,
     vmsg("Calculating mappabilities per bin for chromosomes:\n    ",
         paste(unique(bins$chromosome), collapse=", "),
         "\nfrom file:\n    ", bigWigFile, "\nchromosomes to process:   ",
-        rep(".", length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
+        rep(".", times=length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
     scipen <- options("scipen")
@@ -188,7 +196,7 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
                 max(start, overlaps[i, "start"]) + 1
         bases / (end - start + 1) * 100
     }
-    blacklist <- fapply(bins, MARGIN=1L, FUN=overlap.counter, joined)
+    blacklist <- future_apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
     vmsg()
     blacklist
 }
@@ -207,8 +215,8 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     }
     fit <- assayDataElement(object, "fit")
     residuals <- counts / fit - 1
-    # residuals[fit == 0] <- NA
-    residuals[!binsToUse(object), ] <- NA
+    # residuals[fit == 0] <- NA_real_
+    residuals[!binsToUse(object), ] <- NA_real_
     residual <- rowMedians(residuals, na.rm=TRUE)
     cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
     if (is.numeric(cutoff))
@@ -223,8 +231,8 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
         object <- estimateCorrection(object, ...)
         fit <- assayDataElement(object, "fit")
         residuals <- counts / fit - 1
-        # residuals[fit == 0] <- NA
-        residuals[!binsToUse(object), ] <- NA
+        # residuals[fit == 0] <- NA_real_
+        residuals[!binsToUse(object), ] <- NA_real_
         residual <- rowMedians(residuals, na.rm=TRUE)
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
             abs(residual) <= cutoffValue
@@ -315,19 +323,19 @@ calculateBlacklistByRegions <- function(bins, regions) {
     vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
     sel3 <- combined$idDiff > 1
-    unlist(sapply(which(sel3), function(x) {
+    unlist(sapply(which(sel3), FUN=function(x) {
         s <- combined$sI[x] + 1
         e <- combined$eI[x] - 1
         s:e
     })) -> res3
     
-    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, length(res3))))
+    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))))
     
     aggregate(res$x, list(res$Group.1), max) -> res
     
     res$x / binSize * 100 -> res$pct
     
-    blacklist <- rep(0, nrow(bins))
+    blacklist <- rep(0, times=nrow(bins))
     blacklist[ as.numeric(res$Group.1) ] <- res$pct
     
     blacklist

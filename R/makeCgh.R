@@ -68,6 +68,8 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
     # Filter bins?
     if (filter) {
         keep <- binsToUse(object)
+        ## NOTE: Produces warnings "In seq.default(along = versions) :
+        ##       partial argument match of 'along' to 'along.with'"
         object <- object[keep,]
         keep <- NULL # Not needed anymore
     }
@@ -85,6 +87,8 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
                 chromosomeReplacements[chromosomeReplacement]
         }
     }
+    ## NOTE: Produces warnings "In seq.default(along = versions) :
+    ##       partial argument match of 'along' to 'along.with'"
     fData(object)$chromosome <- as.integer(tmp)
     if (any(is.na(fData(object)$chromosome)))
         stop(paste0("Unknown chromosome names:\n",
@@ -96,6 +100,8 @@ setMethod('makeCgh', signature=c(object='QDNAseqCopyNumbers'),
     names[names == 'chromosome'] <- 'Chromosome'
     names[names == 'start'] <- 'Start'
     names[names == 'end'] <- 'End'
+    ## NOTE: Produces warnings "In seq.default(along = versions) :
+    ##       partial argument match of 'along' to 'along.with'"
     colnames(fData(object)) <- names
 
     # Instantiate choose cgh* object

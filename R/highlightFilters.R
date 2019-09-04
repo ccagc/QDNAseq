@@ -22,13 +22,13 @@
 #     \item{blacklist}{Either a @logical specifying whether to filter based on
 #         overlap with blacklisted regions, or if numeric, the maximum
 #         percentage of overlap allowed. Default is @TRUE, which corresponds to
-#         no overlap allowd (i.e. value of 0).}
+#         no overlap allowed (i.e. value of 0).}
 #     \item{mappability}{A @numeric in \eqn{[0,100]} to specify filtering out
 #         bins with mappabilities lower than the number specified. NA (default)
 #         or @FALSE will not filter based on mappability.}
 #     \item{bases}{A @numeric specifying the minimum percentage of characterized
 #         bases (not Ns) in the reference genome sequence. NA (default) or
-#         @FALSE will not filted based on uncharacterized bases.}
+#         @FALSE will not filter based on uncharacterized bases.}
 #     \item{type}{When specifying multiple filters (\code{residual},
 #         \code{blacklist}, \code{mappability}, \code{bases}), whether to
 #         highlight their \code{union} (default) or \code{intersection}.}

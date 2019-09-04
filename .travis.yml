@@ -65,7 +65,6 @@ bioc_packages:
   - GenomicRanges
   - IRanges
   - Rsamtools
-  - BiocParallel
   - BiocStyle
   - BSgenome
   - GenomeInfoDb

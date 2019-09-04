@@ -90,15 +90,15 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
         if ("paired.ends" %in% colnames(oldphenodata)) {
             pairedEnds <- unique(oldphenodata$paired.ends)
             if (length(pairedEnds) != 1)
-                pairedEnds <- NA
+                pairedEnds <- NA_real_
         }
         totalReads <- sum(oldphenodata$total.reads)
         usedReads <- sum(oldphenodata$used.reads)
-        numericCols <- sapply(oldphenodata, is.numeric)
+        numericCols <- sapply(oldphenodata, FUN=is.numeric)
         oldphenodata[1, numericCols] <- colMeans(oldphenodata[, numericCols,
             drop=FALSE])
         oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
-            drop=FALSE], 2, concatenateIfNotEqual)
+            drop=FALSE], MARGIN=2L, concatenateIfNotEqual)
         if ("paired.ends" %in% colnames(oldphenodata))
             oldphenodata[1, "paired.ends"] <- pairedEnds
         oldphenodata[1, "total.reads"] <- totalReads

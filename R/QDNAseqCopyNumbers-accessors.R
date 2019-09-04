@@ -105,7 +105,7 @@ setReplaceMethod('copynumber',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'copynumber', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'copynumber', value2)
@@ -119,7 +119,7 @@ setReplaceMethod('segmented',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'segmented', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'segmented', value2)
@@ -133,7 +133,7 @@ setReplaceMethod('calls',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'calls', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'calls', value2)
@@ -147,7 +147,7 @@ setReplaceMethod('probdloss',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'probdloss', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'probdloss', value2)
@@ -161,7 +161,7 @@ setReplaceMethod('probloss',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'probloss', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'probloss', value2)
@@ -175,7 +175,7 @@ setReplaceMethod('probnorm',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'probnorm', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'probnorm', value2)
@@ -189,7 +189,7 @@ setReplaceMethod('probgain',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'probgain', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'probgain', value2)
@@ -203,7 +203,7 @@ setReplaceMethod('probamp',
     if (nrow(value) == nrow(object)) {
         assayDataElementReplace(object, 'probamp', value)
     } else {
-        value2 <- matrix(nrow=nrow(object), ncol=ncol(object),
+        value2 <- matrix(NA_real_, nrow=nrow(object), ncol=ncol(object),
             dimnames=list(featureNames(object), sampleNames(object)))
         value2[rownames(value), ] <- value
         assayDataElementReplace(object, 'probamp', value2)

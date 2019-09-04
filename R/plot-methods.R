@@ -55,7 +55,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     } else {
         condition <- rep(TRUE, times=nrow(x))
     }
-    baseLine <- NA
+    baseLine <- NA_real_
     doCalls <- "calls" %in% assayDataElementNames(x) & doCalls
     doSegments <- "segmented" %in% assayDataElementNames(x) & doSegments
     if (doCalls) {
@@ -156,7 +156,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         symbol <- quote(hat(sigma))
     }
     sdFUN <- match.fun(sdFUN)
-    noise <- apply(copynumber, 2, sdFUN, na.rm=TRUE)
+    noise <- apply(copynumber, MARGIN=2L, FUN=sdFUN, na.rm=TRUE)
     if (logTransform)
         copynumber <- log2adhoc(copynumber)
     for (i in seq_len(ncol(x))) {
@@ -498,7 +498,7 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         median.signal$mappability, sep="")
     xx <- min(median.signal$mappability):max(median.signal$mappability)
     yy <- min(median.signal$gc):max(median.signal$gc)
-    m <- matrix(nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
+    m <- matrix(NA_real_, nrow=length(xx), ncol=length(yy), dimnames=list(xx, yy))
 
     for (i in seq_len(ncol(x))) {
         vmsg("Plotting sample ", main[i])
@@ -506,7 +506,7 @@ setMethod("isobarPlot", signature=c(x="QDNAseqReadCounts", y="missing"),
             m[as.character(median.signal[j, "mappability"]),
                 as.character(median.signal[j, "gc"])] <- median.signal[j, i+2L]
         image(xx, yy, m, col=paste("#", c(sprintf("%02X", 0L:255L),
-            rep("FF", 256L)), c(rep("FF", 256L), sprintf("%02X", 255L:0L)),
+            rep("FF", times=256L)), c(rep("FF", times=256L), sprintf("%02X", 255L:0L)),
             sprintf("%02X", 255L), sep=""),
             main=main[i],
             xlab=NA, ylab=NA, xaxt="n", yaxt="n",
@@ -599,7 +599,7 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
     }
     signal <- counts / fit
     signal[fit <= 0] <- 0
-    noise <- apply(signal, 2, sdFUN, na.rm=TRUE)
+    noise <- apply(signal, MARGIN=2L, FUN=sdFUN, na.rm=TRUE)
     plot(reciprocalOfAverageUsedReadsPerBin, noise^2, main=main, cex=0.5,
         xlim=c(0, 1.1*max(reciprocalOfAverageUsedReadsPerBin)),
         ylim=c(0, 1.04*max(noise^2)),
@@ -616,14 +616,14 @@ setMethod("noisePlot", signature=c(x="QDNAseqReadCounts", y="missing"),
         usedReadsAtTicks <- sum(condition)/at
         labels <- round(predict(relationship,
             newdata=data.frame(usedReads=usedReadsAtTicks)) / 1e6, digits=1)
-        labels[1] <- NA
+        labels[1] <- NA_real_
         xlab <- "million reads"
     } else if (xAxis == "reciprocal of average reads per bin") {
         labels <- round(at, digits=3)
         xlab <- expression((average~reads~per~bin)^-1)
     } else {
         labels <- round(1/at, digits=3)
-        labels[1] <- NA
+        labels[1] <- NA_real_
         xlab <- expression(average~reads~per~bin)
     }
     axis(side=1, tck=-.015, at=at, labels=NA)

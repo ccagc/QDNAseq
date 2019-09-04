@@ -124,7 +124,7 @@ dev.off()
 
 Apply filters and plot median read counts as a function of GC content and
 mappability (Figure~\ref{fig:isobar}). As the example data set only contains a
-subset of the chromosomes, the distribution looks slithly less smooth than
+subset of the chromosomes, the distribution looks slightly less smooth than
 expected for the entire genome.
 
 <<>>=
@@ -313,17 +313,14 @@ objects by running it before segmentation or calling.
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
 After installing it with \Rcode{install.packages("future")}, all that is
-required is to select an appropriate \textit{plan}. The recommended way to do
-that is to include it in your \file{$\sim$/.Rprofile}.
+required is to select an appropriate \textit{plan}.
 
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
 \Rfunction{estimateCorrection()}, \Rfunction{segmentBins()},
 \Rfunction{createBins()}, and \Rfunction{calculateBlacklist()}. 
 \Rfunction{binReadCounts()} parallelizes by chromosome when \Rcode{chunkSize} 
-is used. The parallel environment used for this can be controlled using 
-\Biocpkg{BiocParallel}'s standard configuration methods (e.g. 
-\Rfunction{register()}, \Robject{mc.cores}).
+is used.
 
 However, when argument \Rcode{method="CGHcall"} (which is the default),
 function \Rfunction{callBins()} calls function \Rfunction{CGHcall()} from
@@ -332,16 +329,16 @@ computation. For that, the number of processes to use should be specified with
 argument \Rcode{ncpus}, with something along the lines of:
 
 <<eval=FALSE>>=
-copyNumbers <- callBins(..., ncpus=4L)
+copyNumbers <- callBins(..., ncpus=4)
 @
 
 \subsection{Non-parallel processing}
 
-The default is to use single-core processing via ``eager'' futures. This can be
+The default is to use single-core processing via ``sequential'' futures. This can be
 set explicitly with:
 
 <<eval=FALSE>>=
-future::plan("eager")
+future::plan("sequential")
 @
 
 \subsection{Parallel processing on the current machine}
@@ -354,31 +351,34 @@ future::plan("multiprocess")
 @
 
 After that, all functions that support parallel processing will automatically
-use it.
-
-On Mac OS X and Linux, this will use multiple \textit{forked} \R{} processes
-\Rcode{("multicore")}. On Windows, which does not support \textit{forking},
-multiple \textit{background} \R{} processes \Rcode{("multisession")} will be
-used instead.
-
-The number of parallel processes to use can be defined via option
-\Robject{mc.cores}, for example with:
+use it.  The \Rpackage{future} framework attempts to play nice with the
+current compute environment.  It will automatically respect environment
+variables and \R{} options that are used to limit the number of parallel works.
+It will also respect environment variables such as number of cores assigned
+to job scripts in high-performance compute (HPC) clusters.  If no such
+restrictions are set, the default is to use all cores available.
+To explicitly set, and override other settings, the number of parallel workers,
+use argument \textit{workers}, e.g.
 
 <<eval=FALSE>>=
-options(mc.cores=4L)
+future::plan("multiprocess", workers=4)
 @
 
-\subsection{Parallel processing on a cluster}
+For more details, see the \Rpackage{future} documentation.
+
+
+\subsection{Parallel processing on an ad-hoc cluster}
 
 To process data using multiple \R{} sessions running on different machines, use
 something along the lines of:
 
 <<eval=FALSE>>=
-cl <- parallel::makeCluster(...)
+cl <- future::makeClusterPSOCK(...)
 future::plan("cluster", cluster=cl)
 @
 
-See package \Rpackage{parallel} for more details.
+See package \Rpackage{future} for more details.
+
 
 \clearpage
 
@@ -409,7 +409,7 @@ there can be bins in the sex chromosomes with a combination of GC content and
 mappability that is not found anywhere else in the genome. This will cause
 those bins to miss a correction estimate altogether, and these bins will be
 filtered out from subsequent steps by \Rfunction{correctBins()}. If this
-happens, it will print out a message speficying the number of bins affected.
+happens, it will print out a message specifying the number of bins affected.
 
 Another possible approach is to allow extrapolation while calculating the loess
 correction. But please do note that the effect of extrapolation has not been
@@ -427,7 +427,7 @@ readCounts <- estimateCorrection(readCounts,
 This section describes how bin annotations have been created for the hg19 build
 of the human reference genome, and can be applied for other genome builds and
 species. The first step is to create the bins based on chromosome sizes, and
-calculate their GC content and proportion of characterized nucletodies (non-N
+calculate their GC content and proportion of characterized nucleotides (non-N
 bases in the reference sequence). For this, the corresponding
 \Biocpkg{BSgenome} package is needed.
 
@@ -508,7 +508,7 @@ The column \Robject{use} specifies whether each bin should be used for
 subsequent analyses by default. The command \Rfunction{applyFilters()} will
 change its value accordingly. By default, bins in the sex chromosomes, or with
 only uncharacterized nucleotides (N's) in their reference sequence, are flagged
-for exlusion.
+for exclusion.
 
 <<eval=FALSE>>=
 # by default, use all autosomal bins that have a reference sequence

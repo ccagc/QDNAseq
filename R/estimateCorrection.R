@@ -34,12 +34,17 @@
 #     \item{variables}{A character vector specifying which variables to include
 #         in the correction. Can be \code{c("gc", "mappability")} (the default),
 #         \code{"gc"}, or \code{"mappability"}.}
-#     \item{...}{Additional aguments passed to @see "stats::loess".}
+#     \item{...}{Additional arguments passed to @see "stats::loess".}
 # }
 #
 # \value{
 #     Returns a @see "QDNAseqReadCounts" object with the assay data element
 #     \code{fit} added.
+# }
+#
+# \section{Parallel processing}{
+#   This function uses \pkg{future} to calculate the QDNAseq model across
+#   samples in parallel.
 # }
 #
 # \examples{
@@ -95,9 +100,9 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
     calculateFits <-  function(i, ...) {
         if (is.na(span[i]) && is.na(family[i])) {
             vmsg("    Skipping sample ", sampleNames(object)[i], "...")
-            loessFit <- rep(1, nrow(counts))
-            attr(loessFit, "used.span") <- NA
-            attr(loessFit, "used.family") <- NA
+            loessFit <- rep(1, times=nrow(counts))
+            attr(loessFit, "used.span") <- NA_real_
+            attr(loessFit, "used.family") <- NA_character_
             return(loessFit)
         }
         vmsg("    Calculating fit for sample ", sampleNames(object)[i],
@@ -145,16 +150,16 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
             attr(loessFit, "used.family") <- family[i]
             return(loessFit)
         }, silent=TRUE)
-        loessFit <- rep(1, nrow(counts))
-        attr(loessFit, "used.span") <- NA
-        attr(loessFit, "used.family") <- NA
+        loessFit <- rep(1, times=nrow(counts))
+        attr(loessFit, "used.span") <- NA_real_
+        attr(loessFit, "used.family") <- NA_character_
         return(loessFit)
     }
-    fits <- flapply(seq_len(ncol(counts)), calculateFits, ...)
+    fits <- future_lapply(seq_len(ncol(counts)), FUN=calculateFits, ...)
     loessFit <- do.call(cbind, fits)
     dimnames(loessFit) <- dimnames(counts)
-    object$loess.span <- unlist(lapply(fits, attr, which="used.span"))
-    object$loess.family <- unlist(lapply(fits, attr, which="used.family"))
+    object$loess.span <- unlist(lapply(fits, FUN=attr, which="used.span"))
+    object$loess.family <- unlist(lapply(fits, FUN=attr, which="used.family"))
     assayDataElement(object, "fit") <- loessFit
     vmsg("Done.")
     object

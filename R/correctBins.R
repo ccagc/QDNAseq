@@ -16,7 +16,7 @@
 #     \item{fit}{An optional matrix of values to use for the correction. If
 #         NULL (default), assay data \code{fit} from object is used. If it is
 #         missing, it is generated with a call to @see "estimateCorrection".}
-#     \item{method}{A character(1) string speficying the correction method.
+#     \item{method}{A character(1) string specifying the correction method.
 #         \code{ratio} (default) divides \code{counts} with \code{fit}.
 #         \code{median} calculates the median \code{fit}, and defines the
 #         correction for bins with GC content \code{gc} and mappability

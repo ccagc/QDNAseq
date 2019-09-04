@@ -25,6 +25,40 @@ Run `revdep_details(,"ACE")` for more info
     Package unavailable to check Rd xrefs: ‘corrplot’
     ```
 
+# GeneBreak
+
+<details>
+
+* Version: 1.14.0
+* Source code: https://github.com/cran/GeneBreak
+* URL: https://github.com/stefvanlieshout/GeneBreak
+* Date/Publication: 2019-05-02
+* Number of recursive dependencies: 33
+
+Run `revdep_details(,"GeneBreak")` for more info
+
+</details>
+
+## In both
+
+*   checking R code for possible problems ... NOTE
+    ```
+    .glmbreak: no visible global function definition for ‘glm’
+    .glmbreak: no visible global function definition for ‘predict’
+    addGeneAnnotation,CopyNumberBreakPoints: no visible global function
+      definition for ‘head’
+    bpStats,CopyNumberBreakPoints: no visible global function definition
+      for ‘sd’
+    bpStats,CopyNumberBreakPoints: no visible global function definition
+      for ‘p.adjust’
+    Undefined global functions or variables:
+      glm head p.adjust predict sd
+    Consider adding
+      importFrom("stats", "glm", "p.adjust", "predict", "sd")
+      importFrom("utils", "head")
+    to your NAMESPACE file.
+    ```
+
 # HiCcompare
 
 <details>

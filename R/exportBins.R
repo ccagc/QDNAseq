@@ -204,9 +204,9 @@ exportVCF <- function(obj) {
 	score <- dsel[posI,4]
 	segVal <- round(dsel[posI,5],2)
 
-	svtype <- rep(NA, length(chr)) 
-	svlen <- rep(NA, length(chr)) 
-	gt <- rep(NA, length(chr)) 
+	svtype <- rep(NA_character_, times=length(chr)) 
+	svlen <- rep(NA_real_, times=length(chr)) 
+	gt <- rep(NA_character_, times=length(chr)) 
 	bins <- rleD$lengths
 	svtype[dsel[posI,4] <= -1] <- "DEL"
 	svtype[dsel[posI,4] >= 1] <- "DUP"
@@ -233,8 +233,8 @@ exportVCF <- function(obj) {
 
 	fname <- paste(pd$name[i], ".vcf", sep="")
 
-	write.table(vcfHeader, fname, quote=F, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, fname, quote=F, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+	write.table(vcfHeader, fname, quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
+	suppressWarnings(write.table(out, fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
     }
 }
 
@@ -280,7 +280,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	fname <- paste(fnames[i], ".seg", sep="")
 
-	write.table(out, fname, quote=F, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
     }
 }
 

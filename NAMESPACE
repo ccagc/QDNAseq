@@ -30,7 +30,7 @@ importFrom(stats, aggregate, approxfun, density, formula, lm, loess, median, pre
 importFrom(utils, data, maintainer, packageVersion, read.table, write.table)
 importFrom(GenomicRanges, GRanges)
 importFrom(IRanges, IRanges)
-importFrom(BiocParallel, bplapply)
+importFrom(future.apply, future_apply, future_lapply)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # EXPORTS

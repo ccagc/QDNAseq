@@ -1,6 +1,36 @@
 Package: QDNQseq
 ----------------
 
+Version: 1.21.2 [2019-09-03]
+
+SIGNIFICANT CHANGES:
+
+ * Package now imports the 'future' and 'future.apply' packages; previously
+   the 'future' was listed as a suggested package.
+
+ * Package no longer depends on BiocParallel.
+
+ * binReadCounts() now uses the future framework instead of BiocParallel for
+   parallelization.
+
+IMPROVEMENTS:
+
+ * Avoiding data type coercions in more places by for instance making sure
+   that vectors and matrices are initated with the values of the correct
+   data type (instead of the default NA, which is a logical value).
+
+SOFTWARE QUALITY:
+
+ * Using future_lapply() and future_apply() of the well-tested future.apply
+   package instead of internal analogue implementations.
+
+ * TESTS: Now testing numerical reproducibility also for parallel processing
+   (using future strategies 'multisession' and 'multicore').
+
+ * TESTS: Now asserting numerical reproducibility of also segmentBins() and
+   callBins().
+ 
+
 Version: 1.21.1 [2019-08-30]
 
 SIGNIFICANT CHANGES:
