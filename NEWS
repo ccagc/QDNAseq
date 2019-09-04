@@ -9,7 +9,7 @@ SIGNIFICANT CHANGES:
    are instead part of Bioconductor annotation packages QDNAseq.hg19 and
    QDNAseq.mm10, which needs to be installed by the user.  If not installed,
    an error is now produced.  The reason for this change, is that the
-   QDNAseq maintainers will no longer hosts QDNAseq bin annotation files
+   QDNAseq maintainers will no longer host QDNAseq bin annotation files
    online (in the cloud).
 
 
