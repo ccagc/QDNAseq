@@ -18,14 +18,17 @@
 #     \item{type}{A @character string specify the experiment type, e.g. "SR50"
 #        or "PE100".}
 #     \item{path}{A @character string specifying the path for the bin
-#         annotation files. Defaults to downloading from the Internet, but can
-#         also be a local path. Can also be defined by setting the
-#         \code{QDNAseq::binAnnotationPath} option.}
+#         annotation file to be downloaded.  The path can either be on the
+#         local file system or a URL online.
+#         If @NULL (default), then data loaded from an \R package named
+#         \pkg{QDNAseq.\{\{genome\}\}}.
+#         The default value can be controlled via \R options
+#         \code{QDNAseq::binAnnotationPath}.}
 #     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \details{
-#     Gets bin annotation data for a particular bin size
+#     Gets bin annotation data for a particular bin size.
 # }
 #
 # \value{
@@ -46,7 +49,7 @@
 #
 # @keyword IO
 #*/#########################################################################
-getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
+getBinAnnotations <- function(binSize, genome="hg19", type="SR50",
     path=getOption("QDNAseq::binAnnotationPath", NULL),
     verbose=getOption("QDNAseq::verbose", TRUE)) {
 
@@ -55,60 +58,61 @@ getBinAnnotations <- function(binSize, genome='hg19', type='SR50',
 
     bins <- NULL
 
-    # when no path argument was provided, try to load from annotation package
+    vmsg_source <- NULL
+    
+    # Use QDNAseq.{{genome}} annotation package
     if (is.null(path)) {
-        # Check for annotation package
-        PKname <- sprintf('QDNAseq.%s', genome)
-        PKfound <- PKname %in% .packages(all.available=TRUE)
-        if(!PKfound) {
-            vmsg("Annotation package ", PKname, " not found.")
-            path <- "http://qdnaseq-ireland.s3.amazonaws.com"
-        } else {
-            # Look for binAnnotations with data()
-            BAname <- sprintf('%s.%gkbp.%s', genome, binSize, type)
-            tryCatch(data(list=BAname, package=PKname, envir = environment()),
-                warning=function(x) {
-                    # TODO suggest install package
-                    vmsg(BAname, " not found in local datasets")
-                }
-            )
-            try(bins <- get(BAname), silent=TRUE)
-            if(!is.null(bins)) {
-                vmsg('Loaded bin annotations for genome ', genome,
-                    ', bin size ', binSize, 'kbp, and experiment type ', type,
-                    ' from annotation package ', PKname, '.')
-                return(bins)
-            }
+        # Check for package
+        pkgName <- sprintf("QDNAseq.%s", genome)
+        pkgPath <- system.file(package = pkgName, mustWork = FALSE)
+        if (pkgPath == "") {
+          stop("Package not installed: ", pkgName)
         }
-    }
 
-    filename <- sprintf('QDNAseq.%s.%gkbp.%s.rds', genome, binSize, type)
-    if (length(grep("^http[s]?://", tolower(path[1]))) == 1) {
-        vmsg('Downloading bin annotations for genome ', genome,
-            ', bin size ', binSize, 'kbp, and experiment type ', type,
-            ' from URL ', path, ' ...', appendLF=FALSE)
-        remotefile <- file.path(path, filename, fsep='/')
-        localfile <- tempfile()
-        tryCatch({
-            result <- downloadFile(remotefile, localfile)
-        }, error=function(e) {
-            vmsg(' not found.')
-            stop(e)
-        })
-        bins <- readRDS(localfile)
-        file.remove(localfile)
-    } else {
-        localfile <- file.path(path, filename)
-        if (!file.exists(localfile)) {
-            stop("File not found: ", localfile)
+        dataPath <- system.file("data", package = pkgName, mustWork = FALSE)
+        if (dataPath == "") {
+          stop("Package does not provide package data: ", pkgName)
         }
-        vmsg('Loading bin annotations for genome ', genome,
-            ', bin size ', binSize, 'kbp, and experiment type ', type,
-            ' from path ', path, ' ...', appendLF=FALSE)
-        localfile <- file.path(path, filename)
-        bins <- readRDS(localfile)
+
+        # Load annotation
+        env <- new.env()
+        baName <- sprintf("%s.%gkbp.%s", genome, binSize, type)
+        tryCatch({
+          data(list=baName, package=pkgName, envir=env)
+        }, warning = function(w) {
+          names <- dir(path=dataPath, pattern="[.]rda$")
+          names <- gsub("[.]rda$", "", names)
+          stop(sprintf("QDNAseq bin annotation %s was not found in package %s. Available bin annotations are: %s", sQuote(baName), sQuote(pkgName), paste(sQuote(names), collapse=", ")))
+        })
+        
+        bins <- get(baName, mode="S4", envir=env)
+        attr(bins, "source") <- sprintf("%s v%s", pkgName, packageVersion(pkgName))
+        
+        vmsg_source <- paste("annotation package", attr(bins, "source"))
+    } else {
+      filename <- sprintf("QDNAseq.%s.%gkbp.%s.rds", genome, binSize, type)
+  
+      ## Download or a local file?
+      if (grepl("^http[s]?://", tolower(path[1]))) {
+          url <- file.path(path, filename, fsep="/")
+          localfile <- tempfile()
+          on.exit(file.remove(localfile))
+          vmsg("Downloading: ", url)
+          result <- downloadFile(url, localfile)
+          bins <- readRDS(localfile)
+          vmsg_source <- url
+      } else {
+          localfile <- file.path(path, filename)
+          if (!file_test("-f", localfile)) stop("File not found: ", localfile)
+          bins <- readRDS(localfile)
+          vmsg_source <- localfile
+      }
     }
-    vmsg()
+    
+    vmsg("Loaded bin annotations for genome ", sQuote(genome), ", bin size ",
+         binSize, " kbp, and experiment type ", sQuote(type), " from ",
+	 vmsg_source)
+ 
     bins
 }
 

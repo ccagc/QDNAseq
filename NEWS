@@ -1,6 +1,18 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.21.3-9000 [2019-09-04]
+
+SIGNIFICANT CHANGES:
+
+ * Bin annotation data files are no longer downloaded automatically. They
+   are instead part of Bioconductor annotation packages QDNAseq.hg19 and
+   QDNAseq.mm10, which needs to be installed by the user.  If not installed,
+   an error is now produced.  The reason for this change, is that the
+   QDNAseq maintainers will no longer hosts QDNAseq bin annotation files
+   online (in the cloud).
+
+
 Version: 1.21.3 [2019-09-04]
 
 NEW FEATURES:

@@ -31,14 +31,17 @@ getBinAnnotations(binSize, genome="hg19", type="SR50",
     \item{type}{A \code{\link[base]{character}} string specify the experiment type, e.g. "SR50"
        or "PE100".}
     \item{path}{A \code{\link[base]{character}} string specifying the path for the bin
-        annotation files. Defaults to downloading from the Internet, but can
-        also be a local path. Can also be defined by setting the
-        \code{QDNAseq::binAnnotationPath} option.}
+        annotation file to be downloaded.  The path can either be on the
+        local file system or a URL online.
+        If \code{\link[base]{NULL}} (default), then data loaded from an \R package named
+        \pkg{QDNAseq.\{\{genome\}\}}.
+        The default value can be controlled via \R options
+        \code{QDNAseq::binAnnotationPath}.}
     \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \details{
-    Gets bin annotation data for a particular bin size
+    Gets bin annotation data for a particular bin size.
 }
 
 \value{
