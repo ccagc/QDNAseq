@@ -68,6 +68,8 @@ bioc_packages:
   - BiocStyle
   - BSgenome
   - GenomeInfoDb
+  - QDNAseq.hg19
+  - QDNAseq.mm10
 
 notifications:
   email:

@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 1.21.3
+Version: 1.21.4
 Title: Quantitative DNA Sequencing for Chromosomal Aberrations
 Depends: R (>= 3.1.0)
 Imports:
@@ -23,7 +23,9 @@ Suggests:
     BSgenome (>= 1.38.0),
     digest (>= 0.6.20),
     GenomeInfoDb (>= 1.6.0),
-    R.cache (>= 0.13.0)
+    R.cache (>= 0.13.0),
+    QDNAseq.hg19,
+    QDNAseq.mm10
 Description: Quantitative DNA sequencing for chromosomal aberrations.
     The genome is divided into non-overlapping fixed-sized bins, number of
     sequence reads in each counted, adjusted with a simultaneous
