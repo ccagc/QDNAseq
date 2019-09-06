@@ -31,6 +31,7 @@
 #     \item{chromosomes}{A @character vector specifying which chromosomes
 #         to filter out. Defaults to the sex chromosomes and mitochondria,
 #         i.e. \code{c("X", "Y", "MT")}.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -49,7 +50,11 @@
 #*/#########################################################################
 setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     definition=function(object, residual=TRUE, blacklist=TRUE, mappability=NA,
-    bases=NA, chromosomes=c("X", "Y", "MT")) {
+    bases=NA, chromosomes=c("X", "Y", "MT"),
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     condition <- rep(TRUE, times=nrow(object))
     msg <- c('total bins'=sum(condition))
@@ -86,7 +91,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
         cutoff <- residual * madDiff(residuals, na.rm=TRUE)
         residualsMissing <- aggregate(residuals,
             by=list(chromosome=fData(object)$chromosome),
-            function(x) all(is.na(x)))
+            FUN=function(x) all(is.na(x)))
         chromosomesWithResidualsMissing <-
             residualsMissing$chromosome[residualsMissing$x]
         chromosomesToInclude <-
@@ -117,8 +122,7 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     msg <- c(msg, 'final bins'=sum(condition))
 
     binsToUse(object) <- condition
-    object$used.reads <- colSums(assayDataElement(object, "counts")[condition, ,
-        drop=FALSE])
+    object$used.reads <- colSums2(assayDataElement(object, "counts"), rows=condition)
     object$expected.variance <- expectedVariance(object)
     vmsg(paste(format(msg, big.mark=','), names(msg),
         sep='\t', collapse='\n'))

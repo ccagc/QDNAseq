@@ -29,6 +29,7 @@
 #         amplifications. And if a second negative value is provided, it is used
 #         as the cutoff for homozygous deletions.}
 #     \item{...}{Additional arguments passed to @see "CGHcall::CGHcall".}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \details{
@@ -78,8 +79,11 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
     definition=function(object, organism=c("human", "other"),
     method=c("CGHcall", "cutoff"),
     cutoffs=log2(c(deletion=0.5, loss=1.5, gain=2.5, amplification=10) / 2),
-    ...) {
+    ..., verbose = getOption("QDNAseq::verbose", TRUE)) {
 
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+    
     method <- match.arg(method)
     if (method == "CGHcall") {
         ## Mark van de Wiel confirms that CGHcall::CGHcall() assumes (=requires)
@@ -105,14 +109,20 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             ## NOTE: CGHcall::CGHcall() produces warnings on "Recycling array
             ##       of length 1 in vector-array arithmetic is deprecated.
             ##       Use c() or as.vector() instead."
-            listcall <- CGHcall(seg, organism=organism, ...)
+            ## NOTE: CGHcall::CGHcall() produces message():s and stdout output.
+	    suppressVerbose({
+                listcall <- CGHcall(seg, organism=organism, ...)
+	    }, suppress = !verbose)
         }, error=function(e) {
             stop("Command CGHcall() returned the following error message:\n",
                 e, "Please contact maintainer of package CGHcall: ",
                 maintainer("CGHcall"), call.=FALSE)
         })
         tryCatch({
-            cgh <- ExpandCGHcall(listcall, seg)
+            ## NOTE: CGHcall::ExpandCGHcall() produces message():s.
+	    suppressVerbose({
+                cgh <- ExpandCGHcall(listcall, seg)
+	    }, suppress = !verbose)
         }, error=function(e) {
             stop("Command ExpandCGHcall() returned the following error ",
                 "message:\n", e,
@@ -207,23 +217,23 @@ betterCall <- function(obj) {
     calls <- rep(0, times=length(seg))
     pval <- 0.01
     # Duplication 
-    dupL <- qnorm(pval, 1, sd, lower.tail=TRUE)
-    dupU <- qnorm(pval, 1, sd, lower.tail=FALSE)
+    dupL <- qnorm(pval, mean=1, sd=sd, lower.tail=TRUE)
+    dupU <- qnorm(pval, mean=1, sd=sd, lower.tail=FALSE)
     dup <- seg >= dupL & seg <= dupU
     calls[dup] <- 2
-    print(paste("dup:", dupL, dupU, sep="\t"))
+    vmsg(paste("dup:", dupL, dupU, sep="\t"))
     # Gain
-    gainL <- qnorm(pval, log2(3/2), sd, lower.tail=TRUE)
-    gainU <- qnorm(pval, log2(3/2), sd, lower.tail=FALSE)
+    gainL <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=TRUE)
+    gainU <- qnorm(pval, mean=log2(3/2), sd=sd, lower.tail=FALSE)
     gain <- seg >= gainL & seg < gainU
     calls[gain] <- 1
-    print(paste("gain:", gainL, gainU, sep="\t"))
+    vmsg(paste("gain:", gainL, gainU, sep="\t"))
     # Loss
-    lossL <- qnorm(pval, -1, sd, lower.tail=TRUE)
-    lossU <- qnorm(pval, -1, sd, lower.tail=FALSE)
+    lossL <- qnorm(pval, mean=-1, sd=sd, lower.tail=TRUE)
+    lossU <- qnorm(pval, mean=-1, sd=sd, lower.tail=FALSE)
     loss <- seg >= lossL & seg <= lossU
     calls[loss] <- -1
-    print(paste("loss:", lossL, lossU, sep="\t"))
+    vmsg(paste("loss:", lossL, lossU, sep="\t"))
     # Amp 
     amp <- seg > dupU
     calls[amp] <- 3

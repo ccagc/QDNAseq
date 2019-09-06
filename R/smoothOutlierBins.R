@@ -19,6 +19,7 @@
 #         calling results. When they are present, running requires specifying
 #         \code{force} is @TRUE.}
 #     \item{...}{Additional arguments passed to @see "DNAcopy::smooth.CNA".}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -44,8 +45,12 @@
 #*/#########################################################################
 ## Adapted from CGHcall::normalize()
 setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
-    definition=function(object, logTransform=TRUE, force=FALSE, ...) {
-    
+    definition=function(object, logTransform=TRUE, force=FALSE, ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Validate arguments
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

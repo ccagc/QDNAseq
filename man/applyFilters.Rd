@@ -16,7 +16,7 @@
 
 \usage{
 applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
-  chromosomes=c("X", "Y"))
+  chromosomes=c("X", "Y"), verbose=getOption("QDNAseq::verbose", TRUE))
 }
 
 \description{
@@ -43,6 +43,7 @@ applyFilters(object, residual=TRUE, blacklist=TRUE, mappability=NA, bases=NA,
     \item{chromosomes}{A \code{\link[base]{character}} vector specifying which chromosomes
         to filter out. Defaults to the sex chromosomes and mitochondria,
         i.e. \code{c("X", "Y", "MT")}.}
+    \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \value{

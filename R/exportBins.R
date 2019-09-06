@@ -126,8 +126,8 @@ exportBins <- function(object, file,
     if (is.numeric(digits)) {
         dat <- round(dat, digits=digits)
     }
-    tmp <- options("scipen")
-    options(scipen=15)
+    oopts2 <- options(scipen=15)
+    on.exit(options(scipen=oopts2), add=TRUE)
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
             end=end, dat, check.names=FALSE, stringsAsFactors=FALSE)
@@ -160,7 +160,6 @@ exportBins <- function(object, file,
     } else if (format == "seg") {
         exportSEG(object)
     }
-    options(scipen=tmp)
 }
 
 
@@ -187,13 +186,16 @@ exportVCF <- function(obj) {
 			 '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
 			 ))
 
+    oopts2 <- options(scipen=100)
+    on.exit(options(scipen=oopts2), add=TRUE)
+
     for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3],calls[,i], segments[,i])
+	d <- cbind(fd[,1:3], calls[,i], segments[,i])
 	sel <- d[,4] != 0 & !is.na(d[,4])
 
 	dsel <- d[sel,]
 
-	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
+	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
 	endI <- cumsum(rleD$lengths)
 	posI <- c(1, endI[-length(endI)] + 1)
@@ -202,7 +204,7 @@ exportVCF <- function(obj) {
 	pos <- dsel[posI,2]
 	end <- dsel[endI,3]
 	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],2)
+	segVal <- round(dsel[posI,5], digits=2)
 
 	svtype <- rep(NA_character_, times=length(chr)) 
 	svlen <- rep(NA_real_, times=length(chr)) 
@@ -217,8 +219,6 @@ exportVCF <- function(obj) {
 	gt[score == 1] <- "0/1"	
 	gt[score == 2] <- "0/1"	
 	gt[score == 3] <- "0/1"	
-
-	options(scipen=100)
 
 	id <- "."
 	ref <- "<DIP>"
@@ -252,16 +252,19 @@ exportSEG <- function(obj, fnames=NULL) {
 	fnames <- pd$name
 
     if (length(fnames) != length(pd$name)) {
-        print("Length of names is too short")
+        stop("Length of 'fnames' is too short: ", length(fnames), " != ", length(pd$name))
     }
  
+    oopts2 <- options(scipen=100)
+    on.exit(options(scipen=oopts2), add=TRUE)
+
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
 	sel <- d[,4] != 0 & !is.na(d[,4])
 
 	dsel <- d[sel,]
 
-	rle(paste(d[sel,1], d[sel,4], sep=":")) -> rleD
+	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
 	endI <- cumsum(rleD$lengths)
 	posI <- c(1, endI[-length(endI)] + 1)
@@ -270,10 +273,8 @@ exportSEG <- function(obj, fnames=NULL) {
 	pos <- dsel[posI,2]
 	end <- dsel[endI,3]
 	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],2)
+	segVal <- round(dsel[posI,5],digits=2)
 	bins <- rleD$lengths
-
-	options(scipen=100)
 
 	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
 	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")

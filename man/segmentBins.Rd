@@ -16,7 +16,7 @@
 
  \usage{
 segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1,
-  force=FALSE, transformFun="log2", seeds=NULL, ...)
+  force=FALSE, transformFun="log2", ...)
 }
 
  \description{
@@ -30,8 +30,7 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
          segment those means. Default (\code{\link[base:logical]{FALSE}}) is to perform no smoothing.
          \code{smoothBy=1L} is a special case that will not perform smoothing,
          but will split the segmentation process by chromosome instead of by
-         sample. This has an effect when using parallel computing or specifying
-         seeds for random number generation.}
+         sample.}
      \item{alpha}{Significance levels for the test to accept change-points.
          Default is 1e-10.}
      \item{undo.splits}{A character string specifying how change-points are to
@@ -48,13 +47,6 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
          stabilizes the variance, "none" for no transformation, or any
          R function that performs the desired transformation and also its
          inverse when called with parameter \code{inv=TRUE}.}
-     \item{seeds}{An optional integer vector of seeds for random number
-         generation, recycled as needed. Normally, the segmentation process is
-         split by sample, and provided seeds also used per sample. But when
-         smoothing is performed (or in the the special case of
-         \code{smoothBy=1L}), the process is split by chromosome, seeds used
-         per chromosome, and results not necessarily reproducible across
-         samples.}
 %     \item{segmentStatistic}{A character vector specifying which segment
 %         statistic to use.}
 %     \item{storeSegmentObjects}{A boolean to indicate whether to store the raw
@@ -62,6 +54,7 @@ segmentBins(object, smoothBy=FALSE, alpha=1e-10, undo.splits="sdundo", undo.SD=1
 %         retrieved as segmentObject in assayData
 %         eg. "assayDataElement(object, 'segmentObject')"}
      \item{...}{Additional arguments passed to \code{\link[DNAcopy]{segment}}.}
+%     \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
  }
 
  \value{

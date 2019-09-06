@@ -20,6 +20,7 @@
 #     \item{force}{Running this function will remove possible segmentation and
 #         calling results. When they are present, running requires specifying
 #         \code{force} is @TRUE.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -43,8 +44,12 @@
 ## Adapted from CGHcall::normalize()
 setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
     definition=function(object, method=c("median", "mean", "mode"),
-    force=FALSE) {
-    
+    force=FALSE,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Validate arguments
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -84,13 +89,14 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
     vmsg("Applying ", method, " normalization ...", appendLF=FALSE)
     if (method == "mean") {
-        values <- colMeans(copynumber[condition, , drop=FALSE], na.rm=TRUE)
+        values <- colMeans2(copynumber, rows=condition, na.rm=TRUE)
     } else if (method == "median") {
-        values <- colMedians(copynumber[condition, , drop=FALSE], na.rm=TRUE)
+        values <- colMedians(copynumber, rows=condition, na.rm=TRUE)
     } else if (method == "mode") {
         values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
-            FUN=function(x) {
-            d <- density(x, na.rm=TRUE); d$x[which.max(d$y)]
+          FUN=function(x) {
+            d <- density(x, na.rm=TRUE)
+	    d$x[which.max(d$y)]
         })
     }
     vmsg()

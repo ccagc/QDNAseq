@@ -33,6 +33,7 @@
 #         \code{blacklist}, \code{mappability}, \code{bases}), whether to
 #         highlight their \code{union} (default) or \code{intersection}.}
 #     \item{...}{Further arguments to @see "graphics::points".}
+#%     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \examples{
@@ -46,10 +47,13 @@
 #
 # @keyword aplot
 #*/#########################################################################
-
 setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
     definition=function(object, col="red", residual=NA, blacklist=NA,
-    mappability=NA, bases=NA, type=c("union", "intersection"), ...) {
+    mappability=NA, bases=NA, type=c("union", "intersection"), ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     condition <- rep(TRUE, times=nrow(object))
     type <- match.arg(type)
@@ -58,7 +62,7 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
         cutoff <- residual * madDiff(residuals, na.rm=TRUE)
         residualsMissing <- aggregate(residuals,
             by=list(chromosome=fData(object)$chromosome),
-            function(x) all(is.na(x)))
+            FUN=function(x) all(is.na(x)))
         chromosomesWithResidualsMissing <-
             residualsMissing$chromosome[residualsMissing$x]
         chromosomesToInclude <-

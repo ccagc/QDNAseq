@@ -14,7 +14,8 @@
 
 \usage{
 getBinAnnotations(binSize, genome="hg19", type="SR50",
-  path=getOption("QDNAseq::binAnnotationPath", NULL))
+  path=getOption("QDNAseq::binAnnotationPath", NULL),
+  verbose=getOption("QDNAseq::verbose", TRUE))
 }
 
 \description{
@@ -33,6 +34,7 @@ getBinAnnotations(binSize, genome="hg19", type="SR50",
         annotation files. Defaults to downloading from the Internet, but can
         also be a local path. Can also be defined by setting the
         \code{QDNAseq::binAnnotationPath} option.}
+    \item{verbose}{If \code{\link[base:logical]{TRUE}}, verbose messages are produced.}
 }
 
 \details{

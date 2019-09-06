@@ -25,6 +25,7 @@ library(QDNAseq)
 @
 
 <<echo=FALSE>>=
+## Send verbose output to stdout instead of stderr
 options("QDNAseq::verbose"=NA)
 options(width=40)
 @

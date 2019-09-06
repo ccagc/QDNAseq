@@ -73,6 +73,7 @@
 #     \item{pairedEnds}{A boolean value or vector specifying whether the BAM
 #         files contain paired-end data or not. Only affects the calculation of
 #         the expected variance.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -103,7 +104,11 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     isNotPassingQualityControls=FALSE,
     isDuplicate=FALSE,
     minMapq=37,
-    pairedEnds=NULL) {
+    pairedEnds=NULL,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
 
     if (is.null(bamfiles))
         bamfiles <- list.files(ifelse(is.null(path), '.', path),
@@ -172,7 +177,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         phenodata$paired.ends <- pairedEnds
     condition <- binsToUse(bins)
     phenodata$total.reads <- colSums(counts)
-    phenodata$used.reads <- colSums(counts[condition, , drop=FALSE])
+    phenodata$used.reads <- colSums2(counts, rows=condition)
 
     object <- new('QDNAseqReadCounts', bins=bins, counts=counts,
         phenodata=phenodata)
@@ -185,7 +190,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 .binReadCountsPerChunk <- function(bins, bamfile, chunkSize, cache, force,
         isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
         isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
-        isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq) {
+        isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq,
+	verbose=getOption("QDNAseq::verbose", TRUE)) {
 
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
@@ -238,7 +244,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
             hits <- list()
             hits[[seqNameI]] <- reads[['pos']]
 
-            paste(seqName, chunkStart, chunkEnd, sep=":") -> chunkName
+            chunkName <- paste(seqName, chunkStart, chunkEnd, sep=":")
             vmsg(paste('binning chunk -', chunkName, sep=" "), appendLF=TRUE)
 
             keep <- which(
@@ -413,7 +419,7 @@ importReadCounts <- function(counts, bins, phenodata=NULL) {
 					data.frame(
 						   sampleNames=colnames(counts),
 						   total.reads=colSums(counts),
-						   used.reads=colSums(counts[condition, , drop=FALSE])
+						   used.reads=colSums2(counts, rows=condition)
 						   ))
     }
     object <- new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)

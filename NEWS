@@ -1,5 +1,28 @@
-Package: QDNQseq
+Package: QDNAseq
 ----------------
+
+Version: 1.21.3 [2019-09-04]
+
+NEW FEATURES:
+
+ * All functions that produce verbose output gained argument 'verbose'.  For
+   backward compatibility, it currently defaults to 'verbose=TRUE' but that
+   may be changed to 'verbose=FALSE' in a future release.
+
+IMPROVEMENTS:
+
+ * callBins() now respects option 'QDNAseq::verbose' for controlling whether
+   output from the CGHcall package should be relayed or not.
+   
+ * MEMORY: Utilize more memory-efficient matrixStats functions colSums2(),
+   colMeans2(), etc.
+
+DEPRECATION AND DEFUNCT:
+
+ * Argument 'seeds' of segmentBins() is deprecated because it did not use
+   proper parallel random number generation (RNG).  We now instead rely on
+   future.apply::future_lapply(..., future.seed=TRUE) for this.
+
 
 Version: 1.21.2 [2019-09-03]
 
@@ -15,8 +38,8 @@ SIGNIFICANT CHANGES:
 
 IMPROVEMENTS:
 
- * Avoiding data type coercions in more places by for instance making sure
-   that vectors and matrices are initated with the values of the correct
+ * MEMORY: Avoiding data type coercions in more places by for instance making
+   sure that vectors and matrices are initated with the values of the correct
    data type (instead of the default NA, which is a logical value).
 
 SOFTWARE QUALITY:

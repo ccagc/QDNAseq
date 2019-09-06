@@ -23,6 +23,7 @@
 #          chromosomes named 'chrM', 'chrMT', 'M', or 'MT'.}
 #     \item{excludeSeqnames}{Character vector of seqnames which should be
 #         ignored.}
+#     \item{verbose}{If @TRUE, verbose messages are produced.}
 # }
 #
 # \value{
@@ -62,7 +63,11 @@
 # }
 #*/#########################################################################
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
-    excludeSeqnames=NULL) {
+    excludeSeqnames=NULL, verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     chrs <- GenomeInfoDb::seqnames(bsgenome)
     try({
         info <- GenomeInfoDb::genomeStyles(GenomeInfoDb::organism(bsgenome))
@@ -84,7 +89,7 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     # Bin size in units of base pairs
     binWidth <- as.integer(binSize * 1000L)
 
-    chrData <- future_lapply(chrs, function(chr) {
+    chrData <- future_lapply(chrs, FUN=function(chr) {
         vmsg("    Processing ", chr, " ...")
         chr.size <- lengths[chr]
         chr.starts <- seq(from=1L, to=chr.size, by=binWidth)
@@ -111,8 +116,12 @@ createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
 }
 
 calculateMappability <- function(bins, bigWigFile,
-    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr") {
-    
+    bigWigAverageOverBed="bigWigAverageOverBed", chrPrefix="chr",
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     binbed <- tempfile(fileext=".bed")
     mapbed <- tempfile(fileext=".bed")
     bins <- bins[, c("chromosome", "start", "end")]
@@ -126,11 +135,10 @@ calculateMappability <- function(bins, bigWigFile,
         rep(".", times=length(unique(bins$chromosome))), "\n    ", appendLF=FALSE)
     bins$start <- bins$start - 1
     bins$name <- seq_len(nrow(bins))
-    scipen <- options("scipen")
-    options(scipen=10)
+    oopts2 <- options(scipen=10)
+    on.exit(options(scipen=oopts2), add=TRUE)
     write.table(bins, binbed, quote=FALSE, sep="\t", row.names=FALSE,
         col.names=FALSE)
-    options(scipen=scipen)
     cmd <- paste0(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
         '" -bedOut="', mapbed, '" /dev/null')
     system(cmd)
@@ -139,16 +147,19 @@ calculateMappability <- function(bins, bigWigFile,
     map$V5 * 100
 }
 
-calculateBlacklist <- function(bins, bedFiles, ...) {
+calculateBlacklist <- function(bins, bedFiles, ...,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    ## Detect defunct usage of argument 'ncpus'
+    if ("ncpus" %in% names(list(...))) {
+      .Defunct(msg="Argument 'ncpus' of calculateBlacklist() is defunct. Use future::plan() instead.")
+    }
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+    
     vmsg("Calculating overlaps per bin with BED files \n    ", paste(bedFiles,
         collapse="\n    "), "\n    ...", appendLF=FALSE)
-
-    ## Detect deprecated usage of argument 'ncpus'
-    args <- list(...)
-    if ("ncpus" %in% names(args)) {
-      .Deprecated(msg=paste("Argument 'ncpus' of calculateBlacklist() is",
-          "deprecated and ignored. Use options(mc.cores=ncpu) instead."))
-    }
 
     beds <- list()
     for (bed in bedFiles)
@@ -196,13 +207,17 @@ calculateBlacklist <- function(bins, bedFiles, ...) {
                 max(start, overlaps[i, "start"]) + 1
         bases / (end - start + 1) * 100
     }
-    blacklist <- future_apply(bins, MARGIN=1L, FUN=overlap.counter, joined)
+    blacklist <- future_apply(bins, MARGIN=1L, FUN=overlap.counter, joined=joined)
     vmsg()
     blacklist
 }
 
 iterateResiduals <- function(object, adjustIncompletes=TRUE,
-    cutoff=4.0, maxIter=30, ...) {
+    cutoff=4.0, maxIter=30, ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     first <- sum(binsToUse(object))
     previous <- first
     vmsg("Iteration #1 with ", format(previous, big.mark=","),
@@ -255,7 +270,12 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
 # More generic, eg when bed files are not readily available.
 # 
 ###############################################################################
-calculateBlacklistByRegions <- function(bins, regions) {
+calculateBlacklistByRegions <- function(bins, regions,
+    verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    oopts <- options("QDNAseq::verbose"=verbose)
+    on.exit(options(oopts))
+
     vmsg("Calculating percent overlap per bin with regions")
     
     combined <- as.data.frame(regions)
@@ -298,7 +318,7 @@ calculateBlacklistByRegions <- function(bins, regions) {
     combined$idDiff <- combined$ei - combined$si 
     
     # Calculate continuous IDX
-    c(0, cumsum(rle(bins$chromosome)$lengths)) -> chrI
+    chrI <- c(0, cumsum(rle(bins$chromosome)$lengths))
     combined$sI <- combined$si + chrI[ as.integer(combined$chromosome) ]
     combined$eI <- combined$ei + chrI[ as.integer(combined$chromosome) ]
     
@@ -308,32 +328,33 @@ calculateBlacklistByRegions <- function(bins, regions) {
     # Sum complete overlaps eg segment smaller than bin
     sel2 <- combined$idDiff == 0
     
-    aggregate(c(
+    res12 <- aggregate(
+      c(
         combined$sm[sel1], 
         combined$em[sel1],
         combined$seDiff[sel2]
-    ), 
-        list(c(
+      ), 
+      by=list(c(
             combined$sI[sel1], 
             combined$eI[sel1],
             combined$sI[sel2]
-        )
-        ), max) -> res12
+      )),
+      FUN=max)
     
     vmsg("Complete overlaps")
     # Sum complete overlaps of segments eg segment larger than bin
     sel3 <- combined$idDiff > 1
-    unlist(sapply(which(sel3), FUN=function(x) {
+    res3 <- unlist(sapply(which(sel3), FUN=function(x) {
         s <- combined$sI[x] + 1
         e <- combined$eI[x] - 1
         s:e
-    })) -> res3
+    }))
     
     res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))))
     
-    aggregate(res$x, list(res$Group.1), max) -> res
+    res <- aggregate(res$x, by=list(res$Group.1), FUN=max)
     
-    res$x / binSize * 100 -> res$pct
+    res$pct <- res$x / binSize * 100
     
     blacklist <- rep(0, times=nrow(bins))
     blacklist[ as.numeric(res$Group.1) ] <- res$pct
