@@ -453,10 +453,10 @@ mappability file can be generated with
 \software{\href{http://gemlibrary.sourceforge.net/}{GEM library}} from the
 reference genome sequence. Or it might be available directly, as was the case
 for hg19, and file \file{wgEncodeCrgMapabilityAlign50mer.bigWig} downloaded
-from \href{http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
+from \href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
 { ENCODE's download section of the UCSC Genome Browser}. The
 \software{bigWigAverageOverBed} binary can also be downloaded from
-\href{http://hgdownload.soe.ucsc.edu/admin/exe/}{UCSC Genome Browser's Other
+\href{https://hgdownload.soe.ucsc.edu/admin/exe/}{UCSC Genome Browser's Other
 utilities section}.
 
 <<eval=FALSE>>=
@@ -472,7 +472,7 @@ and these regions can be calculated as follows. The regions to be excluded need
 to be in the \Rcode{BED} format, like files
 \file{wgEncodeDacMapabilityConsensusExcludable.bed} and
 \file{wgEncodeDukeMapabilityRegionsExcludable.bed} that were downloaded from
-\href{http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}{
+\href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}{
 ENCODE's download section of the UCSC Genome Browser} for hg19.
 
 <<eval=FALSE>>=
