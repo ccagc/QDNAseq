@@ -1,6 +1,15 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.21.5 [2019-09-09]
+
+BUG FIXES:
+
+ * plot(..., logTransform=TRUE, doSegments=TRUE) on QDNAseqSignals would
+   position segments that were out of range incorrectly, because it forgot
+   to take the log transform on those outliers.
+ 
+
 Version: 1.21.4 [2019-09-06]
 
 SIGNIFICANT CHANGES:
