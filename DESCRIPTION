@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 1.21.5
+Version: 1.21.5-9000
 Title: Quantitative DNA Sequencing for Chromosomal Aberrations
 Depends: R (>= 3.1.0)
 Imports:
@@ -36,7 +36,8 @@ Description: Quantitative DNA sequencing for chromosomal aberrations.
 Authors@R: c(
     person("Ilari", "Scheinin", role="aut"),
     person("Daoud", "Sie", role=c("aut", "cre"), email="d.sie@vumc.nl"),
-    person("Henrik", "Bengtsson", role="aut"))
+    person("Henrik", "Bengtsson", role="aut"),
+    person("Erik", "van Dijk", role="ctb"))
 biocViews: CopyNumberVariation, DNASeq, Genetics, GenomeAnnotation,
         Preprocessing, QualityControl, Sequencing
 License: GPL
