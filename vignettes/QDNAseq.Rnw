@@ -311,8 +311,7 @@ objects by running it before segmentation or calling.
 \label{sec:parallel}
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
-After installing it with \Rcode{install.packages("future")}, all that is
-required is to select an appropriate \textit{plan}.
+All that is required is to select an appropriate \textit{plan}.
 
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
