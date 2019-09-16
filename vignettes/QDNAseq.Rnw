@@ -34,13 +34,15 @@ options(width=40)
 
 Then we need to obtain bin annotations. These are available pre-calculated for
 genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp.
-They can be downloaded for example with:
+They are available in the \Biocpkg{QDNAseq.hg19} package, which has to be
+installed from Bioconductor separately.  With this package installed, the
+bin annotations can be acquired as:
 
 \begin{Schunk}
 \begin{Sinput}
 > bins <- getBinAnnotations(binSize=15)
-Downloading bin annotations for genome hg19, bin size 15kbp,
-and experiment type SR50 ...
+Loaded bin annotations for genome 'hg19', bin size 15 kbp, and
+experiment type 'SR50' from annotation package QDNAseq.hg19 v1.14.0
 > bins
 QDNAseq bin annotations for Hsapiens, build hg19.
 Created by Ilari Scheinin with QDNAseq 0.7.5, 2014-02-06 12:48:04.
@@ -51,10 +53,6 @@ An object of class 'AnnotatedDataFrame'
   varMetadata: labelDescription
 \end{Sinput}
 \end{Schunk}
-
-After downloading, the bin annotations can be saved locally with
-\Rfunction{saveRDS()}, and in the future be read from the local file with
-\Rfunction{loadRDS()} instead of relying on downloading.
 
 If you are working with another genome build (or another species), see the
 section on generating the bin annotations.
