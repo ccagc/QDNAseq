@@ -556,7 +556,7 @@ This section defines the criteria that were used to download samples from the
 <<eval=FALSE>>=
 # download table of samples
 urlroot <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp"
-g1k <- read.table(file.path(urlroot, "sequence.index")),
+g1k <- read.table(file.path(urlroot, "sequence.index"),
   header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
 
 # keep cases that are Illumina, low coverage, single-read, and not withdrawn
