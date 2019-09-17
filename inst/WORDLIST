@@ -25,7 +25,6 @@ cgi
 chrM
 chrMT
 chunkSize
-CMD
 copynumber
 correctBins
 createBins
@@ -42,6 +41,7 @@ FASTQ
 gc
 GC
 gemlibrary
+GEnomic
 getBinAnnotations
 getOption
 glioma
@@ -52,14 +52,14 @@ hgFileUi
 homozygous
 HPC
 Hsapiens
-http
+https
 igv
 IGV
+internationalgenome
 JC
 kbp
 labelDescription
 LGG
-loadRDS
 loess
 Loess
 LOESS
@@ -75,6 +75,7 @@ Olshen
 parallelize
 parallelizes
 Pinkel
+PMC
 pre
 QDNAseqCopyNumbers
 QDNAseqReadCounts
@@ -82,7 +83,6 @@ Reijneveld
 rowNames
 Rustenburg
 samplesize
-saveRDS
 SDs
 sdundo
 SEG
@@ -107,5 +107,6 @@ wgEncodeDacMapabilityConsensusExcludable
 wgEncodeDukeMapabilityRegionsExcludable
 wgEncodeMapability
 Wiel
+www
 xmin
 Ylstra
