@@ -445,12 +445,12 @@ The result is a \Rclass{data.frame} with columns \Robject{chromosome},
 \Robject{start}, \Robject{end}, \Robject{gc}, and \Robject{bases}. Next step is
 to calculate the average mappabilities, which requires a mappability file in
 the \Rcode{bigWig} format and the \software{bigWigAverageOverBed} binary. The
-mappability file can be generated with
-\software{\href{http://gemlibrary.sourceforge.net/}{GEM library}} from the
+mappability file can be generated with \software{GEnomic Multi-Tool (GEM) Mapper}
+part of the \software{\href{https://sourceforge.net/projects/gemlibrary/}{GEM library}} from the
 reference genome sequence. Or it might be available directly, as was the case
-for hg19, and file \file{wgEncodeCrgMapabilityAlign50mer.bigWig} downloaded
-from \href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
-{ ENCODE's download section of the UCSC Genome Browser}. The
+for hg19, and file \file{wgEncodeCrgMapabilityAlign50mer.bigWig} downloaded from
+\href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
+{ENCODE's download section of the UCSC Genome Browser}. The
 \software{bigWigAverageOverBed} binary can also be downloaded from
 \href{https://hgdownload.soe.ucsc.edu/admin/exe/}{UCSC Genome Browser's Other
 utilities section}.
