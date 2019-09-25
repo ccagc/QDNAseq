@@ -36,7 +36,7 @@ matrix:
         - _R_CHECK_LENGTH_1_CONDITION_=verbose
         - _R_CHECK_LENGTH_1_LOGIC2_=verbose
       r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
-      r_check_args: --as-cran --no-build-vignettes --no-vignettes
+      r_check_args: --as-cran --no-build-vignettes --no-vignettes --no-tests
     - os: osx
       r: oldrel
       r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
