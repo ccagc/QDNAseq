@@ -34,13 +34,15 @@ options(width=40)
 
 Then we need to obtain bin annotations. These are available pre-calculated for
 genome build hg19 and bin sizes 1, 5, 10, 15, 30, 50, 100, 500, and 1000 kbp.
-They can be downloaded for example with:
+They are available in the \Biocpkg{QDNAseq.hg19} package, which has to be
+installed from Bioconductor separately.  With that package installed, the
+bin annotations can be acquired as:
 
 \begin{Schunk}
 \begin{Sinput}
 > bins <- getBinAnnotations(binSize=15)
-Downloading bin annotations for genome hg19, bin size 15kbp,
-and experiment type SR50 ...
+Loaded bin annotations for genome 'hg19', bin size 15 kbp, and
+experiment type 'SR50' from annotation package QDNAseq.hg19 v1.14.0
 > bins
 QDNAseq bin annotations for Hsapiens, build hg19.
 Created by Ilari Scheinin with QDNAseq 0.7.5, 2014-02-06 12:48:04.
@@ -52,16 +54,12 @@ An object of class 'AnnotatedDataFrame'
 \end{Sinput}
 \end{Schunk}
 
-After downloading, the bin annotations can be saved locally with
-\Rfunction{saveRDS()}, and in the future be read from the local file with
-\Rfunction{loadRDS()} instead of relying on downloading.
-
 If you are working with another genome build (or another species), see the
 section on generating the bin annotations.
 
-\subsection{Processing bam files}
+\subsection{Processing BAM files}
 
-Next step is to load the sequencing data from bam files. This can be done for
+Next step is to load the sequencing data from BAM files. This can be done for
 example with one of the commands below.
 
 <<eval=FALSE>>=
@@ -70,16 +68,16 @@ readCounts <- binReadCounts(bins)
 
 # or
 
-readCounts <- binReadCounts(bins, bamfiles='tumor.bam')
+readCounts <- binReadCounts(bins, bamfiles="tumor.bam")
 # file 'tumor.bam' from the current working directory
 
 # or
 
-readCounts <- binReadCounts(bins, path='tumors')
+readCounts <- binReadCounts(bins, path="tumors")
 # all files ending in .bam from the subdirectory 'tumors'
 @
 
-This will return an object of class \Rclass{QDNAseqReadCounts}. If the same bam
+This will return an object of class \Rclass{QDNAseqReadCounts}. If the same BAM
 files will be used as input in future \R{} sessions, option \Rcode{cache=TRUE}
 can be used to cache intermediate files, which will speed up future analyses.
 Caching is done with package \CRANpkg{R.cache}.
@@ -129,8 +127,7 @@ subset of the chromosomes, the distribution looks slightly less smooth than
 expected for the entire genome.
 
 <<>>=
-readCountsFiltered <- applyFilters(readCounts,
-  residual=TRUE, blacklist=TRUE)
+readCountsFiltered <- applyFilters(readCounts, residual=TRUE, blacklist=TRUE)
 @
 <<echo=FALSE>>=
 png("isobar.png")
@@ -300,7 +297,7 @@ objects by running it before segmentation or calling.
 
 % caching
 
-% 661 bam files = 445G
+% 661 BAM files = 445G
 % cache/reads = 13G
 % cache/readCounts/15kbp = 139M
 % cache/readCounts/30kbp = 82M
@@ -313,8 +310,7 @@ objects by running it before segmentation or calling.
 \label{sec:parallel}
 
 \Biocpkg{QDNAseq} supports parallel computing via the \CRANpkg{future} package.
-After installing it with \Rcode{install.packages("future")}, all that is
-required is to select an appropriate \textit{plan}.
+All that is required is to select an appropriate \textit{plan}.
 
 The instructions below apply to all of \Biocpkg{QDNAseq}'s own functions that
 support parallel processing. At the moment these include
@@ -391,7 +387,7 @@ argument \Rcode{chromosomes=NA} to include both X and Y, or
 \Rcode{chromosomes="Y"} to include X only.
 
 However, this will also affect which chromosomes are used when calculating the
-loess correction with \Rfunction{estimateCorrection()}. Unless the data set
+LOESS correction with \Rfunction{estimateCorrection()}. Unless the data set
 consists of only females, this could be undesirable. The solution is to first
 filter out the sex chromosomes, run \Rfunction{estimateCorrection()}, and
 then reverse the filtering of sex chromosomes:
@@ -412,7 +408,7 @@ those bins to miss a correction estimate altogether, and these bins will be
 filtered out from subsequent steps by \Rfunction{correctBins()}. If this
 happens, it will print out a message specifying the number of bins affected.
 
-Another possible approach is to allow extrapolation while calculating the loess
+Another possible approach is to allow extrapolation while calculating the LOESS
 correction. But please do note that the effect of extrapolation has not been
 properly evaluated.
 
@@ -449,12 +445,12 @@ The result is a \Rclass{data.frame} with columns \Robject{chromosome},
 \Robject{start}, \Robject{end}, \Robject{gc}, and \Robject{bases}. Next step is
 to calculate the average mappabilities, which requires a mappability file in
 the \Rcode{bigWig} format and the \software{bigWigAverageOverBed} binary. The
-mappability file can be generated with
-\software{\href{http://gemlibrary.sourceforge.net/}{GEM library}} from the
+mappability file can be generated with \software{GEnomic Multi-Tool (GEM) Mapper}
+part of the \software{\href{https://sourceforge.net/projects/gemlibrary/}{GEM library}} from the
 reference genome sequence. Or it might be available directly, as was the case
-for hg19, and file \file{wgEncodeCrgMapabilityAlign50mer.bigWig} downloaded
-from \href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
-{ ENCODE's download section of the UCSC Genome Browser}. The
+for hg19, and file \file{wgEncodeCrgMapabilityAlign50mer.bigWig} downloaded from
+\href{https://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability}
+{ENCODE's download section of the UCSC Genome Browser}. The
 \software{bigWigAverageOverBed} binary can also be downloaded from
 \href{https://hgdownload.soe.ucsc.edu/admin/exe/}{UCSC Genome Browser's Other
 utilities section}.
@@ -462,8 +458,8 @@ utilities section}.
 <<eval=FALSE>>=
 # calculate mappabilites per bin from ENCODE mapability tracks
 bins$mappability <- calculateMappability(bins,
-  bigWigFile='/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig',
-  bigWigAverageOverBed='/path/to/bigWigAverageOverBed')
+  bigWigFile="/path/to/wgEncodeCrgMapabilityAlign50mer.bigWig",
+  bigWigAverageOverBed="/path/to/bigWigAverageOverBed")
 @
 
 If there are genomic regions that should excluded from analyses, such as
@@ -478,8 +474,8 @@ ENCODE's download section of the UCSC Genome Browser} for hg19.
 <<eval=FALSE>>=
 # calculate overlap with ENCODE blacklisted regions
 bins$blacklist <- calculateBlacklist(bins,
-  bedFiles=c('/path/to/wgEncodeDacMapabilityConsensusExcludable.bed',
-  '/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed'))
+  bedFiles=c("/path/to/wgEncodeDacMapabilityConsensusExcludable.bed",
+             "/path/to/wgEncodeDukeMapabilityRegionsExcludable.bed"))
 @
 
 For any list of regions, the percentage of bin overlap can be calculated by using
@@ -493,13 +489,13 @@ bins$blacklist <- calculateBlacklistByRegions(bins,
 
 To calculate median residuals of the LOESS fit from a control dataset, the
 following command can be used. For the pre-generated annotations, the control
-set used is 38 samples from the 1000 Genomes project. See the next section on
-how those were downloaded.
+set used is 38 samples from the
+\href{https://www.internationalgenome.org/}{1000 Genomes Project}.
+See the next section on how those were downloaded.
 
 <<eval=FALSE>>=
 # load data for the 1000 Genomes (or similar) data set, and generate residuals
-ctrl <- binReadCounts(bins,
-  path='/path/to/control-set/bam/files')
+ctrl <- binReadCounts(bins, path="/path/to/control-set/bam/files")
 ctrl <- applyFilters(ctrl, residual=FALSE, blacklist=FALSE,
   mappability=FALSE, bases=FALSE)
 bins$residual <- iterateResiduals(ctrl)
@@ -524,15 +520,15 @@ Optionally, the resulting \Rclass{data.frame} can be converted to an
 # convert to AnnotatedDataFrame and add metadata
 bins <- AnnotatedDataFrame(bins,
   varMetadata=data.frame(labelDescription=c(
-  'Chromosome name',
-  'Base pair start position',
-  'Base pair end position',
-  'Percentage of non-N nucleotides (of full bin size)',
-  'Percentage of C and G nucleotides (of non-N nucleotides)',
-  'Average mappability of 50mers with a maximum of 2 mismatches',
-  'Percent overlap with ENCODE blacklisted regions',
-  'Median loess residual from 1000 Genomes (50mers)',
-  'Whether the bin should be used in subsequent analysis steps'),
+  "Chromosome name",
+  "Base pair start position",
+  "Base pair end position",
+  "Percentage of non-N nucleotides (of full bin size)",
+  "Percentage of C and G nucleotides (of non-N nucleotides)",
+  "Average mappability of 50mers with a maximum of 2 mismatches",
+  "Percent overlap with ENCODE blacklisted regions",
+  "Median loess residual from 1000 Genomes (50mers)",
+  "Whether the bin should be used in subsequent analysis steps"),
   row.names=colnames(bins)))
 @
 
@@ -555,18 +551,18 @@ attr(bins, "QDNAseq") <- list(
 \section{Downloading 1000 Genomes samples}
 
 This section defines the criteria that were used to download samples from the
-1000 Genomes project for the pre-generated bin annotations.
+1000 Genomes Project for the pre-generated bin annotations.
 
 <<eval=FALSE>>=
 # download table of samples
-server <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/"
-g1k <- read.table(paste0(server, "sequence.index"),
+urlroot <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp"
+g1k <- read.table(file.path(urlroot, "sequence.index"),
   header=TRUE, sep="\t", as.is=TRUE, fill=TRUE)
 
 # keep cases that are Illumina, low coverage, single-read, and not withdrawn
-g1k <- g1k[g1k$INSTRUMENT_PLATFORM == 'ILLUMINA', ]
-g1k <- g1k[g1k$ANALYSIS_GROUP == 'low coverage', ]
-g1k <- g1k[g1k$LIBRARY_LAYOUT == 'SINGLE', ]
+g1k <- g1k[g1k$INSTRUMENT_PLATFORM == "ILLUMINA", ]
+g1k <- g1k[g1k$ANALYSIS_GROUP == "low coverage", ]
+g1k <- g1k[g1k$LIBRARY_LAYOUT == "SINGLE", ]
 g1k <- g1k[g1k$WITHDRAWN == 0, ]
 
 # keep cases with read lengths of at least 50 bp
@@ -578,18 +574,18 @@ g1k <- g1k[g1k$readLength > 50, ]
 
 # keep samples with a minimum of one million reads
 readCountPerSample <- aggregate(g1k$READ_COUNT,
-  by=list(sample=g1k$SAMPLE_NAME), sum)
+  by=list(sample=g1k$SAMPLE_NAME), FUN=sum)
 g1k <- g1k[g1k$SAMPLE_NAME %in%
   readCountPerSample$sample[readCountPerSample$x >= 1e6], ]
 
 g1k$fileName <- basename(g1k$FASTQ_FILE)
 
-# download fastq files
+# download FASTQ files
 for (i in rownames(g1k)) {
-  sourceFile <- paste0(server, g1k[i, "FASTQ_FILE"])
+  sourceFile <- file.path(urlroot, g1k[i, "FASTQ_FILE"])
   destFile <- g1k[i, "fileName"]
   if (!file.exists(destFile))
-    download.file(sourceFile, destFile)
+    download.file(sourceFile, destFile, mode="wb")
 }
 @
 

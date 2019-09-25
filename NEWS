@@ -1,6 +1,13 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.21.6 [2019-09-25]
+
+BUG FIXES:
+
+ * Link to the 'GEM library' tool was broken.
+ 
+
 Version: 1.21.5 [2019-09-09]
 
 BUG FIXES:

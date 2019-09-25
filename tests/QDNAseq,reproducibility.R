@@ -3,11 +3,7 @@
 # the output/results are reproducible (numerically equal).
 ######################################################################
 library("QDNAseq")
-
-## WORKAROUND: https://github.com/ccagc/QDNAseq/issues/75
-callBins <- function(...) {
-  suppressMessages(QDNAseq::callBins(...))
-}
+options("QDNAseq::verbose"=FALSE)
 
 # Load data
 data(LGG150)

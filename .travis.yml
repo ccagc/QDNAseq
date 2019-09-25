@@ -33,9 +33,8 @@ matrix:
         - _R_S3_METHOD_LOOKUP_BASEENV_AFTER_GLOBALENV_=true
         - _R_S3_METHOD_LOOKUP_USE_TOPENV_AS_DEFENV_=true
         - _R_CHECK_CONNECTIONS_LEFT_OPEN_=true
-        - _R_CHECK_LENGTH_1_CONDITION_=true
-#       ## Disable until lambda.r, futile.logger, ... are fixed
-#       - _R_CHECK_LENGTH_1_LOGIC2_=true
+        - _R_CHECK_LENGTH_1_CONDITION_=verbose
+        - _R_CHECK_LENGTH_1_LOGIC2_=verbose
     - os: osx
       r: oldrel
       r_build_args: --no-build-vignettes  ## WORKAROUND: sectsty.sty missing
