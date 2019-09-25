@@ -3,7 +3,7 @@
 This repository contains source code for the R/Bioconductor package
 [QDNAseq](https://bioconductor.org/packages/release/bioc/html/QDNAseq.html), which implements the QDNAseq method (Scheinin et al., 2014).  For instructions on how to use QDNAseq, see the ['Introduction to QDNAseq'](https://bioconductor.org/packages/release/bioc/vignettes/QDNAseq/inst/doc/QDNAseq.pdf) vignette, which also installed together with  the package.  Please remember to cite Scheinin et al. (2014) whenever using QDNAseq in your research.
 
-Please use [the official Bioconductor instructions](https://bioconductor.org/packages/release/bioc/html/QDNAseq.html) for installation QDNAseq;
+Please use [the official Bioconductor instructions](https://bioconductor.org/packages/release/bioc/html/QDNAseq.html) to install QDNAseq;
 
 ```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
