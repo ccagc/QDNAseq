@@ -1,13 +1,13 @@
 library(QDNAseq)
 
-if (requireNamespace("QDNAseq", quietly = TRUE)) {
-  bins <- getBinAnnotations(500)
+if (requireNamespace("QDNAseq.hg19", quietly = TRUE)) {
+  bins <- getBinAnnotations(500, genome = "hg19")
   print(bins)
 
-  bamFile <- system.file("extdata", "ex1.bam", package="Rsamtools")
-  print(bamFile)
+  bam <- system.file("extdata", "ex1.bam", package = "Rsamtools")
+  print(bam)
 
-  counts <- binReadCounts(bins, bamfiles = bamFile)
+  counts <- binReadCounts(bins, bamfiles = bam)
   print(counts)
 
   ## BUG: https://github.com/ccagc/QDNAseq/issues/89
