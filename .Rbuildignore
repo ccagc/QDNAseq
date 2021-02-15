@@ -30,5 +30,6 @@ README[.]md
 ^[.]test
 ^[.]check
 ^revdep/
+^.local/
 ^.*[.]Rproj$
 ^[.]Rproj[.]user$
