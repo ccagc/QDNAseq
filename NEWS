@@ -1,6 +1,28 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.26.0 [2020-10-28]
+
+RELEASE:
+
+ * Bioconductor 3.12
+
+
+Version: 1.24.0 [2019-10-30]
+
+RELEASE:
+
+ * Bioconductor 3.11
+
+
+Version: 1.22.0 [2018-10-30]
+
+RELEASE:
+
+ * Bioconductor 3.10
+
+
+
 Version: 1.21.6 [2019-09-25]
 
 BUG FIXES:
