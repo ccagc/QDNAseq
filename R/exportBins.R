@@ -191,7 +191,7 @@ exportVCF <- function(obj) {
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3], calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+	sel <- !is.na(d[,4])
 
 	dsel <- d[sel,]
 
@@ -234,7 +234,7 @@ exportVCF <- function(obj) {
 	fname <- paste(pd$name[i], ".vcf", sep="")
 
 	write.table(vcfHeader, fname, quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+	suppressWarnings(write.table(out[dsel[posI,4] != 0,], fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
     }
 }
 
@@ -260,7 +260,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+	sel <- !is.na(d[,4])
 
 	dsel <- d[sel,]
 
@@ -281,7 +281,7 @@ exportSEG <- function(obj, fnames=NULL) {
 
 	fname <- paste(fnames[i], ".seg", sep="")
 
-	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+	write.table(out[dsel[posI,4] != 0,], fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
     }
 }
 
