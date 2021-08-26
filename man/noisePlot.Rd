@@ -25,7 +25,7 @@ noisePlot(x, y, ...)
 \arguments{
     \item{x}{A \code{\link{QDNAseqReadCounts}} object.}
     \item{y}{missing}
-    \item{...}{Further arguments to \code{\link[graphics]{plot}} and
+    \item{...}{Further arguments to \code{\link[graphics]{plot}}() and
         \code{\link[graphics]{text}}.}
 }
 

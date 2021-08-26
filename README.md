@@ -1,3 +1,7 @@
+<div id="badges"><!-- pkgdown markup -->
+<a href="https://bioconductor.org/packages/QDNAseq/"><img border="0" src="https://bioconductor.org/shields/years-in-bioc/QDNAseq.svg" alt="Bioconductor since badge"/></a> <a href="https://bioconductor.org/checkResults/release/bioc-LATEST/QDNAseq/"><img border="0" src="https://bioconductor.org/shields/build/release/bioc/QDNAseq.svg" alt="Bioconductor release build status"/></a> <a href="https://bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/"><img border="0" src="https://bioconductor.org/shields/build/devel/bioc/QDNAseq.svg" alt="Bioconductor devel build status"/></a> <a href="https://github.com/ccagc/QDNAseq/actions?query=workflow%3AR-CMD-check"><img border="0" src="https://github.com/ccagc/QDNAseq/workflows/R-CMD-check/badge.svg?branch=develop" alt="Build status"/></a> <a href="https://codecov.io/gh/ccagc/QDNAseq"><img border="0" src="https://codecov.io/gh/ccagc/QDNAseq/branch/develop/graph/badge.svg" alt="Coverage Status"/></a> 
+</div>
+
 # QDNAseq: Quantitative DNA Sequencing for Chromosomal Aberrations
 
 This repository contains source code for the R/Bioconductor package
@@ -33,13 +37,6 @@ D, Albertson DG and Ylstra B. **DNA copy number analysis of fresh and
 formalin-fixed specimens by shallow whole-genome sequencing with identification
 and exclusion of problematic regions in the genome assembly.** *Genome
 Research* **24**: 2022-2032, 2014. [PMC4248318](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4248318/)
-
-
-## Software quality
-
-* `R CMD check` status on Bioconductor: [![BUILD/CHECK Report](https://bioconductor.org/shields/build/devel/bioc/QDNAseq.svg)](https://master.bioconductor.org/checkResults/devel/bioc-LATEST/QDNAseq/) (devel), [![BUILD/CHECK Report](https://bioconductor.org/shields/build/release/bioc/QDNAseq.svg)](https://master.bioconductor.org/checkResults/release/bioc-LATEST/QDNAseq/) (release)
-* `R CMD check --as-cran` status on Travis CI: [![Build Status](https://travis-ci.org/ccagc/QDNAseq.svg?branch=master)](https://travis-ci.org/ccagc/QDNAseq)
-* Test code coverage: <a href="https://codecov.io/gh/ccagc/QDNAseq"><img src="https://codecov.io/gh/ccagc/QDNAseq/branch/develop/graph/badge.svg" alt="Coverage Status"/></a>
 
 
 ## GitHub repository and Bioconductor repository

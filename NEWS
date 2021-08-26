@@ -1,18 +1,35 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.29.1 [2021-08-26]
+
+SOFTWARE QUALITY:
+
+ * Add package test for binReadCounts().
+
+
+Version: 1.28.0 [2021-05-19]
+
+RELEASE:
+
+ * The version number was bumped for the Bioconductor release version, which is
+   now BioC 3.13 for R (>= 4.0.3).
+
+
 Version: 1.26.0 [2020-10-28]
 
 RELEASE:
 
- * Bioconductor 3.12
+ * The version number was bumped for the Bioconductor release version, which is
+   now BioC 3.12 for R (>= 4.0.0).
 
 
 Version: 1.24.0 [2019-10-30]
 
 RELEASE:
 
- * Bioconductor 3.11
+ * The version number was bumped for the Bioconductor release version, which is
+   now BioC 3.11 for R (>= 3.6.1).
 
 
 Version: 1.22.0 [2018-10-30]
@@ -20,7 +37,6 @@ Version: 1.22.0 [2018-10-30]
 RELEASE:
 
  * Bioconductor 3.10
-
 
 
 Version: 1.21.6 [2019-09-25]

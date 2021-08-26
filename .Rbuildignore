@@ -29,6 +29,8 @@ README[.]md
 ^[.]devel
 ^[.]test
 ^[.]check
-^revdep/
+^revdep
+^.local
 ^.*[.]Rproj$
 ^[.]Rproj[.]user$
+[.]Rdump
