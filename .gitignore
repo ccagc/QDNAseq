@@ -8,3 +8,5 @@ revdep/data.sqlite
 revdep/library/*
 .Rproj.user
 *.tar.gz
+.local
+.Rdump
