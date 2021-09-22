@@ -11,8 +11,8 @@ if (requireNamespace("QDNAseq.hg19", quietly = TRUE)) {
   print(counts)
 
   ## BUG: https://github.com/ccagc/QDNAseq/issues/89
-  ## counts2 <- binReadCounts(bins, bamfiles = bam, chunkSize = 10e3)
-  ## print(counts2)
+  counts2 <- binReadCounts(bins, bamfiles = bam, chunkSize = 10e3)
+  print(counts2)
 }
 
 
