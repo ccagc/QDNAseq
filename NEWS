@@ -1,6 +1,14 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.29.1-9000 [2021-09-22]
+
+BUG FIXES:
+
+ * binReadCounts() would fail when specifying argument 'chunkSize'.  The fix
+   was to require 'future' package version 1.22.1 or newer.
+ 
+
 Version: 1.29.1 [2021-08-26]
 
 SOFTWARE QUALITY:
