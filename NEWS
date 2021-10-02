@@ -1,9 +1,15 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.29.2-9000 [2021-09-22]
+Version: 1.29.2-9000 [2021-10-02]
 
- * ...
+KNOWN ISSUES:
+
+ * callBins() produces warnings on "Recycling array of length 1 in vector-
+   array arithmetic is deprecated. Use c() or as.vector() instead."  This is
+   a problem in the package 'CGHcall' dependency and is something that needs
+   to be fixed there.  For further details, please see
+   https://github.com/tgac-vumc/CGHcall/issues/2.
 
 
 Version: 1.29.2 [2021-09-22]
