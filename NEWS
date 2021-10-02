@@ -11,6 +11,10 @@ KNOWN ISSUES:
    to be fixed there.  For further details, please see
    https://github.com/tgac-vumc/CGHcall/issues/2.
 
+SOFTWARE QUALITY:
+
+ * Add package test for exportBins().
+
 
 Version: 1.29.2 [2021-09-22]
 
