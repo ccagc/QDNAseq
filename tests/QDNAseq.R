@@ -13,7 +13,7 @@ stopifnot(inherits(data, "QDNAseqReadCounts"))
 formats <- c("tsv", "igv", "bed")
 for (format in formats) {
   file <- tempfile(fileext = sprintf(".%s", format))
-  exportBins(data, file = file, format = format)
+  file <- exportBins(data, file = file, format = format)
   stopifnot(file_test("-f", file))
   file.remove(file)
 }
@@ -43,7 +43,7 @@ stopifnot(inherits(dataC, "QDNAseqCopyNumbers"))
 formats <- c("tsv", "igv", "bed")
 for (format in formats) {
   file <- tempfile(fileext = sprintf(".%s", format))
-  exportBins(dataC, file = file, format = format)
+  file <- exportBins(dataC, file = file, format = format)
   stopifnot(file_test("-f", file))
   file.remove(file)
 }
@@ -69,7 +69,7 @@ stopifnot(inherits(fit, "QDNAseqCopyNumbers"))
 formats <- c("tsv", "igv", "bed")
 for (format in formats) {
   file <- tempfile(fileext = sprintf(".%s", format))
-  exportBins(fit, file = file, format = format)
+  file <- exportBins(fit, file = file, format = format)
   stopifnot(file_test("-f", file))
   file.remove(file)
 }
@@ -83,7 +83,7 @@ plot(fitC)
 formats <- c("tsv", "igv", "bed", "vcf", "seg")
 for (format in formats) {
   file <- tempfile(fileext = sprintf(".%s", format))
-  exportBins(fitC, file = file, format = format)
+  file <- exportBins(fitC, file = file, format = format)
   stopifnot(file_test("-f", file))
   file.remove(file)
 }

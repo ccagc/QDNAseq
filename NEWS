@@ -3,6 +3,10 @@ Package: QDNAseq
 
 Version: 1.29.2-9000 [2021-10-03]
 
+NEW FEATURES:
+
+ * Now exportBins() returns the pathname to the files written.
+
 KNOWN ISSUES:
 
  * callBins() produces warnings on "Recycling array of length 1 in vector-

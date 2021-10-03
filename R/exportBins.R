@@ -35,6 +35,10 @@
 #     \item{...}{Additional arguments passed to @see "utils::write.table".}
 # }
 #
+# \value{
+# Returns the pathnames of the files written.
+# }
+#
 # \details{
 #     Exports \code{object} to a file.
 # }
@@ -156,6 +160,7 @@ exportBins <- function(object, file,
         write.table(out, file=file,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
         stopifnot(file_test("-f", file))
+        file
     } else if (format == "igv") {
         out <- data.frame(chromosome=chromosome, start=start, end=end,
             feature=feature, dat, check.names=FALSE, stringsAsFactors=FALSE)
@@ -163,6 +168,7 @@ exportBins <- function(object, file,
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
         stopifnot(file_test("-f", file))
+        file
     } else if (format == "bed" ) {
         names <- sampleNames(object)
         files <- makeFilenames(file, names = names)
@@ -178,6 +184,7 @@ exportBins <- function(object, file,
             })
             stopifnot(file_test("-f", files[i]))
         }
+        files
     } else if (format == "vcf") {
         names <- sampleNames(object)
         files <- makeFilenames(file, names = names)
@@ -261,6 +268,8 @@ exportVCF <- function(obj, fnames) {
 	suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
         stopifnot(file_test("-f", fnames[i]))
     }
+    
+    fnames
 }
 
 
@@ -307,4 +316,6 @@ exportSEG <- function(obj, fnames=NULL) {
 	write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
         stopifnot(file_test("-f", fnames[i]))
     }
+    
+    fnames
 }

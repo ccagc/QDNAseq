@@ -48,6 +48,10 @@ exportBins(object, file, format=c("tsv", "igv", "bed", "vcf", "seg"),
     \item{...}{Additional arguments passed to \code{\link[utils]{write.table}}.}
 }
 
+\value{
+Returns the pathnames of the files written.
+}
+
 \details{
     Exports \code{object} to a file.
 }
