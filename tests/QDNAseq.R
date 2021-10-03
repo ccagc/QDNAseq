@@ -7,17 +7,6 @@ data <- LGG150
 print(data)
 stopifnot(inherits(data, "QDNAseqReadCounts"))
 
-# Exporting
-# FIXME:
-# formats = c("vcf", "seg") require 'calls'; give informative error message
-formats <- c("tsv", "igv", "bed")
-for (format in formats) {
-  file <- tempfile(fileext = sprintf(".%s", format))
-  file <- exportBins(data, file = file, format = format)
-  stopifnot(file_test("-f", file))
-  file.remove(file)
-}
-
 # Plot isobars of read counts
 isobarPlot(data)
 
@@ -37,17 +26,6 @@ print(dataC)
 plot(dataC, ylim=c(-100, 200))
 stopifnot(inherits(dataC, "QDNAseqCopyNumbers"))
 
-# Exporting
-# FIXME:
-# formats = c("vcf", "seg") require 'calls'; give informative error message
-formats <- c("tsv", "igv", "bed")
-for (format in formats) {
-  file <- tempfile(fileext = sprintf(".%s", format))
-  file <- exportBins(dataC, file = file, format = format)
-  stopifnot(file_test("-f", file))
-  file.remove(file)
-}
-
 # Normalize binned read counts to have diploid normal copy number
 dataN <- normalizeBins(dataC)
 print(dataN)
@@ -63,27 +41,30 @@ print(fit)
 plot(fit)
 stopifnot(inherits(fit, "QDNAseqCopyNumbers"))
 
-# Exporting
-# FIXME:
-# formats = c("vcf", "seg") require 'calls'; give informative error message
-formats <- c("tsv", "igv", "bed")
-for (format in formats) {
-  file <- tempfile(fileext = sprintf(".%s", format))
-  file <- exportBins(fit, file = file, format = format)
-  stopifnot(file_test("-f", file))
-  file.remove(file)
-}
-
 # Call copy-number segments
 fitC <- callBins(fit)
 print(fitC)
 plot(fitC)
 
+
+# ---------------------------------------------------------------
 # Exporting
-formats <- c("tsv", "igv", "bed", "vcf", "seg")
-for (format in formats) {
-  file <- tempfile(fileext = sprintf(".%s", format))
-  file <- exportBins(fitC, file = file, format = format)
-  stopifnot(file_test("-f", file))
-  file.remove(file)
+# ---------------------------------------------------------------
+message("* exportBins() ...")
+
+sets <- list(data = data, dataC = dataC, fit = fit, fitC = fitC)
+for (name in names(sets)) {
+  set <- sets[[name]]
+  formats <- c("tsv", "igv", "bed")
+  if (name == "fitC") formats <- c(formats, "vcf", "seg")
+  for (format in formats) {
+    message(sprintf("  - exportBins(..., format=\"%s\")", format))
+    file <- tempfile(fileext = sprintf(".%s", format))
+    file <- exportBins(set, file = file, format = format)
+    stopifnot(file_test("-f", file))
+    file.remove(file)
+    stopifnot(!file_test("-f", file))
+  }
 }
+
+message("* exportBins() ... done")

@@ -198,7 +198,13 @@ exportBins <- function(object, file,
 
 
 exportVCF <- function(obj, fnames) {
+    stopifnot(inherits(obj, "QDNAseqCopyNumbers"))
+    
     calls <- assayDataElement(obj, "calls")
+    if (is.null(calls)) {
+      stop(sprintf("Cannot export as VCF, because %s object does not have 'calls'. Did you forget to do QDNAseq::callBins()?", class(obj)[1]))
+    }
+    
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
     fd <- fData(obj)
@@ -275,8 +281,13 @@ exportVCF <- function(obj, fnames) {
 
 
 exportSEG <- function(obj, fnames=NULL) {
+    stopifnot(inherits(obj, "QDNAseqCopyNumbers"))
 
     calls <- assayDataElement(obj, "calls")
+    if (is.null(calls)) {
+      stop(sprintf("Cannot export as segmention data, because %s object does not have 'calls'. Did you forget to do QDNAseq::callBins()?", class(obj)[1]))
+    }
+    
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
     fd <- fData(obj)
