@@ -152,7 +152,7 @@ exportBins <- function(object, file,
     }
     
     oopts2 <- options(scipen=15)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
     
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
@@ -220,7 +220,7 @@ exportVCF <- function(obj, fnames) {
 			 ))
 
     oopts2 <- options(scipen=100)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3], calls[,i], segments[,i])
@@ -290,7 +290,7 @@ exportSEG <- function(obj, fnames=NULL) {
     }
  
     oopts2 <- options(scipen=100)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
 
     for (i in 1:ncol(calls)) {	
 	d <- cbind(fd[,1:3],calls[,i], segments[,i])

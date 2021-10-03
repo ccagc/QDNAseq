@@ -25,6 +25,8 @@ BUG FIXES:
    respect argument 'file' but instead wrote files of its own names to the
    current working directory.
    
+ * exportBins() would corrupt option 'scipen'.  Now it is left unchanged.
+   
 
 Version: 1.29.2 [2021-09-22]
 
