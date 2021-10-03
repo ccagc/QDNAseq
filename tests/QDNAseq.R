@@ -84,9 +84,6 @@ formats <- c("tsv", "igv", "bed", "vcf", "seg")
 for (format in formats) {
   file <- tempfile(fileext = sprintf(".%s", format))
   exportBins(fitC, file = file, format = format)
-  ## FIXME: formats = c("vcf", "seg") does not respect 'file'
-  if (!format %in% c("seg", "vcf")) {
-    stopifnot(file_test("-f", file))
-    file.remove(file)
-  }
+  stopifnot(file_test("-f", file))
+  file.remove(file)
 }

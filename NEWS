@@ -1,7 +1,7 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.29.2-9000 [2021-10-02]
+Version: 1.29.2-9000 [2021-10-03]
 
 KNOWN ISSUES:
 
@@ -15,6 +15,12 @@ SOFTWARE QUALITY:
 
  * Add package test for exportBins().
 
+BUG FIXES:
+
+ * exportBins(fit, format = "seg", file = ...) and format = "vcf" did not
+   respect argument 'file' but instead wrote files of its own names to the
+   current working directory.
+   
 
 Version: 1.29.2 [2021-09-22]
 

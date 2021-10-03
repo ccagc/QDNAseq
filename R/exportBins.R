@@ -63,8 +63,27 @@ exportBins <- function(object, file,
     filter=TRUE, logTransform=TRUE, digits=3,
     chromosomeReplacements=c("23"="X", "24"="Y", "25"="MT"), ...) {
 
+    makeFilenames <- function(file, names) {
+        if (length(grep("%s", file) > 0L)) {
+            files <- sapply(seq_along(names), FUN = function(idx) {
+                sprintf(file, names[idx])
+            })
+        } else if (length(grep("%i", file) > 0L)) {
+            files <- sapply(seq_along(names), FUN = function(idx) {
+                sprintf(file, idx)
+            })
+        } else {
+            if (length(names) > 1L) {
+              stop("Argument 'file' must be an sprintf-formatted strings with either a %s or a %i component: ", sQuote(file))
+            }
+            files <- file
+        }
+        files
+    } # makeFilenames()
+
     format <- match.arg(format)
     type <- match.arg(type)
+    
     if (inherits(object, "QDNAseqSignals")) {
         if (filter) {
             object <- object[binsToUse(object), ]
@@ -123,54 +142,61 @@ exportBins <- function(object, file,
             dat <- regions(object)
         }
     }
+    
     if (is.numeric(digits)) {
         dat <- round(dat, digits=digits)
     }
+    
     oopts2 <- options(scipen=15)
     on.exit(options(scipen=oopts2), add=TRUE)
+    
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
             end=end, dat, check.names=FALSE, stringsAsFactors=FALSE)
         write.table(out, file=file,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
+        stopifnot(file_test("-f", file))
     } else if (format == "igv") {
         out <- data.frame(chromosome=chromosome, start=start, end=end,
             feature=feature, dat, check.names=FALSE, stringsAsFactors=FALSE)
         cat('#type=COPY_NUMBER\n#track coords=1\n', file=file)
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+        stopifnot(file_test("-f", file))
     } else if (format == "bed" ) {
-        for (i in seq_along(sampleNames(object))) {
-            if (length(grep("%s", file) > 0L)) {
-                filename <- sprintf(file, sampleNames(object)[i])
-            } else {
-                filename <- sprintf(file, i)
-            }
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+        for (i in seq_along(names)) {
             out <- data.frame(chromosome=chromosome, start=start-1, end=end,
                 feature=feature, dat[, i, drop=FALSE], strand="+",
                 check.names=FALSE, stringsAsFactors=FALSE)
-            cat('track name="', sampleNames(object)[i], '" description="',
-                type, '"\n', file=filename, sep="")
-            suppressWarnings(write.table(out, file=filename, append=TRUE,
-                col.names=FALSE,
-                quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+            cat('track name="', names[i], '" description="', type, '"\n',
+                file=files[i], sep="")
+            suppressWarnings({
+                write.table(out, file=files[i], append=TRUE, col.names=FALSE,
+                            quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
+            })
+            stopifnot(file_test("-f", files[i]))
         }
     } else if (format == "vcf") {
-	exportVCF(object)
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+	exportVCF(object, fnames = files)
     } else if (format == "seg") {
-        exportSEG(object)
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+        exportSEG(object, fnames = files)
     }
 }
 
 
-exportVCF <- function(obj) {
-
+exportVCF <- function(obj, fnames) {
     calls <- assayDataElement(obj, "calls")
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
     fd <- fData(obj)
     pd <- pData(obj)
-    
+
     vcfHeader <- cbind(c(
 			 '##fileformat=VCFv4.2',
 			 paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
@@ -231,10 +257,9 @@ exportVCF <- function(obj) {
 	out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)	
 	colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
 
-	fname <- paste(pd$name[i], ".vcf", sep="")
-
-	write.table(vcfHeader, fname, quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+	write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
+	suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+        stopifnot(file_test("-f", fnames[i]))
     }
 }
 
@@ -279,10 +304,7 @@ exportSEG <- function(obj, fnames=NULL) {
 	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
 	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
-	fname <- paste(fnames[i], ".seg", sep="")
-
-	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+	write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+        stopifnot(file_test("-f", fnames[i]))
     }
 }
-
-#EOF
