@@ -62,12 +62,17 @@ for (name in names(sets)) {
     if (name %in% c("fit", "fitC")) types <- c(types, "segments")
     if (name == "fitC") types <- c(types, "calls")
     for (type in types) {
-      message(sprintf("  - exportBins(..., format=\"%s\", type=\"%s\")", format, type))
-      file <- tempfile(fileext = sprintf(".%s", format))
-      file <- exportBins(set, file = file, format = format, type = type)
-      stopifnot(all(file_test("-f", file)))
-      file.remove(file)
-      stopifnot(!any(file_test("-f", file)))
+      fileext <- sprintf(".%s.%s", type, format)
+      for (template in c("QDNAseq.", "QDNAseq-%s.", "QDNAseq-%i.", "QDNAseq-%03i.")) {
+        file <- tempfile(pattern = template, fileext = fileext)
+        message(sprintf("  - exportBins(..., format=\"%s\", type=\"%s\", file=\"%s\")", format, type, template))
+        file <- exportBins(set, file = file, format = format, type = type)
+        message(sprintf("    File(s) written: [n=%d] %s",
+                length(file), paste(sQuote(file), collapse = ", ")))
+        stopifnot(all(file_test("-f", file)))
+        file.remove(file)
+        stopifnot(!any(file_test("-f", file)))
+      }
     }
   }
 }

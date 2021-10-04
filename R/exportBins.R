@@ -74,7 +74,7 @@ exportBins <- function(object, file,
             files <- sapply(seq_along(names), FUN = function(idx) {
                 sprintf(file, names[idx])
             })
-        } else if (length(grep("%i", file) > 0L)) {
+        } else if (length(grep("%([0-9]*|[*])i", file) > 0L)) {
             files <- sapply(seq_along(names), FUN = function(idx) {
                 sprintf(file, idx)
             })
