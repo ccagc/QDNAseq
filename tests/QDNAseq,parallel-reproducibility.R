@@ -31,7 +31,7 @@ fitC <- callBins(fit)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # REPRODUCIBILITY
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-strategies <- c("sequential", "multiprocess")
+strategies <- c("sequential", "multisession")
 if (future::supportsMulticore()) strategies <- c(strategies, "multicore")
 
 oplan <- future::plan("list")
