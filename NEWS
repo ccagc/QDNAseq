@@ -5,6 +5,8 @@ Version: 1.29.2-9000 [2021-10-03]
 
 NEW FEATURES:
 
+ * Now argument 'logTransform' of exportBins() is ignored if 'type' = "calls".
+
  * Now exportBins() returns the pathname to the files written.
 
 KNOWN ISSUES:

@@ -16,7 +16,8 @@
 
 \usage{
 exportBins(object, file, format=c("tsv", "igv", "bed", "vcf", "seg"),
-  type=c("copynumber", "segments", "calls"), filter=TRUE, logTransform=TRUE, digits=3,
+  type=c("copynumber", "segments", "calls"), filter=TRUE,
+  logTransform=(type \%in\% c("segments", "calls")), digits=3,
   chromosomeReplacements=c(`23` = "X", `24` = "Y", `25` = "MT"), ...)
 }
 

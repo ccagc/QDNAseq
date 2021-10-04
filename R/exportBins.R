@@ -23,7 +23,9 @@
 #     \item{type}{Type of data to export, options are "copynumber" (corrected or
 #         uncorrected read counts), "segments", or "calls".}
 #     \item{filter}{If @TRUE, bins are filtered, otherwise not.}
-#     \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
+#     \item{logTransform}{If @TRUE (default), exported data will be log2
+#         transformed for \code{format} in \code{"tsv"}, \code{"igv"}, and
+#         \code{"bed"}.  This argument is ignored if code{type = "calls"}.}
 #     \item{digits}{The number of digits to round to. If not @numeric, no
 #         no rounding is performed.}
 #     \item{chromosomeReplacements}{A named character vector of chromosome name
@@ -87,7 +89,7 @@ exportBins <- function(object, file,
 
     format <- match.arg(format)
     type <- match.arg(type)
-    
+
     if (inherits(object, "QDNAseqSignals")) {
         if (filter) {
             object <- object[binsToUse(object), ]
@@ -114,7 +116,7 @@ exportBins <- function(object, file,
                 dat <- assayDataElement(object, "calls")
             }
         }
-        if (logTransform) {
+        if (logTransform && type != "calls") {
             dat <- log2adhoc(dat)
         }
     } else if (inherits(object, c("cghRaw", "cghSeg", "cghCall",
