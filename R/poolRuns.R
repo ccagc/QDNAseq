@@ -101,7 +101,7 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
             oldphenodata[1, "paired.ends"] <- pairedEnds
         oldphenodata[1, "total.reads"] <- totalReads
         oldphenodata[1, "used.reads"] <- usedReads
-        newphenodata <- rbind(newphenodata, oldphenodata[1, ])
+        newphenodata <- rbind(newphenodata, oldphenodata[1, ], stringsAsFactors=FALSE)
     }
     rownames(newphenodata) <- newphenodata[, 1]
     newphenodata <- AnnotatedDataFrame(newphenodata,

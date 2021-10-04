@@ -192,7 +192,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         segmentStatisticCol <- grep(segmentStatistic, 
                                     colnames(segments.summary(segments[[1]])))
         
-        segmented <- do.call(rbind, lapply(segments, FUN=function(x) {
+        segmented <- do.call(rbind, args = lapply(segments, FUN=function(x) {
             chrSegmented <- matrix(NA_real_, nrow=nrow(x$data),
                 ncol=ncol(x$data)-2,
                 dimnames=list(NULL, colnames(x$data)[-(1:2)]))

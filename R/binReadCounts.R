@@ -132,7 +132,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
     }
     if (!is.null(phenofile)) {
         pdata <- read.table(phenofile, header=TRUE, sep='\t', as.is=TRUE,
-            row.names=1L)
+            row.names=1L, stringsAsFactors=FALSE)
         phenodata <- cbind(phenodata, pdata[rownames(phenodata), , drop=FALSE])
     }
 
@@ -419,7 +419,8 @@ importReadCounts <- function(counts, bins, phenodata=NULL) {
 					data.frame(
 						   sampleNames=colnames(counts),
 						   total.reads=colSums(counts),
-						   used.reads=colSums2(counts, rows=condition)
+						   used.reads=colSums2(counts, rows=condition),
+                                                   stringsAsFactors=FALSE
 						   ))
     }
     object <- new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)

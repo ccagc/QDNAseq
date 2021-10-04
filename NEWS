@@ -1,7 +1,52 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.29.3 [2021-10-04]
+
+NEW FEATURES:
+
+ * Now argument 'logTransform' of exportBins() is ignored if 'type' = "calls".
+
+ * Now exportBins() returns the pathname to the files written.
+
+SOFTWARE QUALITY:
+
+ * Test code coverage was increased from 42% to 52%.
+ 
+ * Add package test for exportBins().
+
+BUG FIXES:
+
+ * exportBins(fit, format = "seg", ...) and format = "vcf" would merge
+   segments with equal copy-number calls if they were interweaved with
+   copy-neutral segments.
+
+ * exportBins(fit, format = "seg", ...) and format = "vcf" produced an obscure
+   error with messages "Error in dimnames(x) <- dn : length of 'dimnames' [2]
+   not equal to array extent" for samples with no copy-number abberations.
+   
+ * exportBins(fit, format = "seg", file = ...) and format = "vcf" did not
+   respect argument 'file' but instead wrote files of its own names to the
+   current working directory.
+   
+ * exportBins() would corrupt option 'scipen'.  Now it is left unchanged.
+
+KNOWN ISSUES:
+
+ * callBins() produces warnings on "Recycling array of length 1 in vector-
+   array arithmetic is deprecated. Use c() or as.vector() instead." in
+   R (>= 3.4.0).  This is a problem in the package 'CGHcall' dependency and
+   is something that needs to be fixed there.  For further details, please
+   see https://github.com/tgac-vumc/CGHcall/issues/2.
+
+
 Version: 1.29.2 [2021-09-22]
+
+SOFTWARE QUALITY:
+
+ * Test code coverage was increased from 32% to 39%.
+
+ * Added package tests for binReadCounts().
 
 BUG FIXES:
 

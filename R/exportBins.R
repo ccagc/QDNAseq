@@ -23,7 +23,9 @@
 #     \item{type}{Type of data to export, options are "copynumber" (corrected or
 #         uncorrected read counts), "segments", or "calls".}
 #     \item{filter}{If @TRUE, bins are filtered, otherwise not.}
-#     \item{logTransform}{If @TRUE (default), data will be log2-transformed.}
+#     \item{logTransform}{If @TRUE (default), exported data will be log2
+#         transformed for \code{format} in \code{"tsv"}, \code{"igv"}, and
+#         \code{"bed"}.  This argument is ignored if code{type = "calls"}.}
 #     \item{digits}{The number of digits to round to. If not @numeric, no
 #         no rounding is performed.}
 #     \item{chromosomeReplacements}{A named character vector of chromosome name
@@ -33,6 +35,10 @@
 #        QDNAseq object types use character vectors. Defaults to
 #         \code{c("23"="X", "24"="Y", "25"="MT")} for human.}
 #     \item{...}{Additional arguments passed to @see "utils::write.table".}
+# }
+#
+# \value{
+# Returns the pathnames of the files written.
 # }
 #
 # \details{
@@ -63,8 +69,27 @@ exportBins <- function(object, file,
     filter=TRUE, logTransform=TRUE, digits=3,
     chromosomeReplacements=c("23"="X", "24"="Y", "25"="MT"), ...) {
 
+    makeFilenames <- function(file, names) {
+        if (length(grep("%s", file) > 0L)) {
+            files <- sapply(seq_along(names), FUN = function(idx) {
+                sprintf(file, names[idx])
+            })
+        } else if (length(grep("%([0-9]*|[*])i", file) > 0L)) {
+            files <- sapply(seq_along(names), FUN = function(idx) {
+                sprintf(file, idx)
+            })
+        } else {
+            if (length(names) > 1L) {
+              stop("Argument 'file' must be an sprintf-formatted strings with either a %s or a %i component: ", sQuote(file))
+            }
+            files <- file
+        }
+        files
+    } # makeFilenames()
+
     format <- match.arg(format)
     type <- match.arg(type)
+
     if (inherits(object, "QDNAseqSignals")) {
         if (filter) {
             object <- object[binsToUse(object), ]
@@ -91,7 +116,7 @@ exportBins <- function(object, file,
                 dat <- assayDataElement(object, "calls")
             }
         }
-        if (logTransform) {
+        if (logTransform && type != "calls") {
             dat <- log2adhoc(dat)
         }
     } else if (inherits(object, c("cghRaw", "cghSeg", "cghCall",
@@ -123,166 +148,215 @@ exportBins <- function(object, file,
             dat <- regions(object)
         }
     }
+    
     if (is.numeric(digits)) {
         dat <- round(dat, digits=digits)
     }
+    
     oopts2 <- options(scipen=15)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
+    
     if (format == "tsv") {
         out <- data.frame(feature=feature, chromosome=chromosome, start=start,
             end=end, dat, check.names=FALSE, stringsAsFactors=FALSE)
         write.table(out, file=file,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
+        stopifnot(file_test("-f", file))
+        file
     } else if (format == "igv") {
         out <- data.frame(chromosome=chromosome, start=start, end=end,
             feature=feature, dat, check.names=FALSE, stringsAsFactors=FALSE)
         cat('#type=COPY_NUMBER\n#track coords=1\n', file=file)
         suppressWarnings(write.table(out, file=file, append=TRUE,
             quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+        stopifnot(file_test("-f", file))
+        file
     } else if (format == "bed" ) {
-        for (i in seq_along(sampleNames(object))) {
-            if (length(grep("%s", file) > 0L)) {
-                filename <- sprintf(file, sampleNames(object)[i])
-            } else {
-                filename <- sprintf(file, i)
-            }
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+        for (i in seq_along(names)) {
             out <- data.frame(chromosome=chromosome, start=start-1, end=end,
                 feature=feature, dat[, i, drop=FALSE], strand="+",
                 check.names=FALSE, stringsAsFactors=FALSE)
-            cat('track name="', sampleNames(object)[i], '" description="',
-                type, '"\n', file=filename, sep="")
-            suppressWarnings(write.table(out, file=filename, append=TRUE,
-                col.names=FALSE,
-                quote=FALSE, sep="\t", na="", row.names=FALSE, ...))
+            cat('track name="', names[i], '" description="', type, '"\n',
+                file=files[i], sep="")
+            suppressWarnings({
+                write.table(out, file=files[i], append=TRUE, col.names=FALSE,
+                            quote=FALSE, sep="\t", na="", row.names=FALSE, ...)
+            })
+            stopifnot(file_test("-f", files[i]))
         }
+        files
     } else if (format == "vcf") {
-	exportVCF(object)
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+        exportVCF(object, fnames = files)
     } else if (format == "seg") {
-        exportSEG(object)
+        names <- sampleNames(object)
+        files <- makeFilenames(file, names = names)
+        exportSEG(object, fnames = files)
     }
 }
 
 
-exportVCF <- function(obj) {
-
+exportVCF <- function(obj, fnames) {
+    stopifnot(inherits(obj, "QDNAseqCopyNumbers"))
+    
     calls <- assayDataElement(obj, "calls")
+    if (is.null(calls)) {
+      stop(sprintf("Cannot export as VCF, because %s object does not have 'calls'. Did you forget to do QDNAseq::callBins()?", class(obj)[1]))
+    }
+    
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
     fd <- fData(obj)
     pd <- pData(obj)
-    
+
     vcfHeader <- cbind(c(
-			 '##fileformat=VCFv4.2',
-			 paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
-			 '##REF=<ID=DIP,Description="CNV call">',
-			 '##ALT=<ID=DEL,Description="Deletion">',
-			 '##ALT=<ID=DUP,Description="Duplication">',
-			 '##FILTER=<ID=LOWQ,Description="Filtered due to call in low quality region">',
-			 '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of variant: DEL,DUP,INS">',
-			 '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of variant">',
-			 '##INFO=<ID=BINS,Number=1,Type=Integer,Description="Number of bins in call">',
-			 '##INFO=<ID=SCORE,Number=1,Type=Integer,Description="Score of calling algorithm">',
-			 '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
-			 '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
-			 ))
+                         '##fileformat=VCFv4.2',
+                         paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
+                         '##REF=<ID=DIP,Description="CNV call">',
+                         '##ALT=<ID=DEL,Description="Deletion">',
+                         '##ALT=<ID=DUP,Description="Duplication">',
+                         '##FILTER=<ID=LOWQ,Description="Filtered due to call in low quality region">',
+                         '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of variant: DEL,DUP,INS">',
+                         '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of variant">',
+                         '##INFO=<ID=BINS,Number=1,Type=Integer,Description="Number of bins in call">',
+                         '##INFO=<ID=SCORE,Number=1,Type=Integer,Description="Score of calling algorithm">',
+                         '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
+                         '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
+                         ))
 
     oopts2 <- options(scipen=100)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
 
-    for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3], calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+    for (i in 1:ncol(calls)) {        
+        d <- cbind(fd[,1:3], calls[,i], segments[,i])
+        sel <- !is.na(d[,4])
 
-	dsel <- d[sel,]
+        dsel <- d[sel,]
+        rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
 
-	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        endI <- cumsum(rleD$lengths)
+        posI <- c(1, endI[-length(endI)] + 1)
+        stopifnot(length(posI) == length(endI))
 
-	endI <- cumsum(rleD$lengths)
-	posI <- c(1, endI[-length(endI)] + 1)
+        chr <- dsel[posI,1]
+        pos <- dsel[posI,2]
+        end <- dsel[endI,3]
+        score <- dsel[posI,4]
+        segVal <- round(dsel[posI,5], digits=2)
+        nchr <- length(chr)
+        svtype <- rep(NA_character_, times=nchr) 
+        svlen <- rep(NA_real_, times=nchr) 
+        gt <- rep(NA_character_, times=nchr) 
+        bins <- rleD$lengths
+        svtype[dsel[posI,4] <= -1] <- "DEL"
+        svtype[dsel[posI,4] >= 1] <- "DUP"
+        svlen <- end - pos + 1
 
-	chr <- dsel[posI,1]
-	pos <- dsel[posI,2]
-	end <- dsel[endI,3]
-	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5], digits=2)
+        gt[score == -2] <- "1/1"        
+        gt[score == -1] <- "0/1"        
+        gt[score == 1] <- "0/1"        
+        gt[score == 2] <- "0/1"        
+        gt[score == 3] <- "0/1"
+        
+        ## Sanity checks
+        stopifnot(
+          length(pos) == nchr,
+          length(end) == nchr,
+          length(score) == nchr,
+          length(segVal) == nchr,
+          length(bins) == nchr,
+          length(svtype) == nchr,
+          length(svlen) == nchr,
+          length(gt) == nchr
+        )
 
-	svtype <- rep(NA_character_, times=length(chr)) 
-	svlen <- rep(NA_real_, times=length(chr)) 
-	gt <- rep(NA_character_, times=length(chr)) 
-	bins <- rleD$lengths
-	svtype[dsel[posI,4] <= -1] <- "DEL"
-	svtype[dsel[posI,4] >= 1] <- "DUP"
-	svlen <- end - pos + 1
+        id <- "."
+        ref <- "<DIP>"
+        alt <- paste("<", svtype, ">", sep="")
+        qual <- 1000
+        filter <- "PASS"
+        info <- paste("SVTYPE=", svtype, ";END=", end, ";SVLEN=", svlen, ";BINS=", bins, ";SCORE=", score, ";LOG2CNT=", segVal, sep="")
+        format <- "GT"
+        sample <- gt
+        out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)        
+        colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
 
-	gt[score == -2] <- "1/1"	
-	gt[score == -1] <- "0/1"	
-	gt[score == 1] <- "0/1"	
-	gt[score == 2] <- "0/1"	
-	gt[score == 3] <- "0/1"	
-
-	id <- "."
-	ref <- "<DIP>"
-	alt <- paste("<", svtype, ">", sep="")
-	qual <- 1000
-	filter <- "PASS"
-	info <- paste("SVTYPE=", svtype, ";END=", end, ";SVLEN=", svlen, ";BINS=", bins, ";SCORE=", score, ";LOG2CNT=", segVal, sep="")
-	format <- "GT"
-	sample <- gt
-	out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)	
-	colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
-
-	fname <- paste(pd$name[i], ".vcf", sep="")
-
-	write.table(vcfHeader, fname, quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, fname, quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+        ## Drop copy-neutral segments
+        out <- out[dsel[posI, 4] != 0, ]
+        
+        write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
+        suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+        stopifnot(file_test("-f", fnames[i]))
     }
+    
+    fnames
 }
 
 
 
 exportSEG <- function(obj, fnames=NULL) {
+    stopifnot(inherits(obj, "QDNAseqCopyNumbers"))
 
     calls <- assayDataElement(obj, "calls")
+    if (is.null(calls)) {
+      stop(sprintf("Cannot export as segmention data, because %s object does not have 'calls'. Did you forget to do QDNAseq::callBins()?", class(obj)[1]))
+    }
+    
     segments <- log2adhoc(assayDataElement(obj, "segmented"))
 
     fd <- fData(obj)
     pd <- pData(obj)
   
     if (is.null(fnames)) 
-	fnames <- pd$name
+        fnames <- pd$name
 
     if (length(fnames) != length(pd$name)) {
         stop("Length of 'fnames' is too short: ", length(fnames), " != ", length(pd$name))
     }
  
     oopts2 <- options(scipen=100)
-    on.exit(options(scipen=oopts2), add=TRUE)
+    on.exit(options(oopts2))
 
-    for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3],calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+    for (i in 1:ncol(calls)) {        
+        d <- cbind(fd[,1:3], calls[,i], segments[,i])
+        sel <- !is.na(d[,4])
 
-	dsel <- d[sel,]
+        dsel <- d[sel,]
+        rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
 
-	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        endI <- cumsum(rleD$lengths)
+        posI <- c(1, endI[-length(endI)] + 1)
+        stopifnot(length(posI) == length(endI))
 
-	endI <- cumsum(rleD$lengths)
-	posI <- c(1, endI[-length(endI)] + 1)
+        chr <- dsel[posI,1]
+        pos <- dsel[posI,2]
+        end <- dsel[endI,3]
+        score <- dsel[posI,4]
+        segVal <- round(dsel[posI,5],digits=2)
+        bins <- rleD$lengths
 
-	chr <- dsel[posI,1]
-	pos <- dsel[posI,2]
-	end <- dsel[endI,3]
-	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],digits=2)
-	bins <- rleD$lengths
+        ## Sanity checks
+        nchr <- length(chr)
+        stopifnot(
+          length(pos) == nchr,
+          length(end) == nchr,
+          length(score) == nchr,
+          length(segVal) == nchr,
+          length(bins) == nchr
+        )
+        
+        out <- cbind(fnames[i], chr, pos, end, bins, segVal)
+        colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
-	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
-	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
-
-	fname <- paste(fnames[i], ".seg", sep="")
-
-	write.table(out, fname, quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+        ## Drop copy-neutral segments
+        out <- out[dsel[posI, 4] != 0, ]
+        
+        write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+        stopifnot(file_test("-f", fnames[i]))
     }
+    
+    fnames
 }
-
-#EOF
