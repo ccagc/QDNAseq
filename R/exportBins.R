@@ -232,11 +232,11 @@ exportVCF <- function(obj, fnames) {
 
     for (i in 1:ncol(calls)) {        
         d <- cbind(fd[,1:3], calls[,i], segments[,i])
-        sel <- d[,4] != 0 & !is.na(d[,4])
+        sel <- !is.na(d[,4])
+        sel <- sel & (d[,4] != 0)
 
         dsel <- d[sel,]
-
-        rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
 
         endI <- cumsum(rleD$lengths)
         posI <- c(1, endI[-length(endI)] + 1)
@@ -319,12 +319,12 @@ exportSEG <- function(obj, fnames=NULL) {
     on.exit(options(oopts2))
 
     for (i in 1:ncol(calls)) {        
-        d <- cbind(fd[,1:3],calls[,i], segments[,i])
-        sel <- d[,4] != 0 & !is.na(d[,4])
+        d <- cbind(fd[,1:3], calls[,i], segments[,i])
+        sel <- !is.na(d[,4])
+        sel <- sel & (d[,4] != 0)
 
         dsel <- d[sel,]
-
-        rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
 
         endI <- cumsum(rleD$lengths)
         posI <- c(1, endI[-length(endI)] + 1)
