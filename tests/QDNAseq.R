@@ -65,9 +65,9 @@ for (name in names(sets)) {
       message(sprintf("  - exportBins(..., format=\"%s\", type=\"%s\")", format, type))
       file <- tempfile(fileext = sprintf(".%s", format))
       file <- exportBins(set, file = file, format = format, type = type)
-      stopifnot(file_test("-f", file))
+      stopifnot(all(file_test("-f", file)))
       file.remove(file)
-      stopifnot(!file_test("-f", file))
+      stopifnot(!any(file_test("-f", file)))
     }
   }
 }
