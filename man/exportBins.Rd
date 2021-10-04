@@ -16,8 +16,7 @@
 
 \usage{
 exportBins(object, file, format=c("tsv", "igv", "bed", "vcf", "seg"),
-  type=c("copynumber", "segments", "calls"), filter=TRUE,
-  logTransform=(type \%in\% c("segments", "calls")), digits=3,
+  type=c("copynumber", "segments", "calls"), filter=TRUE, logTransform=TRUE, digits=3,
   chromosomeReplacements=c(`23` = "X", `24` = "Y", `25` = "MT"), ...)
 }
 
@@ -37,7 +36,9 @@ exportBins(object, file, format=c("tsv", "igv", "bed", "vcf", "seg"),
     \item{type}{Type of data to export, options are "copynumber" (corrected or
         uncorrected read counts), "segments", or "calls".}
     \item{filter}{If \code{\link[base:logical]{TRUE}}, bins are filtered, otherwise not.}
-    \item{logTransform}{If \code{\link[base:logical]{TRUE}} (default), data will be log2-transformed.}
+    \item{logTransform}{If \code{\link[base:logical]{TRUE}} (default), exported data will be log2
+        transformed for \code{format} in \code{"tsv"}, \code{"igv"}, and
+        \code{"bed"}.  This argument is ignored if code{type = "calls"}.}
     \item{digits}{The number of digits to round to. If not \code{\link[base]{numeric}}, no
         no rounding is performed.}
     \item{chromosomeReplacements}{A named character vector of chromosome name
