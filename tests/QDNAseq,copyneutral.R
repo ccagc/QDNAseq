@@ -39,15 +39,11 @@ for (format in formats) {
     fileext <- sprintf(".%s.%s", type, format)
     file <- tempfile(pattern =  "QDNAseq-%s", fileext = fileext)
     message(sprintf("  - exportBins(<%d samples>, format=\"%s\", type=\"%s\")", ncol(fitC), format, type))
-    res <- tryCatch({
-      exportBins(fitC, format = format, type = type, file = file)
-    }, error = identity)
-    print(res)
-    if (format %in% c("seg", "vcf") && type %in% c("copynumber", "segments", "calls")) {
-      ## FIXME: All these give errors
-      stopifnot(inherits(res, "error"))
-    } else {
-      stopifnot(is.character(res))
-    }
+    exportBins(fitC, format = format, type = type, file = file)
+    message(sprintf("    File(s) written: [n=%d] %s",
+            length(file), paste(sQuote(file), collapse = ", ")))
+    stopifnot(all(file_test("-f", file)))
+    file.remove(file)
+    stopifnot(!any(file_test("-f", file)))
   }
 }

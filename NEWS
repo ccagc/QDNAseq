@@ -1,7 +1,7 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.29.2-9000 [2021-10-03]
+Version: 1.29.2-9000 [2021-10-04]
 
 NEW FEATURES:
 
@@ -17,6 +17,10 @@ SOFTWARE QUALITY:
 
 BUG FIXES:
 
+ * exportBins(fit, format = "seg", ...) and format = "vcf" produced an obscure
+   error with messages "Error in dimnames(x) <- dn : length of 'dimnames' [2]
+   not equal to array extent" for samples with no copy-number abberations.
+   
  * exportBins(fit, format = "seg", file = ...) and format = "vcf" did not
    respect argument 'file' but instead wrote files of its own names to the
    current working directory.
