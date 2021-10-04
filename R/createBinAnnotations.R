@@ -142,7 +142,7 @@ calculateMappability <- function(bins, bigWigFile,
     cmd <- paste0(bigWigAverageOverBed, ' "', bigWigFile, '" "', binbed,
         '" -bedOut="', mapbed, '" /dev/null')
     system(cmd)
-    map <- read.table(mapbed, sep="\t", as.is=TRUE)
+    map <- read.table(mapbed, sep="\t", as.is=TRUE, stringsAsFactors=FALSE)
     map <- map[order(map$V4), ]
     map$V5 * 100
 }
@@ -163,11 +163,11 @@ calculateBlacklist <- function(bins, bedFiles, ...,
 
     beds <- list()
     for (bed in bedFiles)
-        beds[[bed]] <- read.table(bed, sep="\t", as.is=TRUE)
+        beds[[bed]] <- read.table(bed, sep="\t", as.is=TRUE, stringsAsFactors=FALSE)
     combined <- beds[[1L]]
     if (length(beds) >= 2L)
         for (i in 2:length(beds))
-            combined <- rbind(combined, beds[[i]])
+            combined <- rbind(combined, beds[[i]], stringsAsFactors=FALSE)
     combined <- combined[, 1:3]
     colnames(combined) <- c("chromosome", "start", "end")
     combined$chromosome <- sub("^chr", "", combined$chromosome)
@@ -187,13 +187,13 @@ calculateBlacklist <- function(bins, bedFiles, ...,
     for (i in 2:nrow(combined)) {
         if (combined[i, "chromosome"] != prev$chromosome ||
             combined[i, "start"] > (prev$end + 1)) {
-            joined <- rbind(joined, prev)
+            joined <- rbind(joined, prev, stringsAsFactors=FALSE)
             prev <- combined[i,]
         } else {
             prev$end <- max(prev$end, combined[i, "end"])
         }
     }
-    joined <- rbind(joined, prev)
+    joined <- rbind(joined, prev, stringsAsFactors=FALSE)
     overlap.counter <- function(x, joined) {
         chr <- x["chromosome"]
         start <- as.integer(x["start"])
@@ -278,7 +278,7 @@ calculateBlacklistByRegions <- function(bins, regions,
 
     vmsg("Calculating percent overlap per bin with regions")
     
-    combined <- as.data.frame(regions)
+    combined <- as.data.frame(regions, stringsAsFactors=FALSE)
     
     colnames(combined) <- c("chromosome", "start", "end")
     # Remove chr if present
@@ -350,7 +350,7 @@ calculateBlacklistByRegions <- function(bins, regions,
         s:e
     }))
     
-    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))))
+    res <- rbind(res12, cbind(Group.1 = res3, x = rep(binSize, times=length(res3))), stringsAsFactors=FALSE)
     
     res <- aggregate(res$x, by=list(res$Group.1), FUN=max)
     

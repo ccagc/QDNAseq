@@ -19,6 +19,8 @@ KNOWN ISSUES:
 
 SOFTWARE QUALITY:
 
+ * Test code coverage was increased from 42% to 52%.
+ 
  * Add package test for exportBins().
 
 BUG FIXES:
@@ -31,6 +33,12 @@ BUG FIXES:
    
 
 Version: 1.29.2 [2021-09-22]
+
+SOFTWARE QUALITY:
+
+ * Test code coverage was increased from 32% to 39%.
+
+ * Added package tests for binReadCounts().
 
 BUG FIXES:
 
