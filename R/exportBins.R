@@ -190,7 +190,7 @@ exportBins <- function(object, file,
     } else if (format == "vcf") {
         names <- sampleNames(object)
         files <- makeFilenames(file, names = names)
-	exportVCF(object, fnames = files)
+        exportVCF(object, fnames = files)
     } else if (format == "seg") {
         names <- sampleNames(object)
         files <- makeFilenames(file, names = names)
@@ -213,67 +213,80 @@ exportVCF <- function(obj, fnames) {
     pd <- pData(obj)
 
     vcfHeader <- cbind(c(
-			 '##fileformat=VCFv4.2',
-			 paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
-			 '##REF=<ID=DIP,Description="CNV call">',
-			 '##ALT=<ID=DEL,Description="Deletion">',
-			 '##ALT=<ID=DUP,Description="Duplication">',
-			 '##FILTER=<ID=LOWQ,Description="Filtered due to call in low quality region">',
-			 '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of variant: DEL,DUP,INS">',
-			 '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of variant">',
-			 '##INFO=<ID=BINS,Number=1,Type=Integer,Description="Number of bins in call">',
-			 '##INFO=<ID=SCORE,Number=1,Type=Integer,Description="Score of calling algorithm">',
-			 '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
-			 '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
-			 ))
+                         '##fileformat=VCFv4.2',
+                         paste('##source=QDNAseq-', packageVersion("QDNAseq"), sep=""),
+                         '##REF=<ID=DIP,Description="CNV call">',
+                         '##ALT=<ID=DEL,Description="Deletion">',
+                         '##ALT=<ID=DUP,Description="Duplication">',
+                         '##FILTER=<ID=LOWQ,Description="Filtered due to call in low quality region">',
+                         '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of variant: DEL,DUP,INS">',
+                         '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of variant">',
+                         '##INFO=<ID=BINS,Number=1,Type=Integer,Description="Number of bins in call">',
+                         '##INFO=<ID=SCORE,Number=1,Type=Integer,Description="Score of calling algorithm">',
+                         '##INFO=<ID=LOG2CNT,Number=1,Type=Float,Description="Log 2 count">', 
+                         '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
+                         ))
 
     oopts2 <- options(scipen=100)
     on.exit(options(oopts2))
 
-    for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3], calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+    for (i in 1:ncol(calls)) {        
+        d <- cbind(fd[,1:3], calls[,i], segments[,i])
+        sel <- d[,4] != 0 & !is.na(d[,4])
 
-	dsel <- d[sel,]
+        dsel <- d[sel,]
 
-	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
-	endI <- cumsum(rleD$lengths)
-	posI <- c(1, endI[-length(endI)] + 1)
+        endI <- cumsum(rleD$lengths)
+        posI <- c(1, endI[-length(endI)] + 1)
+        stopifnot(length(posI) == length(endI))
 
-	chr <- dsel[posI,1]
-	pos <- dsel[posI,2]
-	end <- dsel[endI,3]
-	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5], digits=2)
+        chr <- dsel[posI,1]
+        pos <- dsel[posI,2]
+        end <- dsel[endI,3]
+        score <- dsel[posI,4]
+        segVal <- round(dsel[posI,5], digits=2)
+        nchr <- length(chr)
+        svtype <- rep(NA_character_, times=nchr) 
+        svlen <- rep(NA_real_, times=nchr) 
+        gt <- rep(NA_character_, times=nchr) 
+        bins <- rleD$lengths
+        svtype[dsel[posI,4] <= -1] <- "DEL"
+        svtype[dsel[posI,4] >= 1] <- "DUP"
+        svlen <- end - pos + 1
 
-	svtype <- rep(NA_character_, times=length(chr)) 
-	svlen <- rep(NA_real_, times=length(chr)) 
-	gt <- rep(NA_character_, times=length(chr)) 
-	bins <- rleD$lengths
-	svtype[dsel[posI,4] <= -1] <- "DEL"
-	svtype[dsel[posI,4] >= 1] <- "DUP"
-	svlen <- end - pos + 1
+        gt[score == -2] <- "1/1"        
+        gt[score == -1] <- "0/1"        
+        gt[score == 1] <- "0/1"        
+        gt[score == 2] <- "0/1"        
+        gt[score == 3] <- "0/1"
+        
+        ## Sanity checks
+        stopifnot(
+          length(pos) == nchr,
+          length(end) == nchr,
+          length(score) == nchr,
+          length(segVal) == nchr,
+          length(bins) == nchr,
+          length(svtype) == nchr,
+          length(svlen) == nchr,
+          length(gt) == nchr
+        )
 
-	gt[score == -2] <- "1/1"	
-	gt[score == -1] <- "0/1"	
-	gt[score == 1] <- "0/1"	
-	gt[score == 2] <- "0/1"	
-	gt[score == 3] <- "0/1"	
+        id <- "."
+        ref <- "<DIP>"
+        alt <- paste("<", svtype, ">", sep="")
+        qual <- 1000
+        filter <- "PASS"
+        info <- paste("SVTYPE=", svtype, ";END=", end, ";SVLEN=", svlen, ";BINS=", bins, ";SCORE=", score, ";LOG2CNT=", segVal, sep="")
+        format <- "GT"
+        sample <- gt
+        out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)        
+        colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
 
-	id <- "."
-	ref <- "<DIP>"
-	alt <- paste("<", svtype, ">", sep="")
-	qual <- 1000
-	filter <- "PASS"
-	info <- paste("SVTYPE=", svtype, ";END=", end, ";SVLEN=", svlen, ";BINS=", bins, ";SCORE=", score, ";LOG2CNT=", segVal, sep="")
-	format <- "GT"
-	sample <- gt
-	out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)	
-	colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
-
-	write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
-	suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
+        write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
+        suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
         stopifnot(file_test("-f", fnames[i]))
     }
     
@@ -296,7 +309,7 @@ exportSEG <- function(obj, fnames=NULL) {
     pd <- pData(obj)
   
     if (is.null(fnames)) 
-	fnames <- pd$name
+        fnames <- pd$name
 
     if (length(fnames) != length(pd$name)) {
         stop("Length of 'fnames' is too short: ", length(fnames), " != ", length(pd$name))
@@ -305,28 +318,39 @@ exportSEG <- function(obj, fnames=NULL) {
     oopts2 <- options(scipen=100)
     on.exit(options(oopts2))
 
-    for (i in 1:ncol(calls)) {	
-	d <- cbind(fd[,1:3],calls[,i], segments[,i])
-	sel <- d[,4] != 0 & !is.na(d[,4])
+    for (i in 1:ncol(calls)) {        
+        d <- cbind(fd[,1:3],calls[,i], segments[,i])
+        sel <- d[,4] != 0 & !is.na(d[,4])
 
-	dsel <- d[sel,]
+        dsel <- d[sel,]
 
-	rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
+        rleD <- rle(paste(d[sel,1], d[sel,4], sep=":"))
 
-	endI <- cumsum(rleD$lengths)
-	posI <- c(1, endI[-length(endI)] + 1)
+        endI <- cumsum(rleD$lengths)
+        posI <- c(1, endI[-length(endI)] + 1)
+        stopifnot(length(posI) == length(endI))
 
-	chr <- dsel[posI,1]
-	pos <- dsel[posI,2]
-	end <- dsel[endI,3]
-	score <- dsel[posI,4]
-	segVal <- round(dsel[posI,5],digits=2)
-	bins <- rleD$lengths
+        chr <- dsel[posI,1]
+        pos <- dsel[posI,2]
+        end <- dsel[endI,3]
+        score <- dsel[posI,4]
+        segVal <- round(dsel[posI,5],digits=2)
+        bins <- rleD$lengths
 
-	out <- cbind(fnames[i], chr, pos, end, bins, segVal)
-	colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
+        ## Sanity checks
+        nchr <- length(chr)
+        stopifnot(
+          length(pos) == nchr,
+          length(end) == nchr,
+          length(score) == nchr,
+          length(segVal) == nchr,
+          length(bins) == nchr
+        )
+        
+        out <- cbind(fnames[i], chr, pos, end, bins, segVal)
+        colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
-	write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
+        write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
         stopifnot(file_test("-f", fnames[i]))
     }
     
