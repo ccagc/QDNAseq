@@ -1,4 +1,5 @@
 library(QDNAseq)
+library(Biobase) ## combine(), sampleNames()
 library(utils)
 
 # Load data
@@ -83,12 +84,13 @@ for (name in names(sets)) {
 
 sets <- list(data = data, dataC = dataC, fit = fit, fitC = fitC)
 sets <- lapply(sets, FUN = function(set) {
+  stopifnot(ncol(set) == 1L)
   name <- sampleNames(set)
   setA <- set
   sampleNames(setA) <- sprintf("%sa", name)
   setB <- set
   sampleNames(setB) <- sprintf("%sb", name)
-  Biobase::combine(setA, setB)
+  combine(setA, setB)
 })
 
 for (name in names(sets)) {
