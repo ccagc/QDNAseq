@@ -39,7 +39,7 @@ for (format in formats) {
     fileext <- sprintf(".%s.%s", type, format)
     file <- tempfile(pattern =  "QDNAseq-%s", fileext = fileext)
     message(sprintf("  - exportBins(<%d samples>, format=\"%s\", type=\"%s\")", ncol(fitC), format, type))
-    exportBins(fitC, format = format, type = type, file = file)
+    file <- exportBins(fitC, format = format, type = type, file = file)
     message(sprintf("    File(s) written: [n=%d] %s",
             length(file), paste(sQuote(file), collapse = ", ")))
     stopifnot(all(file_test("-f", file)))
