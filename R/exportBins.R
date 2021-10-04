@@ -233,7 +233,6 @@ exportVCF <- function(obj, fnames) {
     for (i in 1:ncol(calls)) {        
         d <- cbind(fd[,1:3], calls[,i], segments[,i])
         sel <- !is.na(d[,4])
-        sel <- sel & (d[,4] != 0)
 
         dsel <- d[sel,]
         rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
@@ -285,6 +284,9 @@ exportVCF <- function(obj, fnames) {
         out <- cbind(chr, pos, id, ref, alt, qual, filter, info, format, sample)        
         colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
 
+        ## Drop copy-neutral segments
+        out <- out[dsel[posI, 4] != 0, ]
+        
         write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
         suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
         stopifnot(file_test("-f", fnames[i]))
@@ -321,7 +323,6 @@ exportSEG <- function(obj, fnames=NULL) {
     for (i in 1:ncol(calls)) {        
         d <- cbind(fd[,1:3], calls[,i], segments[,i])
         sel <- !is.na(d[,4])
-        sel <- sel & (d[,4] != 0)
 
         dsel <- d[sel,]
         rleD <- rle(paste(dsel[ ,1], dsel[ ,4], sep=":"))
@@ -350,6 +351,9 @@ exportSEG <- function(obj, fnames=NULL) {
         out <- cbind(fnames[i], chr, pos, end, bins, segVal)
         colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
+        ## Drop copy-neutral segments
+        out <- out[dsel[posI, 4] != 0, ]
+        
         write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
         stopifnot(file_test("-f", fnames[i]))
     }
