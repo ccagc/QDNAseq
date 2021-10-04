@@ -58,12 +58,17 @@ for (name in names(sets)) {
   formats <- c("tsv", "igv", "bed")
   if (name == "fitC") formats <- c(formats, "vcf", "seg")
   for (format in formats) {
-    message(sprintf("  - exportBins(..., format=\"%s\")", format))
-    file <- tempfile(fileext = sprintf(".%s", format))
-    file <- exportBins(set, file = file, format = format)
-    stopifnot(file_test("-f", file))
-    file.remove(file)
-    stopifnot(!file_test("-f", file))
+    types <- c("copynumber")
+    if (name %in% c("fit", "fitC")) types <- c(types, "segments")
+    if (name == "fitC") types <- c(types, "calls")
+    for (type in types) {
+      message(sprintf("  - exportBins(..., format=\"%s\", type=\"%s\")", format, type))
+      file <- tempfile(fileext = sprintf(".%s", format))
+      file <- exportBins(set, file = file, format = format, type = type)
+      stopifnot(file_test("-f", file))
+      file.remove(file)
+      stopifnot(!file_test("-f", file))
+    }
   }
 }
 
