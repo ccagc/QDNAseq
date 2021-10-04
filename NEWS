@@ -17,6 +17,10 @@ SOFTWARE QUALITY:
 
 BUG FIXES:
 
+ * exportBins(fit, format = "seg", ...) and format = "vcf" would merge
+   segments with equal copy-number calls if they were interweaved with
+   copy-neutral segments.
+
  * exportBins(fit, format = "seg", ...) and format = "vcf" produced an obscure
    error with messages "Error in dimnames(x) <- dn : length of 'dimnames' [2]
    not equal to array extent" for samples with no copy-number abberations.

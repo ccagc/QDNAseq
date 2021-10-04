@@ -1,5 +1,6 @@
 library(QDNAseq)
 library(Biobase)
+library(utils)
 set.seed(0xBEEF)
 
 data(LGG150)
@@ -11,11 +12,18 @@ print(dataF)
 
 dataC <- correctBins(dataF)
 
-## Force all copy neutral data
-cn <- assayDataElement(dataC, "copynumber")
-cn[,1] <- rnorm(nrow(cn), mean = 1.0, sd = 0.05)
-assayDataElement(dataC, "copynumber") <- cn
-
+## Force results to have segments gain, copy neutral, and gain.
+cnAll <- assayDataElement(dataC, "copynumber")
+cnAll[,1] <- rnorm(nrow(cnAll), mean = 1.0, sd = 0.05)
+chr7 <- (chromosomes(dataC) == "7")
+cn <- cnAll[chr7, , drop = FALSE]
+n <- nrow(cn)
+idxs <- seq(from=1/3*n - 0.1*n, to=1/3*n + 0.1*n)
+cn[idxs,1] <- rnorm(length(idxs), mean = 2.0, sd = 0.05)
+idxs <- seq(from=2/3*n - 0.1*n, to=2/3*n + 0.1*n)
+cn[idxs,1] <- rnorm(length(idxs), mean = 2.0, sd = 0.05)
+cnAll[chr7, ] <- cn
+assayDataElement(dataC, "copynumber") <- cnAll
 print(dataC)
 
 dataN <- normalizeBins(dataC)
@@ -27,10 +35,9 @@ print(fit)
 fitC <- callBins(fit)
 print(fitC)
 
-
 ## Assert that everything is called copy-neutral
 calls <- assayDataElement(fitC, "calls")
-stopifnot(all(is.na(calls) | calls == 0))
+stopifnot(all(is.na(calls) | calls %in% c(0, 2)))
 
 formats <- c("tsv", "igv", "bed", "seg", "vcf")
 types <- c("copynumber", "segments", "calls")
@@ -43,16 +50,17 @@ for (format in formats) {
     message(sprintf("    File(s) written: [n=%d] %s",
             length(file), paste(sQuote(file), collapse = ", ")))
     stopifnot(all(file_test("-f", file)))
+
     if (format == "seg") {
       segs <- read.table(file, sep = "\t", header = TRUE)
       print(segs)
-      stopifnot(nrow(segs) == 0L)
+      stopifnot(all(segs$CHROMOSOME == "7"), nrow(segs) == 2L)
     } else if (format == "vcf") {
-      rows <- readLines(file)
-      rows <- grep("^#", rows, invert = TRUE, value = TRUE)
-      print(rows)
-      stopifnot(length(rows) == 0L)
+      segs <- read.table(file, sep = "\t", header = FALSE)
+      print(segs)
+      stopifnot(all(segs$V1 == "7"), nrow(segs) == 2L)
     }
+
     file.remove(file)
     stopifnot(!any(file_test("-f", file)))
   }
