@@ -83,7 +83,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
 
     if ("seeds" %in% names(list(...))) {
-      .Deprecated("Argument 'seeds' (integer) is no longer supported and ignored.")
+      .Defunct("Argument 'seeds' (integer) is no longer supported and ignored.")
     }
     
     oopts <- options("QDNAseq::verbose"=verbose)
