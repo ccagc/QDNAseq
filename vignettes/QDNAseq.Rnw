@@ -344,7 +344,7 @@ To process data in parallel using multiple processes on the current machine,
 use the following:
 
 <<eval=FALSE>>=
-future::plan("multiprocess")
+future::plan("multisession")
 @
 
 After that, all functions that support parallel processing will automatically
@@ -358,10 +358,10 @@ To explicitly set, and override other settings, the number of parallel workers,
 use argument \textit{workers}, e.g.
 
 <<eval=FALSE>>=
-future::plan("multiprocess", workers=4)
+future::plan("multisession", workers=4)
 @
 
-For more details, see the \Rpackage{future} documentation.
+For more details and alternative parallelization backends, see the \Rpackage{future} documentation.
 
 
 \subsection{Parallel processing on an ad-hoc cluster}
