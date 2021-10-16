@@ -50,6 +50,14 @@
 #         added.
 # }
 #
+# \section{Numerical reproducibility}{
+#  This method make use of random number generation (RNG) via the
+#  @see "DNAcopy::segment" used internally.  Because of this, calling the
+#  method with the same input data multiple times will each time give slightly
+#  different results.  To get numerically reproducible results, the random
+#  seed must be fixed, e.g. by using `set.seed()` at the top of the script.
+# }
+#
 # \section{Parallel processing}{
 #   This function uses \pkg{future} to segment samples in parallel.
 # }
@@ -69,7 +77,16 @@
 #
 # \seealso{
 #     Internally, @see "DNAcopy::segment" of the \pkg{DNAcopy} package,
-#     which implements the CBS method, is used to segment the data.
+#     which implements the CBS method [1,2], is used to segment the data.
+# }
+#
+# \references{
+#  [1] A.B. Olshen, E.S. Venkatraman (aka Venkatraman E. Seshan), R. Lucito
+#      and M. Wigler, \emph{Circular binary segmentation for the analysis of
+#      array-based DNA copy number data}, Biostatistics, 2004 \cr
+#  [2] E.S. Venkatraman and A.B. Olshen, \emph{A faster circular binary
+#      segmentation algorithm for the analysis of array CGH data},
+#      Bioinformatics, 2007 \cr
 # }
 #
 # @keyword manip
@@ -83,7 +100,7 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
 
     if ("seeds" %in% names(list(...))) {
-      .Deprecated("Argument 'seeds' (integer) is no longer supported and ignored.")
+      .Defunct("Argument 'seeds' (integer) is no longer supported and ignored.")
     }
     
     oopts <- options("QDNAseq::verbose"=verbose)
