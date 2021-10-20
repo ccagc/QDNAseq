@@ -1,9 +1,11 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.29.4-9000 [2021-10-16]
+Version: 1.29.4-9001 [2021-10-20]
 
- * ...
+MISCELLANEOUS:
+
+ * Moved 'future' from Imports to Suggests.
  
 
 Version: 1.29.4 [2021-10-16]
