@@ -89,14 +89,14 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
     vmsg("Applying ", method, " normalization ...", appendLF=FALSE)
     if (method == "mean") {
-        values <- colMeans2(copynumber, rows=condition, na.rm=TRUE)
+        values <- colMeans2(copynumber, rows=condition, na.rm=TRUE, useNames=FALSE)
     } else if (method == "median") {
-        values <- colMedians(copynumber, rows=condition, na.rm=TRUE)
+        values <- colMedians(copynumber, rows=condition, na.rm=TRUE, useNames=FALSE)
     } else if (method == "mode") {
         values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
           FUN=function(x) {
             d <- density(x, na.rm=TRUE)
-	    d$x[which.max(d$y)]
+            d$x[which.max(d$y)]
         })
     }
     vmsg()
@@ -123,5 +123,3 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
     object
 })
-
-# EOF

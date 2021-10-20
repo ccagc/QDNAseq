@@ -73,5 +73,3 @@ setReplaceMethod("binsToUse",
     object$use <- value
     object
 })
-
-# EOF

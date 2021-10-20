@@ -209,5 +209,3 @@ setReplaceMethod('probamp',
         assayDataElementReplace(object, 'probamp', value2)
     }
 })
-
-# EOF

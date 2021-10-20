@@ -124,5 +124,3 @@ setAs("QDNAseqCopyNumbers", "cghSeg", function(from) {
 setAs("QDNAseqCopyNumbers", "cghCall", function(from) {
     makeCgh(from, filter=FALSE)
 })
-
-# EOF

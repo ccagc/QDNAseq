@@ -110,9 +110,9 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             ##       of length 1 in vector-array arithmetic is deprecated.
             ##       Use c() or as.vector() instead."
             ## NOTE: CGHcall::CGHcall() produces message():s and stdout output.
-	    suppressVerbose({
+            suppressVerbose({
                 listcall <- CGHcall(seg, organism=organism, ...)
-	    }, suppress = !verbose)
+            }, suppress = !verbose)
         }, error=function(e) {
             stop("Command CGHcall() returned the following error message:\n",
                 e, "Please contact maintainer of package CGHcall: ",
@@ -120,9 +120,9 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
         })
         tryCatch({
             ## NOTE: CGHcall::ExpandCGHcall() produces message():s.
-	    suppressVerbose({
+            suppressVerbose({
                 cgh <- ExpandCGHcall(listcall, seg)
-	    }, suppress = !verbose)
+            }, suppress = !verbose)
         }, error=function(e) {
             stop("Command ExpandCGHcall() returned the following error ",
                 "message:\n", e,
@@ -165,11 +165,11 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
                 appendLF=FALSE)
             vmsg(" < ", round(cutoffGains[3], digits=2), " < amplification",
                 appendLF=FALSE)
-	} else {
+        } else {
             if (!is.na(cutoffGains[2]))
                 vmsg(" < ", round(cutoffGains[2], digits=2), " < amplification",
                     appendLF=FALSE)
-	}
+        }
         vmsg()
         segmentedMatrix <- log2adhoc(assayDataElement(object, "segmented"))
         ## multiplication with 1L turns logical values into integers
@@ -189,15 +189,15 @@ setMethod('callBins', signature=c(object='QDNAseqCopyNumbers'),
             callsMatrix[segmentedMatrix > cutoffGains[3]] <- 3L
             probamp(object) <- (callsMatrix == 3) * 1
         } else {
-	    if (!is.na(cutoffGains[2])) {
-	        callsMatrix[segmentedMatrix > cutoffGains[2]] <- 2L
+            if (!is.na(cutoffGains[2])) {
+                callsMatrix[segmentedMatrix > cutoffGains[2]] <- 2L
                 probamp(object) <- (callsMatrix == 2) * 1
             } else {
-            	if ("probamp" %in% assayDataElementNames(object))
+                    if ("probamp" %in% assayDataElementNames(object))
                     probamp(object) <- NULL
                 #if ("probdgain" %in% assayDataElementNames(object))
                 #    assayDataElement(object, "probdgain") <- NULL
-	    }
+            }
         }
         calls(object) <- callsMatrix
         probloss(object) <- (callsMatrix == -1) * 1
@@ -245,7 +245,3 @@ betterCall <- function(obj) {
     calls[del] <- -2
     return(calls)
 }
-
-
-
-# EOF

@@ -167,5 +167,3 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
     vmsg("Done.")
     object
 })
-
-# EOF

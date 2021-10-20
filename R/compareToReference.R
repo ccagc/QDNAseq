@@ -88,5 +88,3 @@ setMethod("compareToReference", signature=c(object="QDNAseqCopyNumbers",
         object <- object[, -toremove]
     object
 })
-
-# EOF

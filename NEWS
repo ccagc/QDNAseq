@@ -1,6 +1,18 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.29.5 [2021-10-20]
+
+PERFORMANCE:
+
+ * All internal row and column-based matrixStats calls now avoids overhead
+   from handling row and column names.
+ 
+MISCELLANEOUS:
+
+ * Moved 'future' from Imports to Suggests.
+ 
+
 Version: 1.29.4 [2021-10-16]
 
 DOCUMENTATION:

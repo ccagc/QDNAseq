@@ -122,11 +122,11 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
     msg <- c(msg, 'final bins'=sum(condition))
 
     binsToUse(object) <- condition
-    object$used.reads <- colSums2(assayDataElement(object, "counts"), rows=condition)
+    ## Assigning to an 'eSet' object will drop dimnames, so we can equally
+    ## well use useNames=FALSE here to minimize memory and speed overheads
+    object$used.reads <- colSums2(assayDataElement(object, "counts"), rows=condition, useNames=FALSE)
     object$expected.variance <- expectedVariance(object)
     vmsg(paste(format(msg, big.mark=','), names(msg),
         sep='\t', collapse='\n'))
     object
 })
-
-# EOF

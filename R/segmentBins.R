@@ -235,5 +235,3 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     segmented(object)[is.na(copynumber)] <- NA_real_
     object
 })
-
-# EOF

@@ -232,7 +232,7 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
     residuals <- counts / fit - 1
     # residuals[fit == 0] <- NA_real_
     residuals[!binsToUse(object), ] <- NA_real_
-    residual <- rowMedians(residuals, na.rm=TRUE)
+    residual <- rowMedians(residuals, na.rm=TRUE, useNames=FALSE)
     cutoffValue <- cutoff * madDiff(residual, na.rm=TRUE)
     if (is.numeric(cutoff))
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
@@ -248,7 +248,7 @@ iterateResiduals <- function(object, adjustIncompletes=TRUE,
         residuals <- counts / fit - 1
         # residuals[fit == 0] <- NA_real_
         residuals[!binsToUse(object), ] <- NA_real_
-        residual <- rowMedians(residuals, na.rm=TRUE)
+        residual <- rowMedians(residuals, na.rm=TRUE, useNames=FALSE)
         binsToUse(object) <- binsToUse(object) & !is.na(residual) &
             abs(residual) <= cutoffValue
         num <- sum(binsToUse(object))
@@ -361,7 +361,3 @@ calculateBlacklistByRegions <- function(bins, regions,
     
     blacklist
 }
-
-
-
-# EOF

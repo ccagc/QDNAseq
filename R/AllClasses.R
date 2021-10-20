@@ -15,5 +15,3 @@ setClass('QDNAseqCopyNumbers',
     prototype = prototype(new('VersionedBiobase',
     versions  = c(classVersion('eSet'), QDNAseq=packageVersion('QDNAseq'))))
 )
-
-# EOF

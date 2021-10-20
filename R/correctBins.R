@@ -100,5 +100,3 @@ setMethod("correctBins", signature=c(object="QDNAseqReadCounts"),
     new("QDNAseqCopyNumbers", bins=featureData(object), copynumber=corrected,
         phenodata=phenoData(object))
 })
-
-# EOF

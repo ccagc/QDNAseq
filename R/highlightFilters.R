@@ -177,5 +177,3 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
     vmsg("Highlighted ", format(num, big.mark=","), " bins.")
     return(invisible(num))
 })
-
-# EOF
