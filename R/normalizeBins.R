@@ -96,7 +96,7 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
         values <- apply(copynumber[condition, , drop=FALSE], MARGIN=2L,
           FUN=function(x) {
             d <- density(x, na.rm=TRUE)
-	    d$x[which.max(d$y)]
+            d$x[which.max(d$y)]
         })
     }
     vmsg()
@@ -123,5 +123,3 @@ setMethod("normalizeBins", signature=c(object="QDNAseqCopyNumbers"),
 
     object
 })
-
-# EOF

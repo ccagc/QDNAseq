@@ -12,5 +12,3 @@ expectedVariance <- function(object) {
     }
     expected.variance
 }
-
-# EOF

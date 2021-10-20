@@ -41,5 +41,3 @@ addPhenodata <- function(object, phenofile) {
         drop=FALSE])
     object
 }
-
-# EOF

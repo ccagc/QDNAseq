@@ -361,7 +361,3 @@ calculateBlacklistByRegions <- function(bins, regions,
     
     blacklist
 }
-
-
-
-# EOF

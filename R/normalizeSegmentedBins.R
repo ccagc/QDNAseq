@@ -78,5 +78,3 @@ setMethod("normalizeSegmentedBins", signature=c(object="QDNAseqCopyNumbers"),
     segmented(object) <- log2adhoc(segmented(postseg), inv=TRUE)
     object
 })
-
-# EOF

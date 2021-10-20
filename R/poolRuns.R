@@ -122,5 +122,3 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
     object2$expected.variance <- expectedVariance(object2)
     object2
 })
-
-# EOF

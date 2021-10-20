@@ -191,7 +191,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         isPaired, isProperPair, isUnmappedQuery, hasUnmappedMate,
         isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
         isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq,
-	verbose=getOption("QDNAseq::verbose", TRUE)) {
+        verbose=getOption("QDNAseq::verbose", TRUE)) {
 
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
@@ -410,23 +410,19 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 
 importReadCounts <- function(counts, bins, phenodata=NULL) {
     if (class(bins) == 'data.frame')
-	bins <- AnnotatedDataFrame(bins)
+        bins <- AnnotatedDataFrame(bins)
     if (class(phenodata) == 'data.frame')
-	phenodata <- AnnotatedDataFrame(phenodata)
+        phenodata <- AnnotatedDataFrame(phenodata)
     if (is.null(phenodata)) {
-	condition <- binsToUse(bins)
-	phenodata <- AnnotatedDataFrame(
-					data.frame(
-						   sampleNames=colnames(counts),
-						   total.reads=colSums(counts),
-						   used.reads=colSums2(counts, rows=condition, useNames=FALSE),
+        condition <- binsToUse(bins)
+        phenodata <- AnnotatedDataFrame(
+                                        data.frame(
+                                                   sampleNames=colnames(counts),
+                                                   total.reads=colSums(counts),
+                                                   used.reads=colSums2(counts, rows=condition, useNames=FALSE),
                                                    stringsAsFactors=FALSE
-						   ))
+                                                   ))
     }
     object <- new('QDNAseqReadCounts', bins=bins, counts=counts, phenodata=phenodata)
     return(object)
 }
-
-
-
-# EOF

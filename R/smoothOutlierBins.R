@@ -121,5 +121,3 @@ setMethod("smoothOutlierBins", signature=c(object="QDNAseqCopyNumbers"),
     vmsg()
     object
 })
-
-# EOF

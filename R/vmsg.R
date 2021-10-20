@@ -14,5 +14,3 @@ vmsg <- function(...) {
         message(...)
     }
 }
-
-# EOF

@@ -82,5 +82,3 @@ setGeneric("probgain<-", function(object, value)
     standardGeneric("probgain<-"))
 setGeneric("probamp<-", function(object, value)
     standardGeneric("probamp<-"))
-
-# EOF

@@ -76,5 +76,3 @@ setMethod('fit', signature=c(object='QDNAseqReadCounts'),
 #         assayDataElementReplace(object, 'fit', value2)
 #     }
 # })
-
-# EOF

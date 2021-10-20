@@ -19,5 +19,3 @@
 # LGG150 <- LGG150[Biobase::fData(LGG150)$chromosome %in%
 #     c("7", "8", "9", "10"),]
 # save(LGG150, file="LGG150.rda", compress="xz")
-
-# EOF

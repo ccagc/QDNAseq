@@ -111,7 +111,7 @@ getBinAnnotations <- function(binSize, genome="hg19", type="SR50",
     
     vmsg("Loaded bin annotations for genome ", sQuote(genome), ", bin size ",
          binSize, " kbp, and experiment type ", sQuote(type), " from ",
-	 vmsg_source)
+         vmsg_source)
  
     bins
 }
@@ -145,5 +145,3 @@ setMethod("show", signature=c(object="AnnotatedDataFrame"),
     }
     .showAnnotatedDataFrame((object))
 })
-
-# EOF

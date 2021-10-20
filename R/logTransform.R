@@ -81,5 +81,3 @@ sqrtadhoc <- function(x, factor=sqrtfactor(), offset=sqrtoffset(), inv=FALSE) {
         x - offset
     }
 }
-
-# EOF

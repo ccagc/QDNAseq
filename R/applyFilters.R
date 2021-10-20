@@ -130,5 +130,3 @@ setMethod('applyFilters', signature=c(object='QDNAseqReadCounts'),
         sep='\t', collapse='\n'))
     object
 })
-
-# EOF
