@@ -81,9 +81,9 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
     for (newsample in newsamples) {
         replicates <- samples == newsample
         if (inherits(object, "QDNAseqReadCounts")) {
-            newcounts[, newsample] <- rowSums2(counts, cols=replicates)
+            newcounts[, newsample] <- rowSums2(counts, cols=replicates, useNames=FALSE)
         } else if (inherits(object, "QDNAseqCopyNumbers")) {
-            newcopynumber[, newsample] <- rowMeans2(copynumber, cols=replicates)
+            newcopynumber[, newsample] <- rowMeans2(copynumber, cols=replicates, useNames=FALSE)
         }
         oldphenodata <- phenodata[replicates, ]
         if ("paired.ends" %in% colnames(oldphenodata)) {
@@ -94,7 +94,7 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
         totalReads <- sum(oldphenodata$total.reads)
         usedReads <- sum(oldphenodata$used.reads)
         numericCols <- sapply(oldphenodata, FUN=is.numeric)
-        oldphenodata[1, numericCols] <- colMeans2(oldphenodata, cols=numericCols)
+        oldphenodata[1, numericCols] <- colMeans2(oldphenodata, cols=numericCols, useNames=FALSE)
         oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
             drop=FALSE], MARGIN=2L, concatenateIfNotEqual)
         if ("paired.ends" %in% colnames(oldphenodata))

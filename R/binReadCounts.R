@@ -177,7 +177,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         phenodata$paired.ends <- pairedEnds
     condition <- binsToUse(bins)
     phenodata$total.reads <- colSums(counts)
-    phenodata$used.reads <- colSums2(counts, rows=condition)
+    phenodata$used.reads <- colSums2(counts, rows=condition, useNames=FALSE)
 
     object <- new('QDNAseqReadCounts', bins=bins, counts=counts,
         phenodata=phenodata)
@@ -419,7 +419,7 @@ importReadCounts <- function(counts, bins, phenodata=NULL) {
 					data.frame(
 						   sampleNames=colnames(counts),
 						   total.reads=colSums(counts),
-						   used.reads=colSums2(counts, rows=condition),
+						   used.reads=colSums2(counts, rows=condition, useNames=FALSE),
                                                    stringsAsFactors=FALSE
 						   ))
     }

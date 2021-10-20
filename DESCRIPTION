@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 1.29.4-9001
+Version: 1.29.4-9002
 Title: Quantitative DNA Sequencing for Chromosomal Aberrations
 Depends: R (>= 3.1.0)
 Imports:
@@ -13,7 +13,7 @@ Imports:
     DNAcopy (>= 1.32.0),
     GenomicRanges (>= 1.20),
     IRanges (>= 2.2),
-    matrixStats (>= 0.54.0),
+    matrixStats (>= 0.60.0),
     R.utils (>= 2.9.0),
     Rsamtools (>= 1.20),
     future.apply (>= 1.8.1)
