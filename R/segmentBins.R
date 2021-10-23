@@ -157,15 +157,11 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
         ## create a vector of messages to be printed
         msgs <- paste0("    Segmenting: ", sampleNames(object),
             " (", 1:ncol(object), " of ", ncol(object), ") ...")
-        ## use sample names for indexing, they are available in the CNA objects
-        ## as the name of the third column
-        names(msgs) <- sampleNames(object)
-        segments <- future_lapply(seq_along(cna), FUN=function(kk, ...) {
-            x <- cna[[kk]]
-            vmsg(msgs[kk])
+        segments <- future_mapply(cna, msgs, FUN=function(x, msg, ...) {
+            vmsg(msg)
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ..., future.seed=TRUE)
+        }, MoreArgs = list(...), SIMPLIFY = FALSE, USE.NAMES = FALSE, future.seed=TRUE)
         
         if(storeSegmentObjects)
           object <- assayDataElementReplace(object, "segmentObj", segments)
