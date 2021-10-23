@@ -1,6 +1,15 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.29.6 [2021-10-23]
+
+BUG FIXES:
+
+ * segmentBins() would *report* the sample names as "NA" in output messages
+   if the sample name contained hyphens, or other symbols automatically
+   replaced by data.frame(..., check.names = TRUE).  This was a harmless bug.
+
+
 Version: 1.29.5 [2021-10-20]
 
 PERFORMANCE:

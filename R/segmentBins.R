@@ -147,23 +147,21 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     # if (is.na(smoothBy) || !smoothBy || smoothBy <= 1) {
     if (is.na(smoothBy) || !smoothBy) {
         ## create a list of CNA objects that can be analyzed with *lapply()
-        cna <- lapply(sampleNames(object), FUN=function(x)
+        cna <- lapply(sampleNames(object), FUN=function(x) {
             CNA(genomdat=copynumber[condition, x, drop=FALSE],
                 chrom=factor(fData(object)$chromosome[condition],
                     levels=unique(fData(object)$chromosome), ordered=TRUE),
                 maploc=fData(object)$start[condition], data.type="logratio",
-                sampleid=x, presorted=TRUE))
+                sampleid=x, presorted=TRUE)
+        })
         ## create a vector of messages to be printed
         msgs <- paste0("    Segmenting: ", sampleNames(object),
             " (", 1:ncol(object), " of ", ncol(object), ") ...")
-        ## use sample names for indexing, they are available in the CNA objects
-        ## as the name of the third column
-        names(msgs) <- sampleNames(object)
-        segments <- future_lapply(cna, FUN=function(x, ...) {
-            vmsg(msgs[colnames(x)[3]])
+        segments <- future_mapply(cna, msgs, FUN=function(x, msg, ...) {
+            vmsg(msg)
             segment(x, alpha=alpha, undo.splits=undo.splits,
                     undo.SD=undo.SD, verbose=0, ...)
-        }, ..., future.seed=TRUE)
+        }, MoreArgs = list(...), SIMPLIFY = FALSE, USE.NAMES = FALSE, future.seed=TRUE)
         
         if(storeSegmentObjects)
           object <- assayDataElementReplace(object, "segmentObj", segments)

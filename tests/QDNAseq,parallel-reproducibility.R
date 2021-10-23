@@ -22,6 +22,7 @@ dataC <- correctBins(dataF)
 dataN <- normalizeBins(dataC)
 
 # Segment copy numbers
+set.seed(42)  ## segmentBins() relies on RNG via DNAcopy::segment()
 fit <- segmentBins(dataN)
 
 # Call copy-number segments
@@ -49,6 +50,7 @@ for (strategy in strategies) {
   dataNr <- normalizeBins(dataC)
   stopifnot(all.equal(dataNr, dataN))
   
+  set.seed(42)  ## segmentBins() relies on RNG via DNAcopy::segment()
   fitr <- segmentBins(dataNr)
   stopifnot(all.equal(fitr, fit))
   
