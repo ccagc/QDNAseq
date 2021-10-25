@@ -19,7 +19,7 @@ Version: 1.29.5 [2021-10-20]
 
 PERFORMANCE:
 
- * All internal row and column-based matrixStats calls now avoids overhead
+ * All internal row and column-based matrixStats calls now avoid overhead
    from handling row and column names.
  
 MISCELLANEOUS:
