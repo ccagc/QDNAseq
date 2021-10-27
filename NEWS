@@ -1,6 +1,14 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.31.0 [2021-10-27]
+
+RELEASE:
+
+ * The version number was bumped for the Bioconductor release version, which is
+   now BioC 3.15 for R-devel.
+
+
 Version: 1.30.0 [2021-10-27]
 
 RELEASE:
