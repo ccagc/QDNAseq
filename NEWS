@@ -1,9 +1,12 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.31.0-9000 [2021-10-27]
+Version: 1.31.0-9001 [2021-11-25]
 
- * ...
+MISCELLANEOUS:
+
+ * Now the package gives an informative error message when an outdated version
+   of the 'future' package is used.  It requires future (>= 1.22.1).
 
 
 Version: 1.31.0 [2021-10-27]

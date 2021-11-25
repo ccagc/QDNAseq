@@ -68,6 +68,8 @@ setMethod("estimateCorrection", signature=c(object="QDNAseqReadCounts"),
     adjustIncompletes=TRUE, maxIter=1, cutoff=4.0,
     variables=c("gc", "mappability"), ...,
     verbose=getOption("QDNAseq::verbose", TRUE)) {
+    
+    assert_future_version() ## Until future.apply (>= 1.9.0) is on CRAN
 
     oopts <- options("QDNAseq::verbose"=verbose)
     on.exit(options(oopts))

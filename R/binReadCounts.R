@@ -193,6 +193,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq,
         verbose=getOption("QDNAseq::verbose", TRUE)) {
 
+    assert_future_version() ## Until future.apply (>= 1.9.0) is on CRAN
+
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
     bamfile <- normalizePath(bamfile)

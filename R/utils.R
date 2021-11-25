@@ -14,3 +14,19 @@ suppressVerbose <- function(expr, envir = parent.frame(), suppress = TRUE) {
   res <- eval(expr, envir=envir, enclos=baseenv())
   if (res$visible) res$value else invisible(res$value)
 }
+
+
+#' @importFrom utils packageVersion
+future_version <- local({
+  ver <- NULL
+  function() {
+    if (is.null(ver)) ver <<- packageVersion("future")
+    ver
+  }
+})
+
+assert_future_version <- function() {
+  if (future_version() >= "1.22.1") return()
+  stop(sprintf("This function requires future (>= 1.22.1). Please update: %s",
+               future_version()))
+}

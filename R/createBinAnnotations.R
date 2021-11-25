@@ -65,6 +65,8 @@
 createBins <- function(bsgenome, binSize, ignoreMitochondria=TRUE,
     excludeSeqnames=NULL, verbose=getOption("QDNAseq::verbose", TRUE)) {
 
+    assert_future_version() ## Until future.apply (>= 1.9.0) is on CRAN
+
     oopts <- options("QDNAseq::verbose"=verbose)
     on.exit(options(oopts))
 

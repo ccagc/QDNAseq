@@ -98,6 +98,8 @@ setMethod("segmentBins", signature=c(object="QDNAseqCopyNumbers"),
     transformFun="log2",
     segmentStatistic="seg.mean", storeSegmentObjects=FALSE,
     ..., verbose=getOption("QDNAseq::verbose", TRUE)) {
+    
+    assert_future_version() ## Until future.apply (>= 1.9.0) is on CRAN
 
     if ("seeds" %in% names(list(...))) {
       .Defunct("Argument 'seeds' (integer) is no longer supported and ignored.")
