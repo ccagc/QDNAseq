@@ -413,7 +413,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 importReadCounts <- function(counts, bins, phenodata=NULL) {
     if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
-    if (inherits(phenodata, "data.frame")
+    if (inherits(phenodata, "data.frame"))
         phenodata <- AnnotatedDataFrame(phenodata)
     if (is.null(phenodata)) {
         condition <- binsToUse(bins)
