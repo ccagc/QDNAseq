@@ -32,9 +32,9 @@
 setMethod('initialize', 'QDNAseqReadCounts',
     function(.Object, bins, counts, phenodata, ...) {
     
-    if (class(bins) == 'data.frame')
+    if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
-    if (class(phenodata) == 'data.frame')
+    if (inherits(phenodata, "data.frame"))
         phenodata <- AnnotatedDataFrame(phenodata)
     callNextMethod(.Object, featureData=bins,
         assayData=assayDataNew(counts=counts),

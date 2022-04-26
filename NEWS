@@ -1,13 +1,19 @@
 Package: QDNAseq
 ----------------
 
-Version: 1.33.0-9001 [2022-04-26]
+Version: 1.33.0-9002 [2022-04-26]
 
 MISCELLANEOUS:
 
- * Now the package gives an informative error message when an outdated version
-   of the 'future' package is used.  It requires future (>= 1.22.1).
+ * Now the package gives an informative error message when an outdated
+   version of the 'future' package is used.  It requires future (>=
+   1.22.1).
 
+BUG FIXES:
+
+ * A few functions used class(x) == "data.frame" rather than
+   inherits(x, "data.frame").
+ 
 
 Version: 1.33.0 [2022-04-26]
 

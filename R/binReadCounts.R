@@ -136,7 +136,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         phenodata <- cbind(phenodata, pdata[rownames(phenodata), , drop=FALSE])
     }
 
-    if (class(bins) == 'data.frame')
+    if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
 
     counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
@@ -411,9 +411,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 }
 
 importReadCounts <- function(counts, bins, phenodata=NULL) {
-    if (class(bins) == 'data.frame')
+    if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
-    if (class(phenodata) == 'data.frame')
+    if (inherits(phenodata, "data.frame")
         phenodata <- AnnotatedDataFrame(phenodata)
     if (is.null(phenodata)) {
         condition <- binsToUse(bins)

@@ -147,7 +147,7 @@ setMethod("highlightFilters", signature=c(object="QDNAseqSignals"),
                 chrom.lengths[uni.chrom[j]]
         }
     }
-    if (class(object) == "QDNAseqReadCounts") {
+    if (inherits(object, "QDNAseqReadCounts")) {
         copynumber <- assayDataElement(object, "counts")[condition, ,
             drop=FALSE]
     } else {
