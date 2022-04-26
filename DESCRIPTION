@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 1.33.0-9001
+Version: 1.33.1
 Title: Quantitative DNA Sequencing for Chromosomal Aberrations
 Depends: R (>= 3.1.0)
 Imports:
