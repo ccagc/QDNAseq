@@ -6,7 +6,7 @@ jobs:
   R-CMD-check:
     if: "! contains(github.event.head_commit.message, '[ci skip]')"    
 
-    timeout-minutes: 15
+    timeout-minutes: 45
 
     runs-on: ${{ matrix.config.os }}
 
@@ -18,13 +18,13 @@ jobs:
         config:
           - {os: windows-latest, r: release  }
           - {os: macOS-latest,   r: devel    }
-          - {os: macOS-latest,   r: release  }
+#          - {os: macOS-latest,   r: release  } # QDNAseq.hg19, QDNAseq.mm10 not available
           - {os: ubuntu-20.04,   r: devel    }
           - {os: ubuntu-20.04,   r: release  }
           - {os: ubuntu-20.04,   r: oldrel   }
           - {os: ubuntu-20.04,   r: oldrel-1 }
           - {os: ubuntu-20.04,   r: oldrel-2 }
-          - {os: ubuntu-20.04,   r: 3.4      }
+          - {os: ubuntu-20.04,   r: oldrel-3 }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
