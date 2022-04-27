@@ -136,7 +136,7 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         phenodata <- cbind(phenodata, pdata[rownames(phenodata), , drop=FALSE])
     }
 
-    if (class(bins) == 'data.frame')
+    if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
 
     counts <- matrix(NA_integer_, nrow=nrow(bins), ncol=length(bamnames),
@@ -192,6 +192,8 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
         isMinusStrand, isMateMinusStrand, isFirstMateRead, isSecondMateRead,
         isSecondaryAlignment, isNotPassingQualityControls, isDuplicate, minMapq,
         verbose=getOption("QDNAseq::verbose", TRUE)) {
+
+    assert_future_version() ## Until future.apply (>= 1.9.0) is on CRAN
 
     binSize <- (bins$end[1L]-bins$start[1L]+1)/1000
 
@@ -409,9 +411,9 @@ binReadCounts <- function(bins, bamfiles=NULL, path=NULL, ext='bam',
 }
 
 importReadCounts <- function(counts, bins, phenodata=NULL) {
-    if (class(bins) == 'data.frame')
+    if (inherits(bins, "data.frame"))
         bins <- AnnotatedDataFrame(bins)
-    if (class(phenodata) == 'data.frame')
+    if (inherits(phenodata, "data.frame"))
         phenodata <- AnnotatedDataFrame(phenodata)
     if (is.null(phenodata)) {
         condition <- binsToUse(bins)

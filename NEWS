@@ -1,6 +1,20 @@
 Package: QDNAseq
 ----------------
 
+Version: 1.33.1 [2022-04-27]
+
+MISCELLANEOUS:
+
+ * Now the package gives an informative error message when an outdated
+   version of the 'future' package is used.  It requires future (>=
+   1.22.1).
+
+BUG FIXES:
+
+ * A few functions used class(x) == "data.frame" rather than
+   inherits(x, "data.frame").
+ 
+
 Version: 1.33.0 [2022-04-26]
 
  * The version number was bumped for the Bioconductor devel version,
@@ -42,7 +56,7 @@ Version: 1.29.5 [2021-10-20]
 
 PERFORMANCE:
 
- * All internal row and column-based matrixStats calls now avoids overhead
+ * All internal row and column-based matrixStats calls now avoid overhead
    from handling row and column names.
  
 MISCELLANEOUS:
