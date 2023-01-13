@@ -103,7 +103,7 @@ jobs:
       - name: Check
         run: |
           skip_vignettes <- (getRversion() < "4.0.0")
-          rcmdcheck::rcmdcheck(build_args = if (skip_vignettes) "--no-build-vignettes", args = c("--no-manual", "--as-cran", if (skip_vignettes) "--ignore-vignettes"), error_on = "warning", check_dir = "check")
+          rcmdcheck::rcmdcheck(build_args = if (skip_vignettes) "--no-build-vignettes", args = c("--no-manual", "--as-cran", if (skip_vignettes) "--ignore-vignettes"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
       - name: Upload check results
