@@ -30,7 +30,7 @@
 # readCounts <- LGG150
 # # Note: the following command will "pool" data from a single run, which
 # # does not really make sense:
-# pooledReadCounts <- poolRuns(readCounts, "LGG150")
+# pooledReadCounts <- poolRuns(readCounts, samples = "LGG150")
 # }
 #
 # @author "IS"
