@@ -25,10 +25,9 @@ message("poolRuns(LGG150set) ...")
 x_pool <- poolRuns(x, samples = sampleNames(x))
 print(x_pool)
 
+message("poolRuns(LGG150set) - pooled ...")
 ## BUG #112 (https://github.com/ccagc/QDNAseq/issues/112)
-x_pool <- tryCatch({
-  poolRuns(x, samples = rep("pooled", times = 2L))
-}, error = identity)
+x_pool <- poolRuns(x, samples = rep("pooled", times = 2L))
 print(x_pool)
 
 message("poolRuns(LGG150set) ... done")

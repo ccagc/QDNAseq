@@ -17,8 +17,8 @@ jobs:
       matrix:
         config:
           - {os: windows-latest, r: release  }
-          - {os: macOS-latest,   r: devel    }
-#          - {os: macOS-latest,   r: release  } # QDNAseq.hg19, QDNAseq.mm10 not available
+#          - {os: macOS-latest,   r: devel    } # QDNAseq.hg19, QDNAseq.mm10 not available
+          - {os: macOS-latest,   r: release  }
           - {os: ubuntu-20.04,   r: devel    }
           - {os: ubuntu-20.04,   r: release  }
           - {os: ubuntu-20.04,   r: oldrel   }
