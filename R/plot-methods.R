@@ -40,6 +40,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
     ampcol=getOption("QDNAseq::ampcol", "darkblue"),
     pointcol=getOption("QDNAseq::pointcol", "black"),
     segcol=getOption("QDNAseq::segcol", "chocolate"),
+    seglwd = 3,
     misscol=getOption("QDNAseq::misscol", NA),
     pointpch=getOption("QDNAseq::pointpch", 1L),
     pointcex=getOption("QDNAseq::pointcex", 0.1),
@@ -240,7 +241,7 @@ setMethod("plot", signature(x="QDNAseqSignals", y="missing"),
         if (doSegments) {
             for (jjj in seq_len(nrow(segment))) {
                 segments(pos[segment[jjj,2]], segment[jjj,1],
-                    pos[segment[jjj,3]], segment[jjj,1], col=segcol, lwd=3)
+                    pos[segment[jjj,3]], segment[jjj,1], col=segcol, lwd=seglwd)
             }
         }
         par(xpd=TRUE)
