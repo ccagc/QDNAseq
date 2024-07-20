@@ -1,4 +1,4 @@
-# Version (development version)
+# Version 1.41.1 [2024-07-20]
 
 ## Miscellaneous
 
@@ -7,7 +7,7 @@
  * Add package test for `poolRuns()`.
  
 
-# Version 1.38.0 [2024-05-01]
+# Version 1.40.0 [2024-05-01]
 
 ## Release
 
@@ -574,5 +574,3 @@
 ## Release
 
  * Initial release as part of Bioconductor 2.14.
-
-
