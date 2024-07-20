@@ -3,6 +3,8 @@
 ## Miscellaneous
 
  * Fix markup typo in `help("exportBins")`.
+
+ * Add package test for `poolRuns()`.
  
 
 # Version 1.38.0 [2024-05-01]
