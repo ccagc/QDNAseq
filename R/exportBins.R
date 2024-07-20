@@ -25,7 +25,7 @@
 #     \item{filter}{If @TRUE, bins are filtered, otherwise not.}
 #     \item{logTransform}{If @TRUE (default), exported data will be log2
 #         transformed for \code{format} in \code{"tsv"}, \code{"igv"}, and
-#         \code{"bed"}.  This argument is ignored if code{type = "calls"}.}
+#         \code{"bed"}.  This argument is ignored if \code{type = "calls"}.}
 #     \item{digits}{The number of digits to round to. If not @numeric, no
 #         no rounding is performed.}
 #     \item{chromosomeReplacements}{A named character vector of chromosome name

@@ -1,3 +1,10 @@
+# Version (development version)
+
+## Miscellaneous
+
+ * Fix markup typo in `help("exportBins")`.
+ 
+
 # Version 1.35.0 [2022-11-01]
 
 ## Release
