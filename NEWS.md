@@ -1,9 +1,34 @@
-# Version 1.35.0 [2022-11-01]
+# Version 1.41.1 [2024-07-20]
+
+## Miscellaneous
+
+ * Fix markup typo in `help("exportBins")`.
+
+ * Add package test for `poolRuns()`.
+ 
+
+# Version 1.40.0 [2024-05-01]
 
 ## Release
 
- * The version number was bumped for the Bioconductor devel version,
-   which is now Bioconductor 3.17 for R-devel.
+ * The version number was bumped for the Bioconductor release version,
+     which is now Bioconductor 3.19 for R (>= 4.4.0).
+
+
+# Version 1.38.0 [2023-10-25]
+
+## Release
+
+ * The version number was bumped for the Bioconductor release version,
+   which is now Bioconductor 3.18 for R (>= 4.3.1).
+
+
+# Version 1.36.0 [2023-04-26]
+
+## Release
+
+ * The version number was bumped for the Bioconductor release version,
+   which is now Bioconductor 3.17 for R (>= 4.3.0).
 
 
 # Version 1.34.0 [2022-11-01]
@@ -549,5 +574,3 @@
 ## Release
 
  * Initial release as part of Bioconductor 2.14.
-
-

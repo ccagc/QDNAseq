@@ -1,5 +1,5 @@
 Package: QDNAseq
-Version: 1.41.0
+Version: 1.41.1
 Title: Quantitative DNA Sequencing for Chromosomal Aberrations
 Depends: R (>= 3.1.0)
 Imports:
@@ -44,4 +44,4 @@ biocViews: CopyNumberVariation, DNASeq, Genetics, GenomeAnnotation,
 License: GPL
 URL: https://github.com/ccagc/QDNAseq
 BugReports: https://github.com/ccagc/QDNAseq/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
