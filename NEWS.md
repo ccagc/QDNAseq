@@ -1,6 +1,10 @@
 # Version (development version)
 
- * ...
+## Bug Fixes
+
+ * `poolRuns()` would give an error "Error in colMeans2(oldphenodata,
+   cols = numericCols, useNames = FALSE) : Argument 'x' must be a
+   matrix or a vector."
 
 
 # Version 1.41.1 [2024-07-20]
