@@ -94,19 +94,18 @@ setMethod("poolRuns", signature=c(object="QDNAseqSignals",
         totalReads <- sum(oldphenodata$total.reads)
         usedReads <- sum(oldphenodata$used.reads)
         numericCols <- sapply(oldphenodata, FUN=is.numeric)
-        oldphenodata[1, numericCols] <- colMeans2(oldphenodata, cols=numericCols, useNames=FALSE)
-        oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols,
-            drop=FALSE], MARGIN=2L, concatenateIfNotEqual)
+        oldphenodata[1,  numericCols] <- apply(oldphenodata[,  numericCols, drop = FALSE], MARGIN = 2L, FUN = mean)
+        oldphenodata[1, !numericCols] <- apply(oldphenodata[, !numericCols, drop = FALSE], MARGIN = 2L, FUN = concatenateIfNotEqual)
         if ("paired.ends" %in% colnames(oldphenodata))
             oldphenodata[1, "paired.ends"] <- pairedEnds
         oldphenodata[1, "total.reads"] <- totalReads
         oldphenodata[1, "used.reads"] <- usedReads
         newphenodata <- rbind(newphenodata, oldphenodata[1, ], stringsAsFactors=FALSE)
     }
-    rownames(newphenodata) <- newphenodata[, 1]
-    newphenodata <- AnnotatedDataFrame(newphenodata,
-        varMetadata=varMetadata(object))
-
+    rownames(newphenodata) <- newphenodata$name
+    metadata <- varMetadata(object)
+    metadata <- rbind(metadata, structure(data.frame(labelDescription = NA_character_), rownames = "total.reads"))
+    newphenodata <- AnnotatedDataFrame(newphenodata, varMetadata=metadata)
     if (inherits(object, "QDNAseqReadCounts")) {
         storage.mode(newcounts) <- "integer"
         object2 <- new("QDNAseqReadCounts",
