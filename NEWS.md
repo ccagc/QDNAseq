@@ -1,3 +1,8 @@
+# Version 1.41.3 (development version)
+
+ * ...
+
+
 # Version 1.41.3 [2024-07-24]
 
 ## Miscellaneous
