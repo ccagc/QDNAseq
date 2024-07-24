@@ -1,3 +1,11 @@
+# Version (development version)
+
+## Miscellaneous
+
+ * `exportBins(..., format = "vcf")` did not add meta-data information
+   for field `END` to the VCF file header.
+
+
 # Version 1.41.2 [2024-07-23]
 
 ## Bug Fixes

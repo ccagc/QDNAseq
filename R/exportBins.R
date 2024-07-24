@@ -220,6 +220,7 @@ exportVCF <- function(obj, fnames) {
                          '##ALT=<ID=DUP,Description="Duplication">',
                          '##FILTER=<ID=LOWQ,Description="Filtered due to call in low quality region">',
                          '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of variant: DEL,DUP,INS">',
+                         '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of variant">',
                          '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of variant">',
                          '##INFO=<ID=BINS,Number=1,Type=Integer,Description="Number of bins in call">',
                          '##INFO=<ID=SCORE,Number=1,Type=Integer,Description="Score of calling algorithm">',
