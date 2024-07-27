@@ -80,7 +80,7 @@ for (name in names(sets)) {
         message(sprintf("    File(s) written: [n=%d] %s",
                 length(file), paste(sQuote(file), collapse = ", ")))
         stopifnot(all(file_test("-f", file)))
-        if (do_cleanup) {f
+        if (do_cleanup) {
 	  file.remove(file)
           stopifnot(!any(file_test("-f", file)))
 	}
