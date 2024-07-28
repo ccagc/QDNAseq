@@ -286,7 +286,7 @@ exportVCF <- function(obj, fnames) {
         colnames(out) <- c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", pd$name[i])
 
         ## Drop copy-neutral segments
-        out <- out[dsel[posI, 4] != 0, ]
+        out <- out[dsel[posI, 4] != 0, , drop = FALSE]
         
         write.table(vcfHeader, file=fnames[i], quote=FALSE, sep="\t", col.names=FALSE, row.names=FALSE)
         suppressWarnings(write.table(out, file=fnames[i], quote=FALSE, sep="\t", append=TRUE, col.names=TRUE, row.names=FALSE))
@@ -353,7 +353,7 @@ exportSEG <- function(obj, fnames=NULL) {
         colnames(out) <- c("SAMPLE_NAME", "CHROMOSOME", "START", "STOP", "DATAPOINTS", "LOG2_RATIO_MEAN")
 
         ## Drop copy-neutral segments
-        out <- out[dsel[posI, 4] != 0, ]
+        out <- out[dsel[posI, 4] != 0, , drop = FALSE]
         
         write.table(out, file = fnames[i], quote=FALSE, sep="\t", append=FALSE, col.names=TRUE, row.names=FALSE)
         stopifnot(file_test("-f", fnames[i]))
